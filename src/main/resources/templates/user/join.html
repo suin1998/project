@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>join</title>
+    <link rel="stylesheet" href="../../static/css/join.css">
+</head>
+<body>
+<main class="join">
+    <div class="join-Box">
+        <header class="logo">
+            <h1>Logo</h1>
+        </header>
+
+        <div class="form-control">
+            <label for="email">이메일</label>
+            <input id="email" class="user_email" type="email" placeholder="email" required>
+
+            <label for="username">이름</label>
+            <input id="username" class="user_name" type="text" placeholder="name" required>
+
+            <label for="password1">비밀번호</label>
+            <input id="password1" class="password" type="password" placeholder="password" required>
+
+            <label for="password2">비밀번호 확인</label>
+            <input id="password2" class="password" type="password" placeholder="confirm password" required>
+
+            <div class="birthForm">
+                <label for="birth">생년월일</label>
+                <input type="text" id="birth" class="birthdayInput" placeholder="yyyy.mm.dd" maxlength="13" required>
+            </div>
+        </div>
+
+        <div class="form-gender">
+            <input type="radio" id="gender1" name="gender" value="M">
+            <label for="gender1" class="gender-card">남성</label>
+
+            <input type="radio" id="gender2" name="gender" value="F">
+            <label for="gender2" class="gender-card">여성</label>
+        </div>
+
+        <div class="joinBtn">
+            <button class="btn btn-primary" type="button">가입하기</button>
+        </div>
+    </div>
+</main>
+</body>
+</html>
