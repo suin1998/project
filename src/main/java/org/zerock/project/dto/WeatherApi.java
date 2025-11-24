@@ -1,4 +1,4 @@
 package org.zerock.project.dto;
 
-public class ksi {
+public class WeatherApi {
 }
