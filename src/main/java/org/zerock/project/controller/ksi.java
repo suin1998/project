@@ -1,4 +1,7 @@
 package org.zerock.project.controller;
 
-public class ksi {safdsfad
+import org.springframework.stereotype.Controller;
+
+@Controller
+public class ksi {
 }
