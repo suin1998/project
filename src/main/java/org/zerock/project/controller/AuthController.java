@@ -21,7 +21,8 @@ import java.util.Map;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @Log4j2
-public class UserController {
+@CrossOrigin(origins = "http://localhost:63342")
+public class AuthController {
 
     private final UserService userService;
     private final EmailService emailService;
@@ -84,28 +85,28 @@ public class UserController {
             return new ResponseEntity<>("회원가입 중 알 수 없는 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-//    @PostMapping("/register-request")
-//    public ResponseEntity<Void> registerRequest(@RequestBody UserDTO userDTO) {
-//        try {
-//            userService.registerRequest(userDTO);
-//            return new ResponseEntity<>(HttpStatus.ACCEPTED);
-//        } catch (RuntimeException e) {
-//
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//    }
-//
-//    @PostMapping("/verify")
-//    public ResponseEntity<Void> verifyEmail(@RequestParam String userId, @RequestParam String code) {
-//        try {
-//            userService.verifyEmail(userId, code);
-//            return new ResponseEntity<>(HttpStatus.OK);
-//        } catch (EntityNotFoundException e) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        } catch (RuntimeException e) {
-//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-//        }
-//    }
+    @PostMapping("/register-request")
+    public ResponseEntity<Void> registerRequest(@RequestBody UserDTO userDTO) {
+        try {
+            userService.registerRequest(userDTO);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        } catch (RuntimeException e) {
+
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<Void> verifyEmail(@RequestParam String userId, @RequestParam String code) {
+        try {
+            userService.verifyEmail(userId, code);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) {
@@ -113,6 +114,7 @@ public class UserController {
             LoginResponseDTO response = userService.authenticate(loginDTO);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (RuntimeException e) {
+            log.warn("로그인 실패: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
@@ -121,9 +123,10 @@ public class UserController {
     public ResponseEntity<UserDTO> modifyUser(@PathVariable String userId, @RequestBody UserDTO userDTO) {
         try {
             UserDTO updatedUser = userService.modify(userId, userDTO);
+            log.info("사용자 정보 수정 성공: userId={}", userId);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-
+            log.warn("사용자 수정 실패: {} (NOT FOUND)", userId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -132,8 +135,10 @@ public class UserController {
     public ResponseEntity<Void> withdrawUser(@PathVariable String userId) {
         try {
             userService.withdraw(userId);
+            log.info("사용자 탈퇴 성공: userId={}", userId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (EntityNotFoundException e) {
+            log.warn("사용자 탈퇴 실패: {} (NOT FOUND)", userId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
