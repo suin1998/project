@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../../static/css/myPage.css">
+</head>
+<body>
+<header>
+    <div class="logo">Logo</div>
+    <nav>
+        <a href="#">LogOut</a>
+        <a href="#">Main</a>
+    </nav>
+</header>
+<div class="container-dashboard">
+    <section class="dashboard">
+        <div class="calendar-card">
+            <div class="calendar-herder">
+                <button id="prev"><</button>
+                <h3 id="monthYear"></h3>
+                <button id="next">></button>
+            </div>
+            <table id="calendar">
+                <thead>
+                <tr>
+                    <th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                </tr>
+                </thead>
+                <tbody id="calendarBody"></tbody>
+            </table>
+        </div>
+    </section>
+    <section class="profile">
+        <div class="profile-card">
+            <div class="profile-img">
+<!--                샘플 이미지-->
+                <img src="../image/user/user-img.jpg">
+            </div>
+            <div class="profile-text">
+                <h3 id="user-name">000님 안녕하세요</h3>
+                <a href="#" id="profile-edit">정보수정</a>
+            </div>
+        </div>
+    </section>
+</div>
+<div class="container-editors">
+        <div class="tag-list">
+<!--            샘플버튼 디자인만 보세요-->
+            <input type="radio" id="btn-tShirt">
+            <label for="btn-tShirt" class="btn">티셔츠</label>
+            <input type="radio" id="btn-pants">
+            <label for="btn-pants" class="btn">팬츠</label>
+            <input type="radio" id="btn-skirt">
+            <label for="btn-skirt" class="btn">스커트</label>
+            <input type="radio" id="btn-outerwear">
+            <label for="btn-outerwear" class="btn">아우터</label>
+        </div>
+        <div class="image-area">
+<!--            샘플 이미지 디자인만 보세요.-->
+            <div id="imageCount">티셔츠 3개</div>
+            <div id="Container" class="image-grid">
+                <img src="../image/user/tShirt1.jpg" alt="">
+                <img src="../image/user/tShirt2.jpg" alt="">
+                <img src="../image/user/tShirt3.jpg" alt="">
+            </div>
+        </div>
+</div>
+
+<script>
+    let today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+
+    const monthYear = document.getElementById("monthYear");
+    const calendarBody = document.getElementById("calendarBody")
+
+    document.getElementById("prev").addEventListener("click", () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        renderCalendar();
+    });
+
+    document.getElementById("next").addEventListener("click", () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        renderCalendar();
+    });
+
+    function renderCalendar() {
+        calendarBody.innerHTML = "";
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        monthYear.textContent = `${currentYear}년 ${currentMonth + 1}월`
+
+        let row = document.createElement("tr");
+
+        for (let i = 0; i < firstDay; i++) {
+            row.appendChild(document.createElement("td"));
+        }
+
+        for (let day = 1; day <= lastDate; day++) {
+            if (row.children.length === 7) {
+                calendarBody.appendChild(row);
+                row = document.createElement("tr");
+            }
+
+            const cell = document.createElement("td");
+            cell.textContent = day;
+            row.appendChild(cell);
+        }
+        calendarBody.appendChild(row);
+    }
+
+    renderCalendar();
+
+</script>
+</body>
+</html>
