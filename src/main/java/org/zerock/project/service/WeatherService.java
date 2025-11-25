@@ -34,67 +34,67 @@
 //        int ny = location.getNy();
 //        LocalDate targetDate = LocalDate.parse(inputdate);
 //
-////        WeatherResponseDto result = new WeatherResponseDto();
+//        WeatherResponseDto result = new WeatherResponseDto();
 //
-////        if(targetDate.isBefore(LocalDate.now().plusDays(4))) {
-////            ShortTermWeatherDto shortTerm = getShortTermForecast(nx, ny);
-////            parseShortTerm(shortTerm, targetDate, result);
-////        }else{
-////            MidTermWeatherDto midTerm = getMidTermForecast(sido);
-////            parseMidTerm(midTerm, targetDate, result);
-////        }
-////        return result;
+//        if(targetDate.isBefore(LocalDate.now().plusDays(4))) {
+//            ShortTermWeatherDto shortTerm = getShortTermForecast(nx, ny);
+//            parseShortTerm(shortTerm, targetDate, result);
+//        }else{
+//            MidTermWeatherDto midTerm = getMidTermForecast(sido);
+//            parseMidTerm(midTerm, targetDate, result);
+//        }
+//        return result;
 //    }
 //
-////    private void parseShortTerm(ShortTremWeatherDto shortTerm, LocalDate targetDate, WeatherResponseDto result){
-////        List<ShortTermweatherDto.Item> items = shortTerm.getResponse().getBody().getItems().getitem();
-////
-////        double tempSum = 0;
-////        int countTmp = 0;
-////        double popMax = 0;
-////        String sky = null;
-////        String pty = null;
-////
-////        String targetDateStr = targetDate.toString().replace("-", "");
-////
-////        for(ShortTermWeatherDto.item item: items){
-////            if(!item.getFcstDate().equals(targetDateStr)) continue;
-////
-////            switch (item.getCategory()){
-////                case "TMP":
-////                    tempSum += Double.parseDouble(item.getFcstValue());
-////                    countTmp++;
-////                    break;
-////
-////                case "POP":
-////                    popMax = Math.max(popMax, Double.parseDouble(item.getFcstValue()));
-////                    break;
-////
-////                case "SKY":
-////                    sky = item.getFcstValue();
-////                    break;
-////
-////                case "PTY":
-////                    pty = item.getFcstValue();
-////                    break;
-////
-////            }
-////
-////        }
-////
-////        result.setTempAvg(countTmp > 0 ? tempSum / countTmp : 0);
-////        result.setPrecipitationProb(popMax);
-////        result.setSkyState(sky);
-////        result.setPrecipitationType(pty);
-////
-////
-////    }
-////    private void parseMidTerm(MidTermWeatherDto midTerm, LocalDate targetDate, WeatherResponseDto result){
-////        int dayDiff = targetDate.getDayOfYear() - LocalDate.now().getDayOfYear() ;
-////
-////        if (dayDiff < 4 || dayDiff > 10){
-////
-////        }
+//    private void parseShortTerm(ShortTremWeatherDto shortTerm, LocalDate targetDate, WeatherResponseDto result){
+//        List<ShortTermweatherDto.Item> items = shortTerm.getResponse().getBody().getItems().getitem();
+//
+//        double tempSum = 0;
+//        int countTmp = 0;
+//        double popMax = 0;
+//        String sky = null;
+//        String pty = null;
+//
+//        String targetDateStr = targetDate.toString().replace("-", "");
+//
+//        for(ShortTermWeatherDto.item item: items){
+//            if(!item.getFcstDate().equals(targetDateStr)) continue;
+//
+//            switch (item.getCategory()){
+//                case "TMP":
+//                    tempSum += Double.parseDouble(item.getFcstValue());
+//                    countTmp++;
+//                    break;
+//
+//                case "POP":
+//                    popMax = Math.max(popMax, Double.parseDouble(item.getFcstValue()));
+//                    break;
+//
+//                case "SKY":
+//                    sky = item.getFcstValue();
+//                    break;
+//
+//                case "PTY":
+//                    pty = item.getFcstValue();
+//                    break;
+//
+//            }
+//
+//        }
+//
+//        result.setTempAvg(countTmp > 0 ? tempSum / countTmp : 0);
+//        result.setPrecipitationProb(popMax);
+//        result.setSkyState(sky);
+//        result.setPrecipitationType(pty);
+//
+//
+//    }
+//    private void parseMidTerm(MidTermWeatherDto midTerm, LocalDate targetDate, WeatherResponseDto result){
+//        int dayDiff = targetDate.getDayOfYear() - LocalDate.now().getDayOfYear() ;
+//
+//        if (dayDiff < 4 || dayDiff > 10){
+//
+//        }
 //    }
 //
 //
