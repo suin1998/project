@@ -17,7 +17,7 @@
         <h2 class="post-title">추천 코디</h2>
 
         <div class="user-box">
-            <div><strong>작성자&nbsp;:&nbsp; </strong><span id="user-name"></span></div>
+            <div><strong>작성자&nbsp;:&nbsp; </strong><span id="user-nickname"></span></div>
             <div><strong>이메일&nbsp;:&nbsp; </strong><span id="user-email"></span></div>
         </div>
 
@@ -52,7 +52,7 @@
 <script>
     /* 저장된 게시글 데이터 (예시) */
     const savedPost = {
-        userName: "홍길동",
+        userNickName: "홍길동",
         userEmail: "hong@test.com",
         title: "제목이 들어갑니다.",
         content:
@@ -78,7 +78,7 @@
     }
 
     /* 화면에 데이터 삽입 */
-    document.getElementById("user-name").textContent = savedPost.userName;
+    document.getElementById("user-nickname").textContent = savedPost.userNickName;
     document.getElementById("user-email").textContent = savedPost.userEmail;
 
     document.getElementById("postTitle").value = savedPost.title;
