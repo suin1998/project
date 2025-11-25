@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../../static/css/userCommunity.css">
+</head>
+<body>
+<header>
+    <div class="logo">Logo</div>
+    <nav>
+        <a href="#">Login / Join</a>
+        <a href="#">My Closet</a>
+    </nav>
+</header>
+<div class="container">
+    <div class="top-bar">
+        <button class="newPost-btn" id="newPost">글쓰기</button>
+
+        <div class="filter-bar" id="filter-bar">
+            <select id="filter-list" class="filter-list">
+                <option value="latest">최신순</option>
+                <option value="recommend">추천순</option>
+                <option value="view">조회순</option>
+            </select>
+        </div>
+    </div>
+    <div id="gallery" class="gallery"></div>
+
+    <div class="pagination">
+        <button class="page-btn" id="prev"> <</button>
+        <div id="page-numbers"></div>
+        <button class="page-btn" id="next"> > </button>
+    </div>
+</div>
+
+<script>
+    const sampleData = Array.from({length: 30}).map((_, i) => ({
+        id: i + 1,
+        title: `게시글 제목 ${i + 1}`,
+        like: Math.floor(Math.random() * 100),
+        img: "https://picsum.photos/400?random=" + (i + 1),
+        coordi: "여기에 코디 정보가 들어갑니다."
+    }));
+
+    const gallery = document.getElementById("gallery");
+    const pageNumbers = document.getElementById("page-numbers");
+    let currentPage = 1;
+    const itemsPerPage = 9;
+
+    // 갤러리 출력
+    function renderGallery() {
+        gallery.innerHTML = "";
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+
+        sampleData.slice(start, end).forEach(post => {
+            gallery.innerHTML += `
+            <div class="gallery-item">
+                <img src="${post.img}" alt="">
+                <div class="gallery-info">
+                    <div class="gallery-title">${post.title}</div>
+                    <div class="gallery-like">👍 ${post.like}</div>
+                </div>
+                <div class="overlay">${post.coordi}</div>
+            </div>
+        `;
+        });
+    }
+
+    // 페이지 버튼 출력 (1~10, 11~20 구조)
+    function renderPagination() {
+        pageNumbers.innerHTML = "";
+        const group = Math.floor((currentPage - 1) / 10);
+        const start = group * 10 + 1;
+        const end = start + 9;
+
+        for (let i = start; i <= end; i++) {
+            const span = document.createElement("span");
+            span.textContent = i;
+            if (i === currentPage) span.classList.add("active");
+
+            span.onclick = () => {
+                currentPage = i;
+                renderEverything();
+            };
+
+            pageNumbers.appendChild(span);
+        }
+    }
+
+    // prev / next 버튼
+    document.getElementById("prev").onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderEverything();
+        }
+    };
+
+    document.getElementById("next").onclick = () => {
+        currentPage++;
+        renderEverything();
+    };
+
+    function renderEverything() {
+        renderGallery();
+        renderPagination();
+    }
+
+    renderEverything();
+</script>
+</body>
+</html>
