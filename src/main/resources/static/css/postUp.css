@@ -1,0 +1,245 @@
+body {
+    margin: 0;
+    background: white;
+    color: dimgray;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1000px;
+    padding: 20px 40px;
+    background: white;
+    border-bottom: 1px solid #eaeaea;
+    margin: auto;
+}
+
+header .logo {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+header nav a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+}
+.container {
+    width: 900px;
+    margin: auto;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+}
+
+.postForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.postForm label {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: #444;
+}
+
+.title,
+.textPost {
+    margin-top: 5px;
+    padding: 10px;
+    font-size: 18px;
+    border: 1px solid #444;
+    border-radius: 6px;
+}
+
+.textPost {
+    width: 100%;
+    height: 350px;
+    resize: none;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.image-btn-box {
+    display: flex;
+    justify-content: flex-start;
+}
+
+/* 이미지 추가 버튼 */
+.open-modal-btn {
+    width: 120px;
+    padding: 8px 10px;
+    font-size: 13px;
+    background: white;
+    color: black;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 8px;
+    align-self: flex-end;
+    font-weight: 600;
+    border: 1px solid #444;
+}
+
+.open-modal-btn:hover {
+    background: #777;
+    color: white;
+    border: 1px solid white;
+}
+
+/* 이미지 목록 스크롤 */
+.sample-image-list {
+    max-height: 250px;   /* 스크롤 생기도록 고정 */
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* 이미지 목록 */
+.image-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.image-preview {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fafafa;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.delete-image-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(255, 0, 0, 0.8);
+    border: none;
+    color: white;
+    padding: 4px 7px;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.image-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    width: 350px;
+    text-align: center;
+}
+
+.image-category-box {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.category-btn {
+    padding: 6px 10px;
+    font-size: 13px;
+    border: 1px solid #aaa;
+    background: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.category-btn.active {
+    background: #444;
+    color: white;
+}
+
+/* --- 스크롤 기능 추가 --- */
+.sample-image-list {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.sample-image {
+    width: 110px;
+    height: 110px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid #ddd;
+}
+
+.sample-image:hover {
+    border-color: black;
+}
+
+.modal-close-btn {
+    margin-top: 20px;
+    padding: 6px 12px;
+    background: #777;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.submit-btn, .delete-btn {
+    padding: 8px 14px;
+    font-size: 16px;
+    border: 1px solid #444;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+    background: white;
+    color: black;
+    transition: 0.2s;
+}
+
+.submit-btn:hover {
+    background: #444;
+    border: 1px solid white;
+    color: white;
+}
+
+.delete-btn:hover {
+    background: #444;
+    border: 1px solid white;
+    color: white;
+}
+
