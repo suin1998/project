@@ -1,18 +1,23 @@
-package org.zerock.project.dto;
+package org.zerock.project.entity;
 
+
+import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "board")
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor
+public class Board {
 
-public class BoardDTO {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardNumber;
+
     private String userId;
     private String userNickname;
     private String title;
