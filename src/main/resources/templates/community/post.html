@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="../../static/css/post.css">
 </head>
 <body>
 <header>
@@ -16,9 +17,145 @@
         <h2 class="post-title">추천 코디</h2>
 
         <div class="user-box">
-            <div><strong>작성자 </strong><span id="user-name"></span></div>
-            <div><strong>이메일 </strong><span id="user-email"></span></div>
+            <div><strong>작성자&nbsp;:&nbsp; </strong><span id="user-name"></span></div>
+            <div><strong>이메일&nbsp;:&nbsp; </strong><span id="user-email"></span></div>
+        </div>
+
+<!--        제목 날짜-->
+        <div class="top-info">
+            <input id="postTitle" class="title-input" readonly>
+            <input id="postDate" class="date-input" readonly>
+        </div>
+
+<!--        이미지 슬라이더-->
+        <div class="slider">
+            <button class="slide-btn left" id="prevBtn"> < </button>
+            <img id="mainImage" class="main-image" src="" alt="">
+            <button class="slide-btn right" id="nextBtn"> > </button>
+        </div>
+
+<!--        이미지 미리보기 리스트-->
+        <div class="thumbnail-box" id="thumbnailList"></div>
+
+        <h3>내용</h3>
+        <p class="content" id="postContent"></p>
+
+        <div class="like-dislike-box">
+            <button type="button" id="likeBtn" class="like-btn"><span class="like">👍</span></button>
+            <span id="likeCount">0</span>
+
+            <button type="button" id="dislikeBtn" class="dislike-btn"><span class="dislike">👎</span></button>
+            <span id="dislikeCount">0</span>
         </div>
     </div>
+
+<script>
+    /* 저장된 게시글 데이터 (예시) */
+    const savedPost = {
+        userName: "홍길동",
+        userEmail: "hong@test.com",
+        title: "제목이 들어갑니다.",
+        content:
+            "여기에 코디와 관련된 내용이 쓰여집니다. 예시임으로 코드를 편히 고치세요.",
+        images: [
+            "https://picsum.photos/200?random=1",
+            "https://picsum.photos/200?random=2",
+            "https://picsum.photos/200?random=3",
+            "https://picsum.photos/200?random=4",
+            "https://picsum.photos/200?random=5"
+        ]
+    };
+
+    /* 현재 날짜 + 시간 */
+    function getFormattedDate() {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, "0");
+        const dd = String(now.getDate()).padStart(2, "0");
+        const hh = String(now.getHours()).padStart(2, "0");
+        const min = String(now.getMinutes()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+    }
+
+    /* 화면에 데이터 삽입 */
+    document.getElementById("user-name").textContent = savedPost.userName;
+    document.getElementById("user-email").textContent = savedPost.userEmail;
+
+    document.getElementById("postTitle").value = savedPost.title;
+    document.getElementById("postDate").value = getFormattedDate();
+    document.getElementById("postContent").textContent = savedPost.content;
+
+    /*  이미지 슬라이더 */
+    let currentIndex = 0;
+
+    const mainImage = document.getElementById("mainImage");
+    const thumbnailList = document.getElementById("thumbnailList");
+
+    function renderImage() {
+        mainImage.src = savedPost.images[currentIndex];
+
+        // 썸네일 강조
+        document.querySelectorAll(".thumb").forEach((el, idx) => {
+            el.classList.toggle("active", idx === currentIndex);
+        });
+    }
+
+    // 썸네일 생성
+    savedPost.images.forEach((img, i) => {
+        const thumb = document.createElement("img");
+        thumb.src = img;
+        thumb.classList.add("thumb");
+        thumb.addEventListener("click", () => {
+            currentIndex = i;
+            renderImage();
+        });
+        thumbnailList.appendChild(thumb);
+    });
+
+    renderImage();
+
+    // 좌우 버튼
+    document.getElementById("prevBtn").onclick = () => {
+        currentIndex = (currentIndex - 1 + savedPost.images.length) % savedPost.images.length;
+        renderImage();
+    };
+
+    document.getElementById("nextBtn").onclick = () => {
+        currentIndex = (currentIndex + 1) % savedPost.images.length;
+        renderImage();
+    };
+
+    /* 좋아요 / 싫어요 기능 */
+
+    // 중복 클릭 방지를 위한 상태값
+    let likeClicked = false;
+    let dislikeClicked = false;
+
+    const likeBtn = document.getElementById("likeBtn");
+    const dislikeBtn = document.getElementById("dislikeBtn");
+
+    const likeCount = document.getElementById("likeCount");
+    const dislikeCount = document.getElementById("dislikeCount");
+
+    likeBtn.onclick = () => {
+        if (likeClicked) return;
+
+        likeCount.textContent = parseInt(likeCount.textContent) + 1;
+
+        likeClicked = true;
+        likeBtn.disabled = true;
+        dislikeBtn.disabled = true;  // 둘 중 하나만 선택하게 하고 싶으면 유지
+    };
+
+    dislikeBtn.onclick = () => {
+        if (dislikeClicked) return;
+
+        dislikeCount.textContent = parseInt(dislikeCount.textContent) + 1;
+
+        dislikeClicked = true;
+        likeBtn.disabled = true;
+        dislikeBtn.disabled = true;  // 둘 중 하나만 선택하게 하고 싶으면 유지
+    };
+</script>
 </body>
 </html>
