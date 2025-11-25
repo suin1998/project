@@ -9,36 +9,48 @@
 <header>
     <div class="logo">Logo</div>
     <nav>
-        <a href="#">Login / Join</a>
+        <a href="#">Logout</a>
         <a href="#">My Closet</a>
     </nav>
 </header>
-<div class="container">
-    <div class="top-bar">
-        <button class="newPost-btn" id="newPost">글쓰기</button>
 
-        <div class="filter-bar" id="filter-bar">
-            <select id="filter-list" class="filter-list">
-                <option value="latest">최신순</option>
-                <option value="recommend">추천순</option>
-                <option value="view">조회순</option>
-            </select>
+<div class="layout">
+    <aside class="sidebar">
+        <button>메뉴 1</button>
+        <button>메뉴 2</button>
+        <button>메뉴 3</button>
+        <button>메뉴 4</button>
+    </aside>
+
+    <div class="container">
+        <div class="top-bar">
+            <div class="filter-bar" id="filter-bar">
+                <select id="filter-list" class="filter-list">
+                    <option value="latest">최신순</option>
+                    <option value="recommend">추천순</option>
+                    <option value="view">조회순</option>
+                </select>
+            </div>
+
+            <button class="newPost-btn" id="newPost">글쓰기</button>
         </div>
-    </div>
-    <div id="gallery" class="gallery"></div>
+        <div id="gallery" class="gallery"></div>
 
-    <div class="pagination">
-        <button class="page-btn" id="prev"> <</button>
-        <div id="page-numbers"></div>
-        <button class="page-btn" id="next"> > </button>
+        <div class="pagination">
+            <button class="page-btn" id="prev"> <</button>
+            <div id="page-numbers"></div>
+            <button class="page-btn" id="next"> ></button>
+        </div>
     </div>
 </div>
 
 <script>
+    // 예시 게시글 데이터
     const sampleData = Array.from({length: 30}).map((_, i) => ({
         id: i + 1,
         title: `게시글 제목 ${i + 1}`,
         like: Math.floor(Math.random() * 100),
+        dislike: Math.floor(Math.random() * 10),
         img: "https://picsum.photos/400?random=" + (i + 1),
         coordi: "여기에 코디 정보가 들어갑니다."
     }));
@@ -58,18 +70,24 @@
         sampleData.slice(start, end).forEach(post => {
             gallery.innerHTML += `
             <div class="gallery-item">
-                <img src="${post.img}" alt="">
-                <div class="gallery-info">
-                    <div class="gallery-title">${post.title}</div>
-                    <div class="gallery-like">👍 ${post.like}</div>
+                <div class="img-box">
+                    <img src="${post.img}" alt="">
+                    <div class="overlay">${post.coordi}</div>
                 </div>
-                <div class="overlay">${post.coordi}</div>
-            </div>
-        `;
+                <div class="gallery-info">
+                    <div class="gallery-title" onclick="goDetail(${post.id})">${post.title}</div>
+                    <div class="gallery-like">👍 ${post.like} &nbsp; 👎 ${post.dislike}</div>
+                </div>
+        </div>`;
         });
     }
 
-    // 페이지 버튼 출력 (1~10, 11~20 구조)
+    //게시글 상세 페이지 이동
+    function goDetail(id) {
+        window.location.href = `/post/${id}`;
+    }
+
+    // 페이지 버튼 출력
     function renderPagination() {
         pageNumbers.innerHTML = "";
         const group = Math.floor((currentPage - 1) / 10);
