@@ -15,6 +15,11 @@
 </header>
 <div class="container">
     <form class="postForm">
+
+        <label>작성자</label>
+        <input type="text" id="user-name" class="title" readonly>
+        <input type="text" id="user-email" class="title" readonly>
+
         <label for="title-input">제목</label>
         <input type="text" id="title-input" class="title" required>
 
@@ -61,6 +66,12 @@
     const sampleImageList = document.getElementById("sampleImageList");
     const imageList = document.getElementById("imageList");
 
+    /* 🔥 로그인 유저 정보 (서버에서 가져오는 값으로 교체하면 됨) */
+    const loggedInUserName = "홍길동";
+    const loggedInUserEmail = "test@example.com";
+
+    document.getElementById("user-name").value = loggedInUserName;
+    document.getElementById("user-email").value = loggedInUserEmail;
     /* 샘플 이미지 URL */
     const sampleImageURLs = [
         "https://picsum.photos/200?random=1",

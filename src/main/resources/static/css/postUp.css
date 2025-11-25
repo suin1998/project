@@ -47,6 +47,10 @@ header nav a {
     color: #444;
 }
 
+#user-name, #user-email {
+    font-size: 15px;
+}
+
 .title,
 .textPost {
     margin-top: 5px;
