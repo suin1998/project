@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import static reactor.netty.http.HttpConnectionLiveness.log;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -123,7 +125,78 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
+        if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
         userRepository.save(user);
+        return entityToDto(user);
+    }
+
+    @Transactional
+    public void saveVerificationCode(String email, String code) {
+
+        Optional<User> existingUser = userRepository.findByEmail(email);
+
+        if (existingUser.isPresent() && existingUser.get().isActivated()) {
+            throw new IllegalStateException("이미 가입된(활성화된) 이메일 주소입니다.");
+        }
+
+        User user = existingUser.orElse(
+                User.builder().email(email).build()
+        );
+
+        user.updateVerificationCode(code, LocalDateTime.now().plusMinutes(5));
+
+        if (existingUser.isEmpty()) {
+            userRepository.save(user);
+        }
+
+        log.info("인증 코드 저장/업데이트 완료: 이메일={}, 코드={}", email, code);
+    }
+
+    @Transactional
+    public boolean verifyCodeAndActivate(String email, String code) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("해당 이메일로 요청된 인증 정보를 찾을 수 없습니다."));
+
+        if (user.getCodeExpiryDate() == null || user.getCodeExpiryDate().isBefore(LocalDateTime.now())) {
+            return false;
+        }
+
+        if (!user.getVerificationCode().equals(code)) {
+            return false;
+        }
+
+        user.setIsVerified(true);
+        user.updateVerificationCode(null, null);
+        log.info("이메일 인증 최종 성공: 이메일={}", email);
+        return true;
+    }
+
+    @Transactional
+    public UserDTO register(UserDTO dto) {
+
+        userRepository.findByUserId(dto.getUserId()).ifPresent(user -> {
+            throw new IllegalStateException("이미 사용 중인 아이디입니다.");
+        });
+
+        User user = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new IllegalStateException("인증 요청된 이메일 정보를 찾을 수 없습니다."));
+
+        if (!user.isVerified()) {
+            throw new IllegalStateException("이메일 인증이 완료되지 않았습니다.");
+        }
+
+        user.setUserId(dto.getUserId());
+        user.setNickname(dto.getNickname());
+        user.setGender(dto.getGender());
+        user.setAge(dto.getAge());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setActivated(true); // 사용자 활성화
+
+        log.info("최종 회원가입 및 활성화 완료: userId={}", user.getUserId());
+
         return entityToDto(user);
     }
 
