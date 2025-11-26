@@ -1,0 +1,254 @@
+body {
+    margin: 0;
+    background: white;
+    color: dimgray;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1000px;
+    padding: 20px 40px;
+    background: white;
+    border-bottom: 1px solid #eaeaea;
+    margin: auto;
+}
+
+header .logo {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+header nav a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+}
+
+.wrapper {
+    display: flex;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    gap: 20px;
+}
+
+.sidebar {
+    width: 360px;
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+    height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+
+.sidebar h2 {
+    margin-bottom: 20px;
+}
+
+.section {
+    margin-bottom: 32px;
+}
+
+.section h3 {
+    margin-bottom: 12px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.input-group {
+    margin-bottom: 18px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #555;
+    font-size: 14px;
+}
+
+.dropdown-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    background: #f1f2f4;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.dropdown-btn:hover {
+    background: #e7e7ea;
+}
+
+.dropdown-panel {
+    display: none;
+    margin-top: 10px;
+    padding: 12px;
+    background: #f9f9fb;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.dropdown-panel select,
+#datePicker {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+#datePicker {
+    width: 93%;
+}
+
+#calendarPanel {
+    width: 90%;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    padding: 8px 14px;
+    background: #f1f1f3;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
+}
+
+.tag:hover {
+    background: #e6e6e8;
+}
+
+.tag.active {
+    background: #444;
+    color: white;
+}
+
+.upload-box {
+    padding: 16px;
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.upload-box label {
+    cursor: pointer;
+    font-size: 15px;
+    color: #666;
+}
+
+#clothesInput {
+    display: none;
+}
+
+.my-clothes-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.my-clothes-list img {
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.main {
+    flex: 1;
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+}
+
+.main h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.result-box {
+    width: 100%;
+    height: 400px;
+    border-radius: 14px;
+    background: #f7f7fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    font-size: 16px;
+}
+
+.submit-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 14px;
+    background: #666;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.submit-btn:hover {
+    background: #444;
+}
+
+.my-clothes-list {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.my-clothes-list img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.category-buttons {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.category-buttons button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #bbb;
+    background: #f5f5f5;
+    cursor: pointer;
+}
+
+.category-buttons button.active {
+    background: #333;
+    color: white;
+}
+
+.load-btn {
+    margin-top: 8px;
+    padding: 6px 12px;
+    background: #eaeaea;
+    border-radius: 6px;
+    cursor: pointer;
+}

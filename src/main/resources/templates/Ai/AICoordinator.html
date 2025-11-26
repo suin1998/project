@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../../static/css/AICoordinator.css">
+</head>
+<body>
+<header>
+    <div class="logo">Logo</div>
+    <nav>
+        <a href="#">Logout</a>
+        <a href="#">My Closet</a>
+        <a href="#">Main</a>
+    </nav>
+</header>
+<div class="wrapper">
+
+    <aside class="sidebar">
+        <h2>AI Coordinator</h2>
+
+        <section class="section">
+            <h3>지역 / 날짜</h3>
+            <div class="input-group">
+                <label>지역</label>
+                <button class="dropdown-btn" id="regionBtn">지역 선택</button>
+                <div class="dropdown-panel" id="regionDropdown">
+                    <select id="sido">
+                        <option value="">시/도 선택</option>
+                    </select>
+
+                    <select id="sigungu">
+                        <option value="">시/군/구 선택</option>
+                    </select>
+
+                    <select id="dong">
+                        <option value="">읍/면/동 선택</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>날짜</label>
+                <button class="dropdown-btn" id="dateBtn">날짜 선택</button>
+                <div class="dropdown-panel" id="calendarPanel">
+                    <input type="date" id="datePicker" />
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h3>스타일</h3>
+
+            <div class="tag-group">
+                <p>패션 스타일</p>
+                <div class="tags" id="fashionStyleTags">
+                    <span class="tag">캐주얼</span>
+                    <span class="tag">스트릿</span>
+                    <span class="tag">클래식</span>
+                    <span class="tag">미니멀</span>
+                </div>
+            </div>
+
+            <div class="tag-group">
+                <p>느낌/컨디션</p>
+                <div class="tags" id="tempStyleTags">
+                    <span class="tag">따뜻하게</span>
+                    <span class="tag">시원하게</span>
+                    <span class="tag">단정하게</span>
+                    <span class="tag">활동성 있게</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h3>상황</h3>
+            <div class="tags" id="situationTags">
+                <span class="tag">일상</span>
+                <span class="tag">면접</span>
+                <span class="tag">결혼식</span>
+                <span class="tag">장례식</span>
+                <span class="tag">데이트</span>
+            </div>
+        </section>
+
+        <section class="section">
+            <h3>내 옷장</h3>
+
+            <div class="upload-box">
+                <label for="clothesInput">+ 옷 사진 업로드</label>
+                <input type="file" id="clothesInput" accept="image/*" multiple />
+            </div>
+
+            <button id="loadSavedBtn" class="load-btn">저장된 옷 불러오기</button>
+
+            <div class="category-buttons" id="categoryButtons"></div>
+
+            <div class="my-clothes-list" id="clothesList">
+            </div>
+        </section>
+
+    </aside>
+
+    <!-- AI 추천 영역 -->
+    <main class="main">
+        <h2>AI 코디 추천 미리보기</h2>
+
+        <div class="result-box">
+            <!-- AI 추천 결과 이미지/텍스트 표시 예정 -->
+            <p>AI가 추천한 코디가 여기 나타납니다.</p>
+        </div>
+
+        <button class="submit-btn">AI 코디 요청하기</button>
+    </main>
+
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        /* ===============================
+           1. 드롭다운(지역, 날짜) 열기/닫기
+        =============================== */
+        const regionBtn = document.getElementById("regionBtn");
+        const regionDropdown = document.getElementById("regionDropdown");
+
+        const dateBtn = document.getElementById("dateBtn");
+        const calendarPanel = document.getElementById("calendarPanel");
+
+        // 지역 드롭다운
+        regionBtn.addEventListener("click", () => {
+            regionDropdown.style.display =
+                regionDropdown.style.display === "block" ? "none" : "block";
+        });
+
+        // 날짜 드롭다운
+        dateBtn.addEventListener("click", () => {
+            calendarPanel.style.display =
+                calendarPanel.style.display === "block" ? "none" : "block";
+        });
+
+
+        /* ===============================
+           2. 지역 선택 — 시도/구/동 (샘플 데이터)
+           실제 연동은 API 사용하면 됨
+        =============================== */
+
+        const sido = document.getElementById("sido");
+        const sigungu = document.getElementById("sigungu");
+        const dong = document.getElementById("dong");
+
+        // 샘플 시도
+        const sidoList = ["서울특별시", "경기도", "부산광역시"];
+
+        sidoList.forEach(s => {
+            const option = document.createElement("option");
+            option.value = s;
+            option.textContent = s;
+            sido.appendChild(option);
+        });
+
+        // 시도 선택 시 시군구 변경
+        sido.addEventListener("change", () => {
+            sigungu.innerHTML = '<option value="">시/군/구 선택</option>';
+            dong.innerHTML = '<option value="">읍/면/동 선택</option>';
+
+            let data = [];
+
+            if (sido.value === "서울특별시") {
+                data = ["강남구", "서초구", "종로구"];
+            } else if (sido.value === "경기도") {
+                data = ["성남시", "수원시", "고양시"];
+            } else if (sido.value === "부산광역시") {
+                data = ["해운대구", "부산진구", "기장군"];
+            }
+
+            data.forEach(v => {
+                const op = document.createElement("option");
+                op.value = v;
+                op.textContent = v;
+                sigungu.appendChild(op);
+            });
+        });
+
+        // 시군구 선택 시 동 목록 변경
+        sigungu.addEventListener("change", () => {
+            dong.innerHTML = '<option value="">읍/면/동 선택</option>';
+
+            let data = ["1동", "2동", "3동"];
+
+            data.forEach(v => {
+                const op = document.createElement("option");
+                op.value = v;
+                op.textContent = v;
+                dong.appendChild(op);
+            });
+        });
+
+
+        /* ===============================
+           3. 태그 클릭 (최대 3개 선택)
+        =============================== */
+
+        function setupTagLimit(containerId, maxCount) {
+            const container = document.getElementById(containerId);
+            const tags = container.querySelectorAll(".tag");
+
+            tags.forEach(tag => {
+                tag.addEventListener("click", () => {
+                    if (tag.classList.contains("active")) {
+                        // 이미 선택된 태그 → 취소
+                        tag.classList.remove("active");
+                    } else {
+                        // 새로 선택 시
+                        const selected = container.querySelectorAll(".active");
+
+                        if (selected.length >= maxCount) return;
+
+                        tag.classList.add("active");
+                    }
+                });
+            });
+        }
+
+        // 패션 스타일 (3개까지)
+        setupTagLimit("fashionStyleTags", 3);
+        // 느낌 스타일 (3개까지)
+        setupTagLimit("tempStyleTags", 3);
+
+
+        /* ===============================
+           4. 상황 태그 (1개만 선택)
+        =============================== */
+        const situationTags = document.querySelectorAll("#situationTags .tag");
+
+        situationTags.forEach(tag => {
+            tag.addEventListener("click", () => {
+                if (tag.classList.contains("active")) {
+                    // 다시 클릭 → 취소
+                    tag.classList.remove("active");
+                    return;
+                }
+
+                // 모두 초기화
+                situationTags.forEach(t => t.classList.remove("active"));
+
+                // 현재 태그 선택
+                tag.classList.add("active");
+            });
+        });
+
+
+        /* ===============================
+           5. 사진 업로드 → 썸네일 표시
+        =============================== */
+        const input = document.getElementById("clothesInput");
+        const clothesList = document.getElementById("clothesList");
+
+        input.addEventListener("change", () => {
+            const files = Array.from(input.files);
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    clothesList.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        /* =====================================
+            옷 데이터 저장 구조
+        ===================================== */
+        let clothesData = []; // 전체 옷 리스트
+        const categories = ["티셔츠", "팬츠", "아우터", "원피스", "기타"];
+
+        const clothesList = document.getElementById("clothesList");
+        const categoryButtons = document.getElementById("categoryButtons");
+
+        /* =====================================
+            1. 카테고리 버튼 생성
+        ===================================== */
+        function renderCategoryButtons() {
+            categoryButtons.innerHTML = "";
+            categories.forEach(cat => {
+                const btn = document.createElement("button");
+                btn.textContent = cat;
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".category-buttons button")
+                        .forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+
+                    renderClothes(cat);
+                });
+                categoryButtons.appendChild(btn);
+            });
+        }
+        renderCategoryButtons();
+
+
+        /* =====================================
+            2. AI 자동 카테고리 분류 함수 (간단 예시)
+        ===================================== */
+        function autoCategory(fileName) {
+            const lower = fileName.toLowerCase();
+
+            if (lower.includes("shirt") || lower.includes("tee")) return "티셔츠";
+            if (lower.includes("pants") || lower.includes("jean")) return "팬츠";
+            if (lower.includes("jacket") || lower.includes("coat")) return "아우터";
+            if (lower.includes("onepiece") || lower.includes("dress")) return "원피스";
+            return "기타";
+        }
+
+
+        /* =====================================
+            3. 업로드 시 → 목록에 추가 + 자동 분류
+        ===================================== */
+        const input = document.getElementById("clothesInput");
+
+        input.addEventListener("change", () => {
+            const files = Array.from(input.files);
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const category = autoCategory(file.name);
+
+                    clothesData.push({
+                        src: e.target.result,
+                        category: category
+                    });
+
+                    renderClothes();
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+
+        /* =====================================
+            4. 저장된 사진 불러오기 (샘플)
+        ===================================== */
+        const loadSavedBtn = document.getElementById("loadSavedBtn");
+
+        loadSavedBtn.addEventListener("click", () => {
+            const sampleImages = [
+                { src: "/static/sample/tshirt1.jpg", category: "티셔츠" },
+                { src: "/static/sample/pants1.jpg", category: "팬츠" },
+                { src: "/static/sample/jacket1.jpg", category: "아우터" }
+            ];
+
+            clothesData = clothesData.concat(sampleImages);
+            renderClothes();
+        });
+
+
+        /* =====================================
+            5. 리스트 렌더링
+        ===================================== */
+        function renderClothes(filterCategory = null) {
+            clothesList.innerHTML = "";
+
+            const list = filterCategory
+                ? clothesData.filter(c => c.category === filterCategory)
+                : clothesData;
+
+            list.forEach(c => {
+                const img = document.createElement("img");
+                img.src = c.src;
+                clothesList.appendChild(img);
+            });
+        }
+
+    });
+</script>
+</body>
+</html>
