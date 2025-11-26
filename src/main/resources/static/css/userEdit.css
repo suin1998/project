@@ -34,15 +34,19 @@ header nav a {
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
-/* 프로필 카드 */
 .profile-card {
     display: flex;
-    gap: 20px;
-    padding: 20px;
+    gap: 25px;
+    padding: 25px;
     align-items: center;
-    border-radius: 10px;
-    border: 2px solid #666;
-    margin-bottom: 20px;
+    border-radius: 14px;
+    border: 1px solid #eee;
+    background: #fafafa;
+    transition: 0.3s;
+}
+
+.profile-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .profile-img-wrap {
@@ -50,35 +54,43 @@ header nav a {
 }
 
 .profile-img-wrap img {
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #aaa;
+    border: 3px solid #ddd;
 }
 
 .edit-img-btn {
     position: absolute;
-    bottom: 5px;
-    right: 5px;
-    border: 2px solid #aaa;
+    bottom: 8px;
+    right: 8px;
     border-radius: 50%;
     background: #fff;
-    padding: 5px;
+    padding: 6px;
     cursor: pointer;
+    border: 1px solid #ccc;
+    transition: 0.2s;
+}
+
+.edit-img-btn:hover {
+    background: #111;
+    color: white;
+    border-color: #111;
 }
 
 .profile-info .user-email {
-    font-size: 20px;
-    font-weight: bold;
-    color: black;
+    font-size: 22px;
+    font-weight: 700;
+    color: #111;
 }
 
 .item {
-    margin-top: 20px;
-    border: 1px solid #888;
-    padding: 20px;
-    border-radius: 10px;
+    margin-top: 25px;
+    border: 1px solid #eee;
+    padding: 25px;
+    border-radius: 12px;
+    background: #fafafa;
 }
 
 .profile-section .item label {
@@ -86,100 +98,59 @@ header nav a {
     font-size: 15px;
     font-weight: 700;
     color: #444;
-    margin-top: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
 .profile-section .item input[readonly] {
-    display: flex;
-    width: 250px;
-    height: 30px;
+    width: 260px;
+    padding: 12px;
     border: none;
-    font-size: 16px;
-    outline: none;
-    gap: 20px;
-    color: #333333;
+    font-size: 15px;
+    background: transparent;
+    color: #555;
 }
 
 .profile-section .item input {
-    display: flex;
-    padding: 10px;
-    width: 250px;
-    height: 10px;
-    border: 1px solid black;
-    border-radius: 10px;
-    font-size: 16px;
+    padding: 12px 14px;
+    width: 260px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
     outline: none;
-    gap: 20px;
-    color: #333333;
+    background: #fff;
+    transition: 0.2s;
 }
 
-.birth-dropdowns {
-    margin-top: 10px;
-}
-
-.dropdown-group {
-    display: flex;
-    gap: 10px;
+.profile-section .item input:focus {
+    border-color: #111;
 }
 
 .birth-dropdown {
     display: flex;
-    gap: 10px;
-    margin-top: 8px;
+    gap: 12px;
+    margin-top: 10px;
 }
 
 .birth-dropdown select {
-    width: 120px;
-    padding: 8px;
-    border: 1px solid #999;
+    width: 130px;
+    padding: 10px;
+    border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 15px;
-    background: white;
-    color: #333;
-    cursor: pointer;
-}
-
-.dropdown {
-    position: relative;
-}
-
-.dropdown-btn {
-    width: 120px;
-    padding: 8px;
-    border: 1px solid #999;
     background: #fff;
+    color: #222;
     cursor: pointer;
-    border-radius: 5px;
+    transition: 0.2s;
 }
 
-.dropdown-list {
-    display: none;
-    position: absolute;
-    top: 40px;
-    left: 0;
-    width: 120px;
-    max-height: 150px;
-    overflow-y: auto;
-    background: white;
-    border: 1px solid #aaa;
-    border-radius: 5px;
-    z-index: 1000;
-}
-
-.dropdown-list div {
-    padding: 8px;
-    cursor: pointer;
-}
-
-.dropdown-list div:hover {
-    background: #eee;
+.birth-dropdown select:hover {
+    border-color: #111;
 }
 
 .form-gender {
     display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 15px;
+    margin-top: 10px;
 }
 
 .form-gender input[type="radio"] {
@@ -187,85 +158,98 @@ header nav a {
 }
 
 .gender-card {
-    padding: 10px 15px;
-    border: 1px solid black;
-    background: white;
-    border-radius: 5px;
+    padding: 10px 18px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 10px;
     cursor: pointer;
     text-align: center;
     font-size: 15px;
-    color: black;
+    transition: 0.25s;
+}
+
+.gender-card:hover {
+    border-color: #111;
 }
 
 .form-gender input[type="radio"]:checked + .gender-card {
-    background: #777;
-    border: none;
+    background: #111;
     color: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-color: #111;
 }
 
 .edit-actions {
-    margin-top: 20px;
+    margin-top: 25px;
+}
+
+.save-btn,
+.cancel-btn,
+.edit-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: 0.25s;
 }
 
 .save-btn {
-    margin-right: 5px;
-    width: 60px;
-    height: auto;
-    padding: 5px;
-    border-radius: 10px;
-    border: none;
-    background: #777777;
+    background: #111;
     color: white;
+    margin-bottom: 20px;
+    margin-right: 10px;
+}
+.save-btn:hover {
+    background: #000;
 }
 
 .cancel-btn {
-    width: 60px;
-    height: auto;
-    padding: 5px;
-    border-radius: 10px;
-    border: none;
-    background: red;
+    background: #aaa;
     color: white;
+}
+.cancel-btn:hover {
+    background: #888;
 }
 
 .edit-btn {
-    justify-content: center;
-    margin: 20px 0;
-    width: 80px;
-    height: auto;
-    padding: 5px;
-    border-radius: 10px;
-    border: 1px solid #444;
+    background: #fff;
+    color: #111;
+    border: 1px solid #aaa;
+    display: flex;
+}
+.edit-btn:hover {
+    border-color: #111;
+    background: #f2f2f2;
 }
 
 .delete-account {
-    display: flex;
-    height: 100%;
-    margin-top: 20px;
-    padding: 20px;
-    border: 1px solid black;
-    border-radius: 10px;
+    margin-top: 30px;
+    padding: 25px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    background: #fff0f0;
 }
 
 .delete-account-btn {
-    margin-right: 10px;
-    width: 80px;
-    height: auto;
-    padding: 5px;
-    border-radius: 10px;
-    border: 1px solid red;
-    background: red;
+    padding: 8px 18px;
+    border-radius: 8px;
+    background: #e53935;
+    border: none;
     color: white;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-/* 모달 */
+.delete-account-btn:hover {
+    background: #c62828;
+}
+
 .modal {
     display: none;
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.65);
     justify-content: center;
     align-items: center;
     color: black;
@@ -273,51 +257,74 @@ header nav a {
 
 .modal-content {
     background: white;
-    padding: 20px;
-    width: 400px;
-    height: auto;
-    border-radius: 10px;
+    padding: 25px;
+    width: 430px;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
 .image-list img {
     width: 100px;
     height: 100px;
-    margin: 5px;
+    margin: 6px;
     cursor: pointer;
     border: 2px solid transparent;
-    border-radius: 10px;
+    border-radius: 12px;
+    transition: 0.2s;
+}
+
+.image-list img:hover {
+    border-color: #aaa;
 }
 
 .image-list img.selected {
-    border-color: black;
+    border-color: #111;
 }
 
 .upload-label {
     display: inline-block;
-    margin: 15px 0;
-    padding: 5px 10px;
-    background: #ddd;
+    margin: 20px 0;
+    padding: 8px 12px;
+    background: #f5f5f5;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 15px;
+    border: 1px solid #ddd;
+    transition: 0.2s;
+}
+
+.upload-label:hover {
+    background: #eaeaea;
 }
 
 .delete-img-btn {
     margin-left: 10px;
     border: none;
-    background: #666666;
-    padding: 5px 10px;
+    background: #999;
+    padding: 6px 14px;
     color: white;
-    font-size: 15px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
 .modal-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 12px;
 }
 
 .modal-save-btn, .modal-close-btn {
-    border: 1px solid #444;
-    border-radius: 5px;
-    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px 16px;
+    background: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.modal-save-btn:hover,
+.modal-close-btn:hover {
+    border-color: #111;
 }
