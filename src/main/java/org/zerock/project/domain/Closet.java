@@ -1,35 +1,37 @@
 package org.zerock.project.domain;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-
+import jakarta.persistence.*;
+import lombok.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "closet")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Closet {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @NotBlank
+    @Column(nullable = false)
     private String userId;
 
-    @NotBlank
+    @Column(nullable = false)
     private String imageUrl;
 
-    @NotBlank
-    private String category; // top, bottom, outer, shoes, bag, accessory, hat
+    @Column(nullable = false)
+    private String category;
 
     private String color;
     private String brand;
-    private List<String> tags;
+
     private Instant createdAt = Instant.now();
 
+    @OneToMany(mappedBy = "clothes", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Tag> tags = new ArrayList<>();
 }
+
