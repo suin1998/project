@@ -26,6 +26,11 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 
@@ -50,6 +55,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework:spring-context-support'
     implementation("com.mysql:mysql-connector-j:8.0.33")
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'org.json:json:20240303'
+
+
+
+
 
 
 }
