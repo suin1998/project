@@ -52,6 +52,35 @@ body {
     transition: 0.15s ease;
 }
 
+.email-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.email-group input {
+    width: 450px;
+    height: 48px;
+}
+
+.email-group button {
+    width: 120px;
+    height: 50px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.3s ease;
+    border: 1px solid #444;
+    transform: translateX(30px);
+}
+
+.email-group button:hover {
+    background: #444;
+    color: white;
+    transition: 0.3s ease;
+}
+
 .form-control select:hover{
     border: 1px solid lightgray;
     transition: 0.15s ease;
@@ -127,8 +156,7 @@ body {
     margin-top: 20px;
 }
 
-.btn {
-    margin-top: 15px;
+.btn-primary {
     width: 100%;
     height: 50px;
     border-radius: 5px;
@@ -140,7 +168,7 @@ body {
     transform: translateX(13px);
 }
 
-.btn:hover {
+.btn-primary:hover {
     background: #444;
     color: white;
     transition: 0.3s ease;
