@@ -2,10 +2,7 @@ package org.zerock.project.util;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Component;
 import org.zerock.project.model.GridLocation;
 
@@ -29,34 +26,36 @@ public class GridLoader {
                 if(row.getRowNum()==0) continue;
 
                 String sido = row.getCell(2).getStringCellValue();
-                log.info(sido);
-                String sigungu = row.getCell(3).getStringCellValue();
-                if(sigungu == null){
+                Cell sigunguCell = row.getCell(3);
+                String sigungu = "";
+
+                if ( sigunguCell != null){
+                    sigungu = row.getCell(3).getStringCellValue();
+                }else{
                     sigungu = null;
                 }
-                String dong = row.getCell(4).getStringCellValue();
-                if(dong == null){
+
+                Cell dongCell = row.getCell(4);
+                String dong = "";
+
+                if(dongCell != null){
+                    dong = row.getCell(4).getStringCellValue();
+
+                }else{
                     dong = null;
                 }
-                log.info(sigungu);
 
-                log.info(dong);
                 int nx = (int) row.getCell(5).getNumericCellValue();
-                log.info(nx);
                 int ny = (int) row.getCell(6).getNumericCellValue();
                 String key = buildKey(sido, sigungu, dong);
                 gridMap.put(key, new GridLocation(sido, sigungu, dong, nx, ny));
-
             }
 
             workbook.close();
     }catch (Exception e){
             e.printStackTrace();
         }
-//        log.info(gridMap);
         return gridMap;
-
-
     }
     private String buildKey(String sido, String sigungu, String dong){
         return (sido + "-" +sigungu + "-"+dong);

@@ -17,19 +17,10 @@ public class WeatherController {
 
    @GetMapping
     public ResponseEntity<WeatherResponseDto> getWeatherForecast(@ModelAttribute WeatherRequestDto request) {
-       if (request.getSido() == null || request.getInputdate() == null) {
-           return ResponseEntity.badRequest().build();
-       }
 
        log.info("날씨 조회 요청: {}", request);
 
-       WeatherResponseDto response = weatherService.getWeather(
-               request.getSido(),
-               request.getSigungu(),
-               request.getDong(),
-               request.getInputdate()
-       );
-
+       WeatherResponseDto response = weatherService.getWeather(request);
        // 3. 응답 반환
        if (response != null) {
            return ResponseEntity.ok(response);
