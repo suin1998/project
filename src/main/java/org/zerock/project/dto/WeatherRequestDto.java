@@ -10,6 +10,4 @@ public class WeatherRequestDto {
     private String sido;
     private String sigungu;
     private String dong;
-    private int nx;
-    private int ny;
 }

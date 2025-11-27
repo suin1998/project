@@ -1,16 +1,33 @@
 package org.zerock.project.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+@AllArgsConstructor
 public class WeatherResponseDto {
-    private double temp;
-    private double precipitationProb;
-    private double precipitationType;
-    private double sky;
 
-    private double tempMax;
-    private double tempMin;
+    private String date;
+    private ShortTermWeather shortTerm;
+    private MidTermWeather midTerm;
+
+    @Data
+    @AllArgsConstructor
+    public static class ShortTermWeather{
+        private String sky;
+        private String precipitationType;
+        private String rainProbability;
+        private String tempMin;
+        private String tempMax;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class MidTermWeather {
+        private String sky;
+        private String rainProbability;
+        private String tempMin;
+        private String tempMax;
+    }
 }

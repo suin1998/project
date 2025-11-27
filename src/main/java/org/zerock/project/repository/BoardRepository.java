@@ -1,0 +1,21 @@
+package org.zerock.project.repository;
+
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.zerock.project.entity.Board;
+import java.util.List;
+import java.util.Optional;
+
+
+public interface BoardRepository extends JpaRepository<Board, Long> {
+
+    Page<Board> findAllByDeletedFalse(Pageable pageable);
+
+    List<Board> findByTitleContainingOrContentContainingAndDeletedFalse(String titleKeyword, String contentKeyword);
+
+    List<Board> findByUserIdAndDeletedFalse(String userId);
+
+    Optional<Board> findByBoardNumberAndDeletedFalse(Long boardNumber);
+}

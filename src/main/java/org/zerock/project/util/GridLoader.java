@@ -28,35 +28,34 @@ public class GridLoader {
             for (Row row : sheet) {
                 if(row.getRowNum()==0) continue;
 
-                String sido = row.getCell(2).getStringCellValue().trim();
+                String sido = row.getCell(2).getStringCellValue();
                 log.info(sido);
                 String sigungu = row.getCell(3).getStringCellValue();
-
                 if(sigungu == null){
-
+                    sigungu = null;
                 }
                 String dong = row.getCell(4).getStringCellValue();
-                if(sigungu == null || dong == null){
-
+                if(dong == null){
+                    dong = null;
                 }
                 log.info(sigungu);
 
                 log.info(dong);
-                log.info(row.getCell(5).getStringCellValue());
                 int nx = (int) row.getCell(5).getNumericCellValue();
+                log.info(nx);
                 int ny = (int) row.getCell(6).getNumericCellValue();
-
-//                System.out.println(nx, ny);
                 String key = buildKey(sido, sigungu, dong);
                 gridMap.put(key, new GridLocation(sido, sigungu, dong, nx, ny));
+
             }
 
             workbook.close();
     }catch (Exception e){
             e.printStackTrace();
         }
-
+//        log.info(gridMap);
         return gridMap;
+
 
     }
     private String buildKey(String sido, String sigungu, String dong){
