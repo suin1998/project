@@ -2,36 +2,52 @@ package org.zerock.project.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.Instant;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "closet")
-@Data
+@Getter @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Closet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long userId;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String userId;
+    private Category category;
 
     @Column(nullable = false)
     private String imageUrl;
 
-    @Column(nullable = false)
-    private String category;
-
     private String color;
     private String brand;
 
-    private Instant createdAt = Instant.now();
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "closet_tags",
+            joinColumns = @JoinColumn(name = "closet_id")
+    )
+    @Column(name = "tag")
+    private List<String> tags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "clothes", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Tag> tags = new ArrayList<>();
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
 }
-
