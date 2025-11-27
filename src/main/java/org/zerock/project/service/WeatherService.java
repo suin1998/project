@@ -63,7 +63,7 @@ public class WeatherService {
             shortTerm = getShortTermForecast(nx, ny, targetDate);
 
         }else{
-            midTerm = getMidTermForecast(regionCode, targetDate);
+//            midTerm = getMidTermForecast(regionCode, targetDate);
         }
         return new WeatherResponseDto(targetDate, shortTerm, midTerm);
     }
