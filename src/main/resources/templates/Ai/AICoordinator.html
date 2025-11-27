@@ -23,9 +23,6 @@
 
         <section class="section">
             <h3>지역 / 날짜</h3>
-            <div class="weather-display" id="weatherDisplay">
-                <p>날씨 정보를 확인하려면 지역과 날짜를 선택해주세요.</p>
-            </div>
             <div class="input-group">
                 <label>지역</label>
                 <button class="dropdown-btn" id="regionBtn">지역 선택</button>
@@ -53,6 +50,12 @@
                 <div class="dropdown-panel" id="calendarPanel">
                     <input type="date" id="datePicker"/>
                 </div>
+            </div>
+            <div class="check-group" id="checkGroup" style="display: none">
+                <button id="checkBtn" class="check-btn">확인</button>
+            </div>
+            <div class="weather-display" id="weatherDisplay">
+                <p>날씨 정보를 확인하려면 지역과 날짜를 선택해주세요.</p>
             </div>
         </section>
 
@@ -183,12 +186,28 @@
         /* ===============================
            1. 드롭다운(지역, 날짜) 토글
         =============================== */
+
+        // 지역 선택 버튼, 지역 드롭다운 가져오기
         const regionBtn = document.getElementById("regionBtn");
         const regionDropdown = document.getElementById("regionDropdown");
 
-        // 날짜 관련 변수 추가/수정
+        // 날짜 선택 버튼, 날짜 드롭다운 가져오기
         const dateBtn = document.getElementById("dateBtn");
         const calendarPanel = document.getElementById("calendarPanel");
+
+        // 확인 버튼 가져오기
+        const checkGroup = document.getElementById("checkGroup");
+        const checkBtn = document.getElementById("checkBtn");
+
+        // 날씨 정보 위치 가져오기
+        const weatherDisplay = document.getElementById("weatherDisplay");
+
+        // (선택한 지역과 날짜의 값, 현재는 값이 없으나 선택 후 값이 생김)
+        let selectedRegion = null;
+        let selectedDate = null;
+
+        let savedRegion = null;
+        let savedDate = null;
 
         // 지역 드롭다운 토글
         regionBtn.addEventListener("click", () => {
@@ -223,9 +242,19 @@
                 minDate: "today",
                 maxDate: today.fp_incr(10),
                 dateFormat: "Y년 m월 d일",
-                locale: 'ko'
+                locale: 'ko',
+
+                // 드롭다운 닫고 텍스트 위로 값이 나오게 하기
+                onChange: function (selectedDates, dateStr, instance) {
+                    selectedDate = `${dateStr}`;
+                    dateBtn.textContent = selectedDate;
+                    calendarPanel.style.display = "none";
+
+                    togglecheckgroupbtn();
+                }
             });
         }
+
         initializeFlatpickr();
 
         /* ===============================
@@ -255,7 +284,7 @@
             })
             .catch(err => console.error("엑셀 로드 실패:", err));
 
-        // ------------------------------- 시/도 채우기 -------------------------------
+        //  시/도 채우기
         function populateSido() {
             const sidoList = [...new Set(excelData.map(row => row["시도"]))];
             sidoSelect.innerHTML = `<option value="">시/도 선택</option>`; // 기본 옵션 초기화
@@ -268,7 +297,7 @@
             });
         }
 
-        // ------------------------------- 시군구 채우기 -------------------------------
+        //  시군구 채우기
         sidoSelect.addEventListener("change", () => {
             sigunguSelect.innerHTML = `<option value="">시/군/구 선택</option>`;
             dongSelect.innerHTML = `<option value="">읍/면/동 선택</option>`;
@@ -286,7 +315,7 @@
             });
         });
 
-        // ------------------------------- 읍면동 채우기 -------------------------------
+        //  읍면동 채우기
         sigunguSelect.addEventListener("change", () => {
             dongSelect.innerHTML = `<option value="">읍/면/동 선택</option>`;
 
@@ -304,10 +333,45 @@
                 option.textContent = d;
                 dongSelect.appendChild(option);
             });
+
         });
 
+        // 드롭다운 닫고 텍스트 위로 값이 나오게 하기(지역 값)
+        dongSelect.addEventListener("change", () => {
+            selectedRegion = `${sidoSelect.value} ${sigunguSelect.value} ${dongSelect.value}`;
+            regionBtn.textContent = selectedRegion;
+
+            regionDropdown.style.display = "none";
+            togglecheckgroupbtn();
+        });
+
+        // 지역 값과 날짜 값 선택 시 확인 버튼 표시
+        function togglecheckgroupbtn() {
+            if(selectedDate && selectedDate) {
+                checkGroup.style.display = "block";
+            } else {
+                checkGroup.style.display = "none";
+            }
+        }
+
+        // 지역 값과 날씨 값 저장 및 출력
+        checkBtn.addEventListener("click", () => {
+            savedRegion = selectedRegion;
+            savedDate = selectedDate;
+
+            const weatherDisplayhtml =
+                `${savedRegion}에
+                ${savedDate} 날씨는
+                (나중에 날씨와 온도, 강수량으로 나옵니다.) 입니다.`;
+
+            weatherDisplay.textContent = weatherDisplayhtml;
+
+            checkGroup.style.display = "none";
+
+        })
+
         /* ===============================
-           3. 태그 클릭 (최대 3개)
+           태그 클릭 (최대 3개)
         =============================== */
         function setupTagLimit(containerId, maxCount) {
             const container = document.getElementById(containerId);
@@ -331,7 +395,7 @@
 
 
         /* ===============================
-           4. 상황 태그 (1개만 선택)
+           상황 태그 (1개만 선택)
         =============================== */
         const situationTags = document.querySelectorAll("#situationTags .tag");
 
@@ -348,7 +412,7 @@
 
 
         /* ===============================
-           5. 사진 업로드 → 썸네일 표시 (기존 코드 유지)
+           사진 업로드 → 썸네일 표시
         =============================== */
         const input = document.getElementById("clothesInput");
         const clothesList = document.getElementById("clothesList");
@@ -377,7 +441,7 @@
 
 
         /* =====================================
-            1. 카테고리 버튼 생성
+            카테고리 버튼 생성
         ===================================== */
         function renderCategoryButtons() {
             categoryButtons.innerHTML = "";
@@ -399,7 +463,7 @@
 
 
         /* =====================================
-            2. AI 자동분류 (간단한 파일명 기반)
+            AI 자동분류 (간단한 파일명 기반)
         ===================================== */
         function autoCategory(fileName) {
             const lower = fileName.toLowerCase();
@@ -413,7 +477,7 @@
 
 
         /* =====================================
-            3. 옷 업로드 시 자동 분류 및 데이터 저장
+            옷 업로드 시 자동 분류 및 데이터 저장
         ===================================== */
 
         input.addEventListener("change", () => {
@@ -438,7 +502,7 @@
 
 
         /* =====================================
-            4. 저장된 샘플 불러오기
+            저장된 샘플 불러오기 (샘플 파일이기 때문에 안에 sampleImages는 지워도 됩니다.)
         ===================================== */
         const loadSavedBtn = document.getElementById("loadSavedBtn");
 
@@ -455,7 +519,7 @@
 
 
         /* =====================================
-            5. 옷 리스트 렌더링
+            옷 리스트 렌더링
         ===================================== */
         function renderClothes(filterCategory = null) {
             clothesList.innerHTML = "";

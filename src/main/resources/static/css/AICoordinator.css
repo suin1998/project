@@ -278,5 +278,38 @@ header nav a {
 }
 
 .weather-display {
-    font-size: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    word-break: keep-all;
+    white-space: pre-line;
+}
+.check-group {
+    text-align: center;
+}
+
+.check-btn {
+    padding: 5px 14px;
+    background: #666666;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    width: 100px;
+    border: none;
+    margin: 10px 0;
+    transition: 0.2s;
+    color: white;
+}
+
+.check-btn:hover {
+    background: #444;
 }
