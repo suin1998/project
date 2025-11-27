@@ -163,73 +163,73 @@ public class WeatherService {
     }
 
 
-    private WeatherResponseDto.MidTermWeather getMidTermForecast(String regionCode, LocalDate targetDate) {
-        int dayDiff = (int) ChronoUnit.DAYS.between(targetDate, LocalDate.now());
-
-        if (dayDiff < 4 || dayDiff > 10) throw new IllegalArgumentException("중기예보는 D+4~D+10일만 제공됩니다.");
-
-        String baseDate =  LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String targetDateStr =  targetDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-
-        String baseTime = "0500";
-        String skyUrl = mid_sky_api_url + "?"
-                +"authKey="+serviceKey
-                +"&dataType=JSON"
-                +"&regId=" + regionCode
-                +"&pageNo=1"
-                +"&numOfRows=10"
-                +"&tmFc="+baseDate+"0600";
-
-        JSONObject json = callJson(skyUrl);
-
-        JSONObject response = json.getJSONObject("response");
-        JSONObject body = response.getJSONObject("body");
-        JSONObject items = body.getJSONObject("items");
-        JSONArray itemArrays = items.getJSONArray("item");
-
-        double rainProb = 0;
-        int tMin = 0;
-        int tMax = 0;
-
-        double sumRainProb = 0;
-
-
-        JSONObject obj = itemArrays.getJSONObject(0);
-
-        Iterator<String> keys = obj.keys();
-        String searchPattern = "rnSt" + dayDiff;
-
-        while(keys.hasNext()){
-            String key = keys.next();
-            if(key.contains(searchPattern)){
-                try{
-                    if (dayDiff >= 4 || dayDiff <= 7){
-                        rainProb += obj.getDouble(key);
-                    }
-
-                }catch(Exception e) {
-
-                }
-
-            }
-
-
-
-
-        }
-
-
-//                    case "POP": rainProb = obj.getString("fcstValue"); break;
-//                    case "TMN": tMin = obj.getString("fcstValue"); break;
-//                    case "TMX": tMax = obj.getString("fcstValue"); break;
-
-
-
-
-//        log.info(new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax));
-//        return new WeatherResponseDto.ShortTermWeather(rainProb, tMin, tMax);
-//        return null;
-    }
+//    private WeatherResponseDto.MidTermWeather getMidTermForecast(String regionCode, LocalDate targetDate) {
+//        int dayDiff = (int) ChronoUnit.DAYS.between(targetDate, LocalDate.now());
+//
+//        if (dayDiff < 4 || dayDiff > 10) throw new IllegalArgumentException("중기예보는 D+4~D+10일만 제공됩니다.");
+//
+//        String baseDate =  LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+//        String targetDateStr =  targetDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+//
+//        String baseTime = "0500";
+//        String skyUrl = mid_sky_api_url + "?"
+//                +"authKey="+serviceKey
+//                +"&dataType=JSON"
+//                +"&regId=" + regionCode
+//                +"&pageNo=1"
+//                +"&numOfRows=10"
+//                +"&tmFc="+baseDate+"0600";
+//
+//        JSONObject json = callJson(skyUrl);
+//
+//        JSONObject response = json.getJSONObject("response");
+//        JSONObject body = response.getJSONObject("body");
+//        JSONObject items = body.getJSONObject("items");
+//        JSONArray itemArrays = items.getJSONArray("item");
+//
+//        double rainProb = 0;
+//        int tMin = 0;
+//        int tMax = 0;
+//
+//        double sumRainProb = 0;
+//
+//
+//        JSONObject obj = itemArrays.getJSONObject(0);
+//
+//        Iterator<String> keys = obj.keys();
+//        String searchPattern = "rnSt" + dayDiff;
+//
+//        while(keys.hasNext()){
+//            String key = keys.next();
+//            if(key.contains(searchPattern)){
+//                try{
+//                    if (dayDiff >= 4 || dayDiff <= 7){
+//                        rainProb += obj.getDouble(key);
+//                    }
+//
+//                }catch(Exception e) {
+//
+//                }
+//
+//            }
+//
+//
+//
+//
+//        }
+//
+//
+////                    case "POP": rainProb = obj.getString("fcstValue"); break;
+////                    case "TMN": tMin = obj.getString("fcstValue"); break;
+////                    case "TMX": tMax = obj.getString("fcstValue"); break;
+//
+//
+//
+//
+////        log.info(new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax));
+////        return new WeatherResponseDto.ShortTermWeather(rainProb, tMin, tMax);
+////        return null;
+//    }
 
 
 
