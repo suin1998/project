@@ -2,7 +2,6 @@ package org.zerock.project.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.hibernate.integrator.spi.Integrator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +38,7 @@ public class WeatherService {
 
     private final GridService gridService;
     private final StnService stnService;
-    private final RestTemplate restTemplate = new RestTemplate();
+//    private final RestTemplate restTemplate = new RestTemplate();
 
     public WeatherResponseDto getWeather(WeatherRequestDto  weatherRequestDto) {
         String sido = weatherRequestDto.getSiDo();
@@ -57,7 +56,7 @@ public class WeatherService {
         WeatherResponseDto.ShortTermWeather shortTerm = null;
         WeatherResponseDto.MidTermWeather midTerm = null;
 
-        if(targetDate.isBefore(LocalDate.now().plusDays(3))) {
+        if(targetDate.isBefore(LocalDate.now().plusDays(4))) {
             shortTerm = getShortTermForecast(nx, ny, targetDate);
 
         }else{
@@ -162,14 +161,13 @@ public class WeatherService {
 
 
     private WeatherResponseDto.MidTermWeather getMidTermForecast(String regionCode, LocalDate targetDate) {
-        int dayDiff = (int) ChronoUnit.DAYS.between(targetDate, LocalDate.now());
+        int dayDiff = (int) ChronoUnit.DAYS.between(LocalDate.now(), targetDate);
 
         if (dayDiff < 4 || dayDiff > 10) throw new IllegalArgumentException("중기예보는 D+4~D+10일만 제공됩니다.");
 
         String baseDate =  LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String targetDateStr =  targetDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        String baseTime = "0500";
         String skyUrl = mid_sky_api_url + "?"
                 +"authKey="+serviceKey
                 +"&dataType=JSON"
@@ -186,9 +184,6 @@ public class WeatherService {
         JSONArray itemArrays = items.getJSONArray("item");
 
         double rainProb = 0;
-        int tMin = 0;
-        int tMax = 0;
-
         double sumRainProb = 0;
 
         JSONObject obj = itemArrays.getJSONObject(0);
@@ -201,34 +196,47 @@ public class WeatherService {
             if(key.contains(searchPattern)){
                 try{
                     if (dayDiff >= 4 || dayDiff <= 7){
-                        rainProb += obj.getDouble(key);
+                        sumRainProb += obj.getDouble(key);
+                    }else {
+                        rainProb = obj.getDouble(key);
                     }
 
                 }catch(Exception e) {
-
+                    log.warn("RainProb key found but value is not a number or parsing failed for key: {}", key);
                 }
 
             }
 
-
-
-
+        }
+        if (dayDiff >= 4 || dayDiff <= 7) {
+            rainProb = Math.round(sumRainProb / 2);
         }
 
+        String tempUrl = mid_temp_api_url + "?"
+                +"authKey="+serviceKey
+                +"&dataType=JSON"
+                +"&regId=" + regionCode
+                +"&pageNo=1"
+                +"&numOfRows=10"
+                +"&tmFc="+baseDate+"0600";
 
-//                    case "POP": rainProb = obj.getString("fcstValue"); break;
-//                    case "TMN": tMin = obj.getString("fcstValue"); break;
-//                    case "TMX": tMax = obj.getString("fcstValue"); break;
+        JSONObject temp = callJson(skyUrl);
 
+        JSONObject temp_response = temp.getJSONObject("response");
+        JSONObject temp_body = response.getJSONObject("body");
+        JSONObject temp_items = body.getJSONObject("items");
+        JSONArray temp_itemArrays = items.getJSONArray("item");
 
+        int tMin = 0;
+        int tMax = 0;
 
+        JSONObject forcast = temp_itemArrays.getJSONObject(0);
+        tMin = forcast.getInt("taMin"+dayDiff);
+        tMax = forcast.getInt("taMax"+dayDiff);
 
-//        log.info(new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax));
-//        return new WeatherResponseDto.ShortTermWeather(rainProb, tMin, tMax);
-//        return null;
-        return null;
+        log.info(new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax));
+        return new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax);
+
     }
-
-
 
 }

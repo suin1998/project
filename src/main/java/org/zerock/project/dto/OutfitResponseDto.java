@@ -9,4 +9,5 @@ import lombok.Data;
 public class OutfitResponseDto {
     private String outfitImg;
 
+
 }
