@@ -1,20 +1,26 @@
 package org.zerock.project.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.zerock.project.domain.Category;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClosetResponseDTO {
     private Long id;
-    private String userId;
+    private Long userId;
+    private Category category;
     private String imageUrl;
-    private String category;
     private String color;
     private String brand;
     private List<String> tags;
-    private Instant createdAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

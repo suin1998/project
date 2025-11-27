@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="../../static/css/myPage.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Closet</title>
+    <link rel="stylesheet" href="/static/css/myPage.css">
 </head>
 <body>
 <header>
     <div class="logo">Logo</div>
     <nav>
-        <a href="#">LogOut</a>
+        <a href="#" id="logout">LogOut</a>
         <a href="#">Main</a>
     </nav>
 </header>
@@ -37,6 +38,7 @@
             </table>
         </div>
     </section>
+
     <section class="profile">
         <div class="profile-card">
             <div class="profile-img">
@@ -53,19 +55,25 @@
 <div class="container-editors">
         <div class="tag-list">
 <!--            샘플버튼 디자인만 보세요-->
-            <input type="radio" id="btn-tShirt">
-            <label for="btn-tShirt" class="btn">티셔츠</label>
-            <input type="radio" id="btn-pants">
-            <label for="btn-pants" class="btn">팬츠</label>
-            <input type="radio" id="btn-skirt">
-            <label for="btn-skirt" class="btn">스커트</label>
-            <input type="radio" id="btn-outerwear">
-            <label for="btn-outerwear" class="btn">아우터</label>
+            <input type="radio" id="btn-top" name="category" value="top" checked>
+            <label for="btn-top" class="btn">티셔츠</label>
+            <input type="radio" id="btn-bottom" name="category" value="bottom">
+            <label for="btn-bottom" class="btn">팬츠</label>
+            <input type="radio" id="btn-outer" name="category" value="outer">
+            <label for="btn-outer" class="btn">아우터</label>
+            <input type="radio" id="btn-shoes" name="category" value="shoes">
+            <label for="btn-shoes" class="btn">신발</label>
+            <input type="radio" id="btn-bag" name="category" value="bag">
+            <label for="btn-bag" class="btn">가방</label>
+            <input type="radio" id="btn-hat" name="category" value="hat">
+            <label for="btn-hat" class="btn">모자</label>
+            <input type="radio" id="btn-accessory" name="category" value="accessory">
+            <label for="btn-accessory" class="btn">악세서리</label>
         </div>
         <div class="image-area">
 <!--            샘플 이미지 디자인만 보세요.-->
             <div id="imageCount">티셔츠 3개</div>
-            <div id="Container" class="image-grid">
+            <div id="closetContainer" class="image-grid">
                 <img src="../image/user/tShirt1.jpg" alt="">
                 <img src="../image/user/tShirt2.jpg" alt="">
                 <img src="../image/user/tShirt3.jpg" alt="">
@@ -74,12 +82,52 @@
 </div>
 
 <script>
-    let today = new Date();
+    /** ---------- 사용자 정보 셋업 ---------- **/
+    const userId = "user123"; // 로그인 시 서버에서 전달받도록 변경 예정
+
+    /** ---------- 달력 렌더링 ---------- **/
+    const today = new Date();
     let currentMonth = today.getMonth();
     let currentYear = today.getFullYear();
 
     const monthYear = document.getElementById("monthYear");
-    const calendarBody = document.getElementById("calendarBody")
+    const calendarBody = document.getElementById("calendarBody");
+
+    function renderCalendar() {
+        calendarBody.innerHTML = "";
+
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        monthYear.textContent = `${currentYear}년 ${currentMonth + 1}월`;
+
+        let row = document.createElement("tr");
+
+        for (let i = 0; i < firstDay; i++) {
+            row.appendChild(document.createElement("td"));
+        }
+
+        for (let day = 1; day <= lastDate; day++) {
+            if (row.children.length === 7) {
+                calendarBody.appendChild(row);
+                row = document.createElement("tr");
+            }
+            const cell = document.createElement("td");
+            cell.textContent = day;
+
+            // 오늘 날짜 강조
+            if (
+                currentYear === today.getFullYear() &&
+                currentMonth === today.getMonth() &&
+                day === today.getDate()
+            ) {
+                cell.classList.add("today");
+            }
+
+            row.appendChild(cell);
+        }
+        calendarBody.appendChild(row);
+    }
 
     document.getElementById("prev").addEventListener("click", () => {
         currentMonth--;
@@ -99,33 +147,48 @@
         renderCalendar();
     });
 
-    function renderCalendar() {
-        calendarBody.innerHTML = "";
-        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-        const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-        monthYear.textContent = `${currentYear}년 ${currentMonth + 1}월`
+    // /** ---------- 옷 불러오기 API 연동 ---------- **/
+    // const closetContainer = document.getElementById("closetContainer");
+    // const imageCount = document.getElementById("imageCount");
+    //
+    // async function loadCloset(category) {
+    //     try {
+    //         const res = await fetch(`/api/closet/${userId}/${category}`);
+    //         if (!res.ok) throw new Error("Failed to load closet");
+    //
+    //         const items = await res.json();
+    //         renderCloset(items, category);
+    //     } catch (e) {
+    //         console.error(e);
+    //         closetContainer.innerHTML = `<p>불러오기에 실패했습니다.</p>`;
+    //     }
+    // }
 
-        let row = document.createElement("tr");
+    // function renderCloset(items, category) {
+    //     closetContainer.innerHTML = "";
+    //
+    //     items.forEach(item => {
+    //         const img = document.createElement("img");
+    //         img.src = item.imageUrl;
+    //         img.alt = `${category}`;
+    //         img.loading = "lazy"; // ✅ lazy-loading 적용
+    //         img.classList.add("closet-image");
+    //         closetContainer.appendChild(img);
+    //     });
+    //
+    //     imageCount.textContent = `${category} ${items.length}개`;
+    // }
 
-        for (let i = 0; i < firstDay; i++) {
-            row.appendChild(document.createElement("td"));
-        }
+    /** ---------- 카테고리 선택 이벤트 ---------- **/
+    document.querySelectorAll("input[name='category']").forEach(radio => {
+        radio.addEventListener("change", (e) => {
+            loadCloset(e.target.value);
+        });
+    });
 
-        for (let day = 1; day <= lastDate; day++) {
-            if (row.children.length === 7) {
-                calendarBody.appendChild(row);
-                row = document.createElement("tr");
-            }
-
-            const cell = document.createElement("td");
-            cell.textContent = day;
-            row.appendChild(cell);
-        }
-        calendarBody.appendChild(row);
-    }
-
-    renderCalendar();
+    /** ---------- 초기 실행 ---------- **/
+    loadCloset("top");
 
 </script>
 </body>
