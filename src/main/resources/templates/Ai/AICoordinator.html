@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../../static/css/AICoordinator.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+<header>
+    <div class="logo">Logo</div>
+    <nav>
+        <a href="#">Logout</a>
+        <a href="#">My Closet</a>
+        <a href="#">Main</a>
+    </nav>
+</header>
+<div class="wrapper">
+
+    <aside class="sidebar">
+        <h2>AI Coordinator</h2>
+
+        <section class="section">
+            <h3>지역 / 날짜</h3>
+            <div class="weather-display" id="weatherDisplay">
+                <p>날씨 정보를 확인하려면 지역과 날짜를 선택해주세요.</p>
+            </div>
+            <div class="input-group">
+                <label>지역</label>
+                <button class="dropdown-btn" id="regionBtn">지역 선택</button>
+                <div class="excel-file" style="display: none">
+                    <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv">
+                </div>
+                <div class="dropdown-panel" id="regionDropdown">
+                    <select id="sido">
+                        <option value="">시/도 선택</option>
+                    </select>
+
+                    <select id="sigungu">
+                        <option value="">시/군/구 선택</option>
+                    </select>
+
+                    <select id="dong">
+                        <option value="">읍/면/동 선택</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>날짜</label>
+                <button class="dropdown-btn" id="dateBtn">날짜 선택</button>
+                <div class="dropdown-panel" id="calendarPanel">
+                    <input type="date" id="datePicker"/>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h3>스타일</h3>
+
+            <div class="tag-group">
+                <p>패션 스타일 (최대 3개)</p>
+                <div class="tags" id="fashionStyleTags">
+                    <span class="tag">캐주얼</span>
+                    <span class="tag">스트릿</span>
+                    <span class="tag">클래식</span>
+                    <span class="tag">미니멀</span>
+                    <span class="tag">고프코어</span>
+                    <span class="tag">스포티</span>
+                    <span class="tag">걸리시</span>
+                    <span class="tag">시크</span>
+                    <span class="tag">프레피</span>
+                    <span class="tag">로맨틱</span>
+                    <span class="tag">미니멀</span>
+                    <span class="tag">레트로</span>
+                    <span class="tag">에스닉</span>
+                    <span class="tag">시티보이</span>
+                    <span class="tag">리조트</span>
+                    <span class="tag">워크웨어</span>
+                    <span class="tag">놈코디</span>
+                    <span class="tag">페미닌</span>
+
+                </div>
+            </div>
+
+            <div class="tag-group">
+                <p>느낌/컨디션 (최대 3개)</p>
+                <div class="tags" id="tempStyleTags">
+                    <span class="tag">따뜻한</span>
+                    <span class="tag">시원한</span>
+                    <span class="tag">단정한</span>
+                    <span class="tag">깔끔한</span>
+                    <span class="tag">귀여운</span>
+                    <span class="tag">화사한</span>
+                    <span class="tag">격식있는</span>
+                    <span class="tag">세련된</span>
+                    <span class="tag">화려한</span>
+                    <span class="tag">무난한</span>
+                    <span class="tag">편안한</span>
+                    <span class="tag">활동적인</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h3>상황 (단일 선택)</h3>
+            <div class="tags" id="situationTags">
+                <span class="tag">일상</span>
+                <span class="tag">운동</span>
+                <span class="tag">등산</span>
+                <span class="tag">서핑</span>
+                <span class="tag">모임</span>
+                <span class="tag">소개팅</span>
+                <span class="tag">데이트</span>
+                <span class="tag">관광지</span>
+                <span class="tag">휴양지</span>
+                <span class="tag">학교</span>
+                <span class="tag">면접</span>
+                <span class="tag">직장</span>
+                <span class="tag">상견례</span>
+                <span class="tag">결혼식</span>
+                <span class="tag">파티</span>
+                <span class="tag">쇼핑</span>
+                <span class="tag">장례식</span>
+
+            </div>
+        </section>
+
+        <section class="section">
+            <h3>내 옷장</h3>
+
+            <div class="upload-box">
+                <label for="clothesInput">+ 옷 사진 업로드</label>
+                <input type="file" id="clothesInput" accept="image/*" multiple/>
+            </div>
+
+            <button id="loadSavedBtn" class="load-btn">저장된 옷 불러오기</button>
+
+            <div class="category-buttons" id="categoryButtons"></div>
+
+            <div class="my-clothes-list" id="clothesList">
+            </div>
+        </section>
+
+    </aside>
+
+    <!-- AI 추천 영역 -->
+    <main class="main">
+        <h2>AI 코디 추천 미리보기</h2>
+
+        <div class="result-box">
+            <!-- AI 추천 결과 이미지/텍스트 표시 예정 -->
+            <p>AI가 추천한 코디가 여기 나타납니다.</p>
+        </div>
+
+        <button class="submit-btn">AI 코디 요청하기</button>
+    </main>
+
+</div>
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+    // =========================================================
+    // Flatpickr 라이브러리 CDN 로드
+    // =========================================================
+
+    function loadFlatpickrScripts() {
+        // Flatpickr 메인 JS
+        const fpScript = document.createElement('script');
+        fpScript.src = 'https://cdn.jsdelivr.net/npm/flatpickr';
+        document.body.appendChild(fpScript);
+
+        // 한국어 로케일 JS
+        const koScript = document.createElement('script');
+        koScript.src = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js';
+        document.body.appendChild(koScript);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        loadFlatpickrScripts();
+
+        /* ===============================
+           1. 드롭다운(지역, 날짜) 토글
+        =============================== */
+        const regionBtn = document.getElementById("regionBtn");
+        const regionDropdown = document.getElementById("regionDropdown");
+
+        // 날짜 관련 변수 추가/수정
+        const dateBtn = document.getElementById("dateBtn");
+        const calendarPanel = document.getElementById("calendarPanel");
+
+        // 지역 드롭다운 토글
+        regionBtn.addEventListener("click", () => {
+            regionDropdown.style.display =
+                regionDropdown.style.display === "block" ? "none" : "block";
+        });
+
+        // 날짜 드롭다운 토글 및 달력 새로고침
+        dateBtn.addEventListener("click", () => {
+            calendarPanel.style.display =
+                calendarPanel.style.display === "block" ? "none" : "block";
+
+            if (window.flatpickrInstance) {
+                window.flatpickrInstance.redraw();
+            }
+        });
+
+        window.flatpickrInstance = null;
+
+        function initializeFlatpickr() {
+            const today = new Date();
+            const datePickerInput = document.getElementById("datePicker");
+
+            if (typeof flatpickr === 'undefined') {
+                setTimeout(initializeFlatpickr, 100);
+                return;
+            }
+
+            window.flatpickrInstance = flatpickr(datePickerInput, {
+                inline: true,
+
+                minDate: "today",
+                maxDate: today.fp_incr(10),
+                dateFormat: "Y년 m월 d일",
+                locale: 'ko'
+            });
+        }
+        initializeFlatpickr();
+
+        /* ===============================
+           2. 시/도 - 시/군/구 - 읍/면/동 (엑셀 기반)
+        =============================== */
+
+        const sidoSelect = document.getElementById("sido");
+        const sigunguSelect = document.getElementById("sigungu");
+        const dongSelect = document.getElementById("dong");
+
+        let excelData = [];
+
+        fetch("/static/sub_file/Korea_area.xlsx")  // 여기에 실제 경로 넣기
+            .then(response => response.arrayBuffer())
+            .then(buffer => {
+                const workbook = XLSX.read(buffer, {type: "array"});
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                excelData = XLSX.utils.sheet_to_json(sheet);
+
+                excelData = excelData.filter(row =>
+                    row["시도"] &&
+                    row["시군구"] &&
+                    row["읍면동"]
+                );
+
+                populateSido();
+            })
+            .catch(err => console.error("엑셀 로드 실패:", err));
+
+        // ------------------------------- 시/도 채우기 -------------------------------
+        function populateSido() {
+            const sidoList = [...new Set(excelData.map(row => row["시도"]))];
+            sidoSelect.innerHTML = `<option value="">시/도 선택</option>`; // 기본 옵션 초기화
+
+            sidoList.forEach(sido => {
+                const option = document.createElement("option");
+                option.value = sido;
+                option.textContent = sido;
+                sidoSelect.appendChild(option);
+            });
+        }
+
+        // ------------------------------- 시군구 채우기 -------------------------------
+        sidoSelect.addEventListener("change", () => {
+            sigunguSelect.innerHTML = `<option value="">시/군/구 선택</option>`;
+            dongSelect.innerHTML = `<option value="">읍/면/동 선택</option>`;
+
+            if (!sidoSelect.value) return;
+
+            const filtered = excelData.filter(row => row["시도"] === sidoSelect.value);
+            const sigunguList = [...new Set(filtered.map(row => row["시군구"]))];
+
+            sigunguList.forEach(sg => {
+                const option = document.createElement("option");
+                option.value = sg;
+                option.textContent = sg;
+                sigunguSelect.appendChild(option);
+            });
+        });
+
+        // ------------------------------- 읍면동 채우기 -------------------------------
+        sigunguSelect.addEventListener("change", () => {
+            dongSelect.innerHTML = `<option value="">읍/면/동 선택</option>`;
+
+            if (!sigunguSelect.value) return;
+
+            const filtered = excelData.filter(
+                row => row["시도"] === sidoSelect.value && row["시군구"] === sigunguSelect.value
+            );
+
+            const dongList = [...new Set(filtered.map(row => row["읍면동"]))];
+
+            dongList.forEach(d => {
+                const option = document.createElement("option");
+                option.value = d;
+                option.textContent = d;
+                dongSelect.appendChild(option);
+            });
+        });
+
+        /* ===============================
+           3. 태그 클릭 (최대 3개)
+        =============================== */
+        function setupTagLimit(containerId, maxCount) {
+            const container = document.getElementById(containerId);
+            const tags = container.querySelectorAll(".tag");
+
+            tags.forEach(tag => {
+                tag.addEventListener("click", () => {
+                    if (tag.classList.contains("active")) {
+                        tag.classList.remove("active");
+                    } else {
+                        const selected = container.querySelectorAll(".active");
+                        if (selected.length >= maxCount) return;
+                        tag.classList.add("active");
+                    }
+                });
+            });
+        }
+
+        setupTagLimit("fashionStyleTags", 3);
+        setupTagLimit("tempStyleTags", 3);
+
+
+        /* ===============================
+           4. 상황 태그 (1개만 선택)
+        =============================== */
+        const situationTags = document.querySelectorAll("#situationTags .tag");
+
+        situationTags.forEach(tag => {
+            tag.addEventListener("click", () => {
+                if (tag.classList.contains("active")) {
+                    tag.classList.remove("active");
+                    return;
+                }
+                situationTags.forEach(t => t.classList.remove("active"));
+                tag.classList.add("active");
+            });
+        });
+
+
+        /* ===============================
+           5. 사진 업로드 → 썸네일 표시 (기존 코드 유지)
+        =============================== */
+        const input = document.getElementById("clothesInput");
+        const clothesList = document.getElementById("clothesList");
+
+        input.addEventListener("change", () => {
+            const files = Array.from(input.files);
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        /* =====================================
+            옷 카테고리 기능 (기존 코드 유지)
+        ===================================== */
+
+        let clothesData = [];
+        const categories = ["티셔츠", "팬츠", "아우터", "원피스", "기타"];
+
+        const categoryButtons = document.getElementById("categoryButtons");
+
+
+        /* =====================================
+            1. 카테고리 버튼 생성
+        ===================================== */
+        function renderCategoryButtons() {
+            categoryButtons.innerHTML = "";
+            categories.forEach(cat => {
+                const btn = document.createElement("button");
+                btn.textContent = cat;
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll("#categoryButtons button")
+                        .forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+
+                    renderClothes(cat);
+                });
+                categoryButtons.appendChild(btn);
+            });
+        }
+
+        renderCategoryButtons();
+
+
+        /* =====================================
+            2. AI 자동분류 (간단한 파일명 기반)
+        ===================================== */
+        function autoCategory(fileName) {
+            const lower = fileName.toLowerCase();
+
+            if (lower.includes("shirt") || lower.includes("tee")) return "티셔츠";
+            if (lower.includes("pants") || lower.includes("jean")) return "팬츠";
+            if (lower.includes("jacket") || lower.includes("coat")) return "아우터";
+            if (lower.includes("onepiece") || lower.includes("dress")) return "원피스";
+            return "기타";
+        }
+
+
+        /* =====================================
+            3. 옷 업로드 시 자동 분류 및 데이터 저장
+        ===================================== */
+
+        input.addEventListener("change", () => {
+            const files = Array.from(input.files);
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const category = autoCategory(file.name);
+
+                    clothesData.push({
+                        src: e.target.result,
+                        category: category
+                    });
+
+                    // 데이터가 추가될 때마다 리스트를 다시 렌더링
+                    renderClothes();
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+
+        /* =====================================
+            4. 저장된 샘플 불러오기
+        ===================================== */
+        const loadSavedBtn = document.getElementById("loadSavedBtn");
+
+        loadSavedBtn.addEventListener("click", () => {
+            const sampleImages = [
+                {src: "/static/sample/tshirt1.jpg", category: "티셔츠"},
+                {src: "/static/sample/pants1.jpg", category: "팬츠"},
+                {src: "/static/sample/jacket1.jpg", category: "아우터"}
+            ];
+
+            clothesData = clothesData.concat(sampleImages);
+            renderClothes();
+        });
+
+
+        /* =====================================
+            5. 옷 리스트 렌더링
+        ===================================== */
+        function renderClothes(filterCategory = null) {
+            clothesList.innerHTML = "";
+
+            const list = filterCategory
+                ? clothesData.filter(c => c.category === filterCategory)
+                : clothesData;
+
+            list.forEach(c => {
+                const img = document.createElement("img");
+                img.src = c.src;
+                clothesList.appendChild(img);
+            });
+        }
+    });
+</script>
+</body>
+</html>

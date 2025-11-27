@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>회원가입</title>
-    <link rel="stylesheet" href="@{/css/join.css}">
+    <link rel="stylesheet" href="../../static/css/join.css">
 </head>
 <body>
 <main class="join">
@@ -14,7 +14,6 @@
         </header>
 
         <div class="form-control">
-
             <label for="email">이메일</label>
             <div class="email-group">
                 <input id="email" class="user_email" type="email" placeholder="email" required>
@@ -28,16 +27,16 @@
             </div>
 
             <label for="userId">아이디</label>
-            <input id="userId" class="user_id" type="text" placeholder="user ID" required>
+            <input id="userId" class="user_id" type="text" placeholder="사용할 아이디" required>
 
             <label for="nickname">닉네임</label>
-            <input id="nickname" class="user_nickname" type="text" placeholder="nickname" required>
+            <input id="nickname" class="user_nickname" type="text" placeholder="닉네임" required>
 
             <label for="password1">비밀번호</label>
-            <input id="password1" class="password" type="password" placeholder="password" required>
+            <input id="password1" class="password" type="password" placeholder="비밀번호(8자 이상)" required>
 
             <label for="password2">비밀번호 확인</label>
-            <input id="password2" class="password" type="password" placeholder="confirm password" required>
+            <input id="password2" class="password" type="password" placeholder="비밀번호 재확인" required>
 
             <div class="birthForm">
                 <label>생년월일</label>
@@ -122,7 +121,7 @@
         }
     }
 
-    requestVerifyBtn.addEventListener('click', function() {
+    requestVerifyBtn.addEventListener('click', function () {
         const email = emailInput.value;
         if (!email || !email.includes('@')) {
             alert('유효한 이메일 주소를 입력해주세요.');
@@ -150,7 +149,7 @@
             });
     });
 
-    verifyCodeBtn.addEventListener('click', function() {
+    verifyCodeBtn.addEventListener('click', function () {
         const email = emailInput.value;
         const code = verificationCodeInput.value;
 
@@ -180,7 +179,7 @@
             });
     });
 
-    document.querySelector('.joinBtn .btn-primary').addEventListener('click', function() {
+    document.querySelector('.joinBtn .btn-primary').addEventListener('click', function () {
 
         const birthYear = yearSelect.value;
         const birthMonth = monthSelect.value;
