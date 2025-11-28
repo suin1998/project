@@ -41,7 +41,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        // 🔥 CORS 설정 (정상 동작)
+        // CORS 설정
         http.cors(cors -> cors.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowCredentials(true);
@@ -51,54 +51,27 @@ public class SecurityConfig {
             return config;
         }));
 
+        // CSRF, 기본 로그인 방식 비활성화
         http.csrf(AbstractHttpConfigurer::disable);
-
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.formLogin(AbstractHttpConfigurer::disable);
 
-        // 세션 사용 안함 (JWT 사용)
+        // 세션 사용 안함 (JWT 구조 유지)
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
 
-        // 인증 실패 → 401 처리
+        // 인증 실패 핸들러 (유지해도 무방)
         http.exceptionHandling(exception ->
                 exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
         );
 
-        // 🔥 URL 인가 설정
-        http.authorizeHttpRequests(authorize -> authorize
-
-                .requestMatchers(
-                        "/css/**",
-                        "/js/**",
-                        "/img/**",
-                        "/image/**",
-                        "/images/**",
-                        "/static/**",
-                        "/favicon.ico",
-                        "/community"
-                ).permitAll()
-
-                // 2️⃣ 인증 없이 접근 가능한 API
-                .requestMatchers(
-                        "/auth/send-verification-code",
-                        "/auth/verify-code",
-                        "/auth/signup",
-                        "/auth/login",
-                        "/auth/resend-verification",
-                        "/auth/verify-email",
-                        "/auth/health"
-                ).permitAll()
-
-                // 3️⃣ 인증 없이 접근 가능한 페이지
-                .requestMatchers("/", "/main", "/home", "/login", "/join").permitAll()
-
-                // 4️⃣ 나머지 모든 요청은 인증 필요
-                .anyRequest().authenticated()
+        // 🔥 여기서 모든 요청을 허용
+        http.authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()
         );
 
-        // JWT 필터 등록
+        // JWT 필터는 그대로 두어도 됨 (인증이 필요하지 않아서 401은 안 남)
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
