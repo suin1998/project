@@ -1,11 +1,10 @@
-const API_URL = 'http://localhost:8080/AI';
+const API_URL = 'http://localhost:8080/AI/weather';
 
 const $siDo = document.getElementById('sido');
 const $siGunGu = document.getElementById('sigungu');
 const $dong = document.getElementById('dong');
 const $datePicker = document.getElementById('datePicker');
 const $weatherDisplay = document.getElementById('weatherDisplay');
-
 const $checkWeatherBtn = document.getElementById('checkBtn');
 // 선택된 지역 및 날짜 저장 변수
 let selectedRegion = {
