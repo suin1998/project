@@ -3,14 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="../../static/css/userCommunity.css">
+    <link rel="stylesheet" href="/css/userCommunity.css">
 </head>
 <body>
 <header>
     <div class="logo">Logo</div>
     <nav>
-        <a href="#">Logout</a>
-        <a href="#">My Closet</a>
+        <div class="headerBtn">
+            <div id="authButtons" style="display: none;">
+                <a href="/login">Login</a>
+                <a href="/join">Join</a>
+            </div>
+
+            <div id="logoutButtons" style="display: none;">
+                <a href="#" id="logoutLink">Logout</a>
+            </div>
+
+            <a href="/mycloset">My Closet</a>
+        </div>
     </nav>
 </header>
 
