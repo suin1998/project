@@ -1,15 +1,16 @@
 package org.zerock.project.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.zerock.project.dto.WeatherRequestDto;
 import org.zerock.project.dto.WeatherResponseDto;
 import org.zerock.project.service.WeatherService;
 
-@RestController
-@RequestMapping("/main/AI")
+@Controller
 @RequiredArgsConstructor
 @Log4j2
 
@@ -49,5 +50,16 @@ public class WeatherController {
        // 3. 응답 반환
 
    }
+
+    public static Logger getLog() {
+        return log;
+    }
+
+    @GetMapping("/AI")
+    public String AIPage() {
+        log.info("GET / 요청: AI추천 페이지로 이동");
+        return "Ai/AICoordinator";
+    }
+
 
 }
