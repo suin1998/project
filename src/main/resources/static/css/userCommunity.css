@@ -132,18 +132,10 @@ header nav a {
     padding: 10px;
 }
 
-.gallery-title {
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    color: #333;
-    text-decoration: none;
-}
-
 .gallery-like {
     font-size: 14px;
     color: #777;
-    margin-top: 3px;
+    margin-bottom: 3px;
 }
 
 .overlay {

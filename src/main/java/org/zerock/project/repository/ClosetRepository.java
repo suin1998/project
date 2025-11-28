@@ -1,7 +1,7 @@
 package org.zerock.project.repository;
 
-import org.zerock.project.domain.Category;
-import org.zerock.project.domain.Closet;
+import org.zerock.project.entity.Category;
+import org.zerock.project.entity.Closet;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -7,54 +7,51 @@
 </head>
 <body>
 <header>
-    <div class="logo">Logo</div>
+    <div class="logo"></div>
     <nav>
-        <a href="#">Logout</a>
-        <a href="#">Main</a>
+        <a href="#" id="logout"></a>
+        <a href="#" id="myPage"></a>
+        <a href="#" id="Main"></a>
     </nav>
 </header>
-    <div class="container">
-        <h2 class="post-title">추천 코디</h2>
+<div class="container">
+    <h2 class="post-title">추천 코디</h2>
 
-        <div class="user-box">
+    <!--        작성자, 이메일, 날짜-->
+    <div class="user-box">
+        <div class="userInformation">
             <div><strong>작성자&nbsp;:&nbsp; </strong><span id="user-nickname"></span></div>
-            <div><strong>이메일&nbsp;:&nbsp; </strong><span id="user-email"></span></div>
         </div>
-
-<!--        제목 날짜-->
-        <div class="top-info">
-            <input id="postTitle" class="title-input" readonly>
+        <div class="date-like">
             <input id="postDate" class="date-input" readonly>
-        </div>
+            <div class="like-dislike-box">
+                <button type="button" id="likeBtn" class="like-btn"><span class="like">👍</span></button>
+                <span id="likeCount">0</span>
 
-<!--        이미지 슬라이더-->
-        <div class="slider">
-            <button class="slide-btn left" id="prevBtn"> < </button>
-            <img id="mainImage" class="main-image" src="" alt="">
-            <button class="slide-btn right" id="nextBtn"> > </button>
-        </div>
-
-<!--        이미지 미리보기 리스트-->
-        <div class="thumbnail-box" id="thumbnailList"></div>
-
-        <h3>내용</h3>
-        <p class="content" id="postContent"></p>
-
-        <div class="like-dislike-box">
-            <button type="button" id="likeBtn" class="like-btn"><span class="like">👍</span></button>
-            <span id="likeCount">0</span>
-
-            <button type="button" id="dislikeBtn" class="dislike-btn"><span class="dislike">👎</span></button>
-            <span id="dislikeCount">0</span>
+                <button type="button" id="dislikeBtn" class="dislike-btn"><span class="dislike">👎</span></button>
+                <span id="dislikeCount">0</span>
+            </div>
         </div>
     </div>
+
+    <!--        이미지 슬라이더-->
+    <div class="slider">
+        <button class="slide-btn left" id="prevBtn"> <</button>
+        <img id="mainImage" class="main-image" src="" alt="">
+        <button class="slide-btn right" id="nextBtn"> ></button>
+    </div>
+
+    <!--        이미지 미리보기 리스트-->
+    <div class="thumbnail-box" id="thumbnailList"></div>
+
+    <h3>내용</h3>
+    <p class="content" id="postContent"></p>
+</div>
 
 <script>
     /* 저장된 게시글 데이터 (예시) */
     const savedPost = {
         userNickName: "홍길동",
-        userEmail: "hong@test.com",
-        title: "제목이 들어갑니다.",
         content:
             "여기에 코디와 관련된 내용이 쓰여집니다. 예시임으로 코드를 편히 고치세요.",
         images: [
@@ -79,9 +76,7 @@
 
     /* 화면에 데이터 삽입 */
     document.getElementById("user-nickname").textContent = savedPost.userNickName;
-    document.getElementById("user-email").textContent = savedPost.userEmail;
 
-    document.getElementById("postTitle").value = savedPost.title;
     document.getElementById("postDate").value = getFormattedDate();
     document.getElementById("postContent").textContent = savedPost.content;
 

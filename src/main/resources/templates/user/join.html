@@ -4,250 +4,449 @@
 <head>
     <meta charset="UTF-8">
     <title>회원가입</title>
-    <link rel="stylesheet" href="../../static/css/join.css">
+    <link rel="stylesheet" href="/css/join.css">
 </head>
 <body>
 <main class="join">
     <div class="join-Box">
         <header class="logo">
-            <h1>Logo</h1>
+            <h1>회원가입</h1>
         </header>
 
-        <div class="form-control">
-            <label for="email">이메일</label>
-            <div class="email-group">
-                <input id="email" class="user_email" type="email" placeholder="email" required>
-                <button id="requestVerifyBtn" class="btn btn-secondary" type="button">인증 요청</button>
-            </div>
+        <p id="messageBox" role="alert"></p>
 
-            <div id="codeInputArea" style="display:none;">
-                <label for="verificationCode">인증 코드</label>
-                <input id="verificationCode" type="text" placeholder="인증 코드를 입력하세요" maxlength="6">
-                <button id="verifyCodeBtn" class="btn btn-secondary" type="button">인증 확인</button>
-            </div>
+        <form id="joinForm">
+            <div class="form-control">
 
-            <label for="userId">아이디</label>
-            <input id="userId" class="user_id" type="text" placeholder="사용할 아이디" required>
+                <label for="email">이메일</label>
+                <div class="email-group">
+                    <input id="email" class="user_email" type="email" placeholder="email" required>
+                    <button id="requestVerifyBtn" class="btn btn-secondary" type="button">인증 요청</button>
+                </div>
 
-            <label for="nickname">닉네임</label>
-            <input id="nickname" class="user_nickname" type="text" placeholder="닉네임" required>
+                <div id="codeInputArea" style="display:none;">
+                    <label for="verificationCode">인증 코드</label>
+                    <input id="verificationCode" type="text" placeholder="인증 코드를 입력하세요" maxlength="6">
+                    <button id="verifyCodeBtn" class="btn btn-secondary" type="button">인증 확인</button>
+                </div>
 
-            <label for="password1">비밀번호</label>
-            <input id="password1" class="password" type="password" placeholder="비밀번호(8자 이상)" required>
+                <p id="codeVerifySuccess" class="messageBox success" style="display:none; margin-top: 10px;">
+                    이메일 인증이 완료되었습니다!</p>
 
-            <label for="password2">비밀번호 확인</label>
-            <input id="password2" class="password" type="password" placeholder="비밀번호 재확인" required>
+                <label for="userId">아이디</label>
+                <input id="userId" class="user_id" type="text" placeholder="사용할 아이디" required
+                       oninput="checkFormValidity()">
 
-            <div class="birthForm">
-                <label>생년월일</label>
-                <div class="select-group">
-                    <select id="birthYear" required>
-                        <option value="">년</option>
-                    </select>
-                    <select id="birthMonth" required>
-                        <option value="">월</option>
-                    </select>
-                    <select id="birthDay" required>
-                        <option value="">일</option>
-                    </select>
+                <label for="nickname">닉네임</label>
+                <input id="nickname" class="user_nickname" type="text" placeholder="닉네임" required
+                       oninput="checkFormValidity()">
+
+                <label for="password1">비밀번호</label>
+                <input id="password1" class="password" type="password" placeholder="비밀번호(8자이상)" required
+                       minlength="8" oninput="checkFormValidity()">
+
+                <label for="password2">비밀번호 확인</label>
+                <input id="password2" class="password" type="password" placeholder="비밀번호 재확인" required
+                       minlength="8" oninput="checkFormValidity()">
+
+                <p id="passwordMatchError" style="display: none;">비밀번호가 일치하지 않습니다.</p>
+
+                <div class="birthForm">
+                    <label>생년월일</label>
+                    <div class="select-group">
+                        <select id="birthYear" required>
+                            <option value="">년</option>
+                        </select>
+                        <select id="birthMonth" required>
+                            <option value="">월</option>
+                        </select>
+                        <select id="birthDay" required>
+                            <option value="">일</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="form-gender">
-            <input type="radio" id="gender1" name="gender" value="M" required>
-            <label for="gender1" class="gender-card">남성</label>
+            <div class="form-gender">
+                <input type="radio" id="gender1" name="gender" value="M" required>
+                <label for="gender1" class="gender-card">남성</label>
 
-            <input type="radio" id="gender2" name="gender" value="F" required>
-            <label for="gender2" class="gender-card">여성</label>
-        </div>
+                <input type="radio" id="gender2" name="gender" value="F" required>
+                <label for="gender2" class="gender-card">여성</label>
+            </div>
 
-        <div class="joinBtn">
-            <button class="btn btn-primary" type="button">가입하기</button>
-        </div>
+            <div class="joinBtn">
+                <button class="btn btn-primary" id="submitButton" type="button" disabled>가입하기</button>
+            </div>
+        </form>
     </div>
 </main>
 </body>
 
 <script>
 
-    const CURRENT_YEAR = new Date().getFullYear();
-    const START_YEAR = 1970;
+    // ========== 전역 변수 ==========
     let isEmailVerified = false;
+    let verificationCode = '';
 
-    const yearSelect = document.getElementById('birthYear');
-    const monthSelect = document.getElementById('birthMonth');
-    const daySelect = document.getElementById('birthDay');
+    // ========== 페이지 로드 시 초기화 ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeDateSelects();
+        attachEventListeners();
+    });
 
-    const requestVerifyBtn = document.getElementById('requestVerifyBtn');
-    const verifyCodeBtn = document.getElementById('verifyCodeBtn');
-    const emailInput = document.getElementById('email');
-    const codeInputArea = document.getElementById('codeInputArea');
-    const verificationCodeInput = document.getElementById('verificationCode');
+    // ========== 날짜 Select 초기화 ==========
+    function initializeDateSelects() {
+        const yearSelect = document.getElementById('birthYear');
+        const monthSelect = document.getElementById('birthMonth');
+        const daySelect = document.getElementById('birthDay');
 
-    function generateYearOptions() {
-        for (let year = CURRENT_YEAR; year >= START_YEAR; year--) {
+        // 연도 옵션 생성 (1970 ~ 현재)
+        const currentYear = new Date().getFullYear();
+        for (let year = currentYear; year >= 1970; year--) {
             const option = document.createElement('option');
             option.value = year;
             option.textContent = year + '년';
             yearSelect.appendChild(option);
         }
-    }
 
-    function generateMonthOptions() {
+        // 월 옵션 생성 (1 ~ 12)
         for (let month = 1; month <= 12; month++) {
             const option = document.createElement('option');
-            const formattedMonth = String(month).padStart(2, '0');
-            option.value = formattedMonth;
+            option.value = month;
             option.textContent = month + '월';
             monthSelect.appendChild(option);
         }
+
+        // 일 옵션 생성 (1 ~ 31)
+        updateDayOptions();
+
+        // 연도/월 변경 시 일 옵션 업데이트
+        yearSelect.addEventListener('change', updateDayOptions);
+        monthSelect.addEventListener('change', updateDayOptions);
     }
 
-    function generateDayOptions() {
+    // ========== 일자 옵션 동적 업데이트 ==========
+    function updateDayOptions() {
+        const yearSelect = document.getElementById('birthYear');
+        const monthSelect = document.getElementById('birthMonth');
+        const daySelect = document.getElementById('birthDay');
+
+        const year = parseInt(yearSelect.value);
+        const month = parseInt(monthSelect.value);
+
+        // 현재 선택된 일 저장
+        const currentDay = daySelect.value;
+
+        // 일 옵션 초기화
         daySelect.innerHTML = '<option value="">일</option>';
-        const selectedYear = yearSelect.value;
-        const selectedMonth = monthSelect.value;
-        if (!selectedYear || !selectedMonth) return;
 
-        const lastDay = new Date(selectedYear, selectedMonth, 0).getDate();
+        // 해당 월의 일수 계산
+        let daysInMonth = 31;
+        if (year && month) {
+            daysInMonth = new Date(year, month, 0).getDate();
+        }
 
-        for (let day = 1; day <= lastDay; day++) {
+        // 일 옵션 생성
+        for (let day = 1; day <= daysInMonth; day++) {
             const option = document.createElement('option');
-            const formattedDay = String(day).padStart(2, '0');
-            option.value = formattedDay;
+            option.value = day;
             option.textContent = day + '일';
             daySelect.appendChild(option);
         }
+
+        // 이전 선택값 복원 (가능한 경우)
+        if (currentDay && currentDay <= daysInMonth) {
+            daySelect.value = currentDay;
+        }
     }
 
-    requestVerifyBtn.addEventListener('click', function () {
-        const email = emailInput.value;
-        if (!email || !email.includes('@')) {
-            alert('유효한 이메일 주소를 입력해주세요.');
+    // ========== 이벤트 리스너 등록 ==========
+    function attachEventListeners() {
+        // 이메일 인증 요청 버튼
+        document.getElementById('requestVerifyBtn').addEventListener('click', requestEmailVerification);
+
+        // 인증 코드 확인 버튼
+        document.getElementById('verifyCodeBtn').addEventListener('click', verifyEmailCode);
+
+        // 비밀번호 확인 실시간 체크
+        document.getElementById('password2').addEventListener('input', checkPasswordMatch);
+
+        // 가입하기 버튼
+        document.getElementById('submitButton').addEventListener('click', submitForm);
+
+        // 모든 입력 필드에 유효성 검사 이벤트 추가
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('input', checkFormValidity);
+            input.addEventListener('change', checkFormValidity);
+        });
+    }
+
+    // ========== 이메일 인증 요청 ==========
+    async function requestEmailVerification() {
+        const email = document.getElementById('email').value.trim();
+
+        if (!email) {
+            showMessage('이메일을 입력해주세요.', 'error');
             return;
         }
 
-        fetch('/auth/send-code', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({email: email})
-        })
-            .then(response => {
-                if (response.status === 200 || response.status === 202) {
-                    alert('인증 코드가 이메일로 발송되었습니다. 코드를 입력해 주세요.');
-                    codeInputArea.style.display = 'flex';
-                    requestVerifyBtn.disabled = true;
-                    emailInput.disabled = true;
-                } else {
-                    alert('인증 코드 발송에 실패했습니다. 이메일 주소를 다시 확인하거나, 이미 사용 중인 이메일일 수 있습니다.');
-                }
-            })
-            .catch(error => {
-                console.error('인증 요청 오류:', error);
-                alert('네트워크 오류로 인증 요청에 실패했습니다.');
-            });
-    });
-
-    verifyCodeBtn.addEventListener('click', function () {
-        const email = emailInput.value;
-        const code = verificationCodeInput.value;
-
-        if (code.length === 0) {
-            alert('인증 코드를 입력해주세요.');
+        if (!validateEmail(email)) {
+            showMessage('올바른 이메일 형식이 아닙니다.', 'error');
             return;
         }
 
-        fetch('/auth/verify-code', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({email: email, code: code})
-        })
-            .then(response => {
-                if (response.ok) {
-                    alert('이메일 인증이 완료되었습니다! 가입을 진행해 주세요.');
-                    isEmailVerified = true;
-                    verificationCodeInput.disabled = true;
-                    verifyCodeBtn.disabled = true;
-                } else {
-                    alert('인증 코드가 일치하지 않거나 만료되었습니다. 다시 시도해주세요.');
-                }
-            })
-            .catch(error => {
-                console.error('인증 확인 오류:', error);
-                alert('네트워크 오류로 인증 확인에 실패했습니다.');
+        try {
+            const response = await fetch('/auth/send-verification-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email })
             });
-    });
 
-    document.querySelector('.joinBtn .btn-primary').addEventListener('click', function () {
+            const data = await response.json();
 
-        const birthYear = yearSelect.value;
-        const birthMonth = monthSelect.value;
-        const birthDay = daySelect.value;
+            if (response.ok && data.success) {
+                showMessage('인증 코드가 이메일로 발송되었습니다.', 'success');
+                document.getElementById('codeInputArea').style.display = 'block';
+                document.getElementById('requestVerifyBtn').disabled = true;
+                document.getElementById('requestVerifyBtn').textContent = '전송됨';
+            } else {
+                showMessage(data.message || '인증 코드 발송에 실패했습니다.', 'error');
+            }
+        } catch (error) {
+            console.error('Email verification error:', error);
+            showMessage('서버 연결에 실패했습니다.', 'error');
+        }
+    }
 
-        const userId = document.getElementById('userId').value;
-        const nickname = document.getElementById('nickname').value;
-        const email = emailInput.value;
-        const password = document.getElementById('password1').value;
-        const passwordConfirm = document.getElementById('password2').value;
+    // ========== 이메일 인증 코드 확인 ==========
+    async function verifyEmailCode() {
+        const email = document.getElementById('email').value.trim();
+        const code = document.getElementById('verificationCode').value.trim();
+
+        if (!code) {
+            showMessage('인증 코드를 입력해주세요.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/auth/verify-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    code: code
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                isEmailVerified = true;
+                showMessage('이메일 인증이 완료되었습니다!', 'success');
+                document.getElementById('codeVerifySuccess').style.display = 'block';
+                document.getElementById('codeInputArea').style.display = 'none';
+                document.getElementById('email').readOnly = true;
+                document.getElementById('verifyCodeBtn').disabled = true;
+                checkFormValidity();
+            } else {
+                showMessage(data.message || '인증 코드가 올바르지 않습니다.', 'error');
+            }
+        } catch (error) {
+            console.error('Code verification error:', error);
+            showMessage('서버 연결에 실패했습니다.', 'error');
+        }
+    }
+
+    // ========== 비밀번호 일치 확인 ==========
+    function checkPasswordMatch() {
+        const password1 = document.getElementById('password1').value;
+        const password2 = document.getElementById('password2').value;
+        const errorMsg = document.getElementById('passwordMatchError');
+
+        if (password2 && password1 !== password2) {
+            errorMsg.style.display = 'block';
+            return false;
+        } else {
+            errorMsg.style.display = 'none';
+            return true;
+        }
+    }
+
+    // ========== 폼 유효성 검사 ==========
+    function checkFormValidity() {
+        const email = document.getElementById('email').value.trim();
+        const userId = document.getElementById('userId').value.trim();
+        const nickname = document.getElementById('nickname').value.trim();
+        const password1 = document.getElementById('password1').value;
+        const password2 = document.getElementById('password2').value;
+        const birthYear = document.getElementById('birthYear').value;
+        const birthMonth = document.getElementById('birthMonth').value;
+        const birthDay = document.getElementById('birthDay').value;
         const gender = document.querySelector('input[name="gender"]:checked');
 
-        if (password !== passwordConfirm) {
-            alert('비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
-            return;
-        }
+        const submitButton = document.getElementById('submitButton');
 
+        const allFieldsFilled =
+            email &&
+            userId &&
+            nickname &&
+            password1.length >= 8 &&
+            password2.length >= 8 &&
+            birthYear &&
+            birthMonth &&
+            birthDay &&
+            gender &&
+            isEmailVerified;
+
+        // 비밀번호 일치 확인
+        const passwordsMatch = password1 === password2;
+
+        // 버튼 활성화/비활성화
+        if (allFieldsFilled && passwordsMatch) {
+            submitButton.disabled = false;
+            submitButton.style.opacity = '1';
+            submitButton.style.cursor = 'pointer';
+        } else {
+            submitButton.disabled = true;
+            submitButton.style.opacity = '0.5';
+            submitButton.style.cursor = 'not-allowed';
+        }
+    }
+
+    // ========== 회원가입 제출 ==========
+    async function submitForm() {
+        // 최종 유효성 검사
         if (!isEmailVerified) {
-            alert('이메일 인증을 먼저 완료해주세요.');
+            showMessage('이메일 인증을 완료해주세요.', 'error');
             return;
         }
 
-        if (!userId || !nickname || !email || !password || !gender || !birthYear || !birthMonth || !birthDay) {
-            alert('모든 필수 정보를 입력해주세요.');
+        if (!checkPasswordMatch()) {
+            showMessage('비밀번호가 일치하지 않습니다.', 'error');
             return;
         }
 
-        const currentYear = new Date().getFullYear();
-        const age = currentYear - parseInt(birthYear);
-        const userData = {
-            userId: userId,
-            password: password,
+        // 폼 데이터 수집
+        const email = document.getElementById('email').value.trim();
+        const username = document.getElementById('userId').value.trim();
+        const nickname = document.getElementById('nickname').value.trim();
+        const password = document.getElementById('password1').value;
+        const confirmPassword = document.getElementById('password2').value;
+
+        const birthYear = document.getElementById('birthYear').value;
+        const birthMonth = document.getElementById('birthMonth').value.padStart(2, '0');
+        const birthDay = document.getElementById('birthDay').value.padStart(2, '0');
+        const birthDate = `${birthYear}-${birthMonth}-${birthDay}`;
+
+        const genderElement = document.querySelector('input[name="gender"]:checked');
+        const gender = genderElement.value === 'M' ? 'MALE' : 'FEMALE';
+
+        // 회원가입 요청 데이터
+        const signupData = {
+            username: username,
             email: email,
             nickname: nickname,
-            gender: gender.value,
-            age: age
+            password: password,
+            confirmPassword: confirmPassword,
+            birthDate: birthDate,
+            gender: gender
         };
 
-        fetch('/auth/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(userData)
-        })
-            .then(response => {
-                if (response.ok) {
-                    alert('회원가입이 완료되었습니다! 메인 화면으로 이동합니다.');
-                    window.location.href = '/';
-                } else if (response.status === 400) {
-                    return response.text().then(text => {
-                        alert('가입 실패: ' + (text || '입력 정보를 확인해주세요.'));
-                    });
-                } else {
-                    alert('서버 오류가 발생했습니다.');
-                }
-            })
-            .catch(error => {
-                console.error('Fetch Error:', error);
-                alert('네트워크 연결 오류: 서버에 연결할 수 없습니다.');
+        console.log('Signup data:', signupData);
+
+        // 버튼 비활성화 (중복 제출 방지)
+        const submitButton = document.getElementById('submitButton');
+        submitButton.disabled = true;
+        submitButton.textContent = '가입 중...';
+
+        try {
+            const response = await fetch('/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(signupData)
             });
-    });
 
-    yearSelect.addEventListener('change', generateDayOptions);
-    monthSelect.addEventListener('change', generateDayOptions);
+            const data = await response.json();
 
-    generateYearOptions();
-    generateMonthOptions();
+            if (response.ok && data.success) {
+                showMessage('회원가입이 완료되었습니다!', 'success');
+
+                // 토큰 저장
+                if (data.accessToken) {
+                    localStorage.setItem('accessToken', data.accessToken);
+                    localStorage.setItem('refreshToken', data.refreshToken);
+                }
+
+                // 2초 후 로그인 페이지로 이동
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+
+            } else {
+                // 에러 메시지 표시
+                if (data.validationErrors && data.validationErrors.length > 0) {
+                    const errors = data.validationErrors.map(err => err.message).join('\n');
+                    showMessage(errors, 'error');
+                } else {
+                    showMessage(data.message || '회원가입에 실패했습니다.', 'error');
+                }
+
+                // 버튼 다시 활성화
+                submitButton.disabled = false;
+                submitButton.textContent = '가입하기';
+            }
+
+        } catch (error) {
+            console.error('Signup error:', error);
+            showMessage('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
+
+            // 버튼 다시 활성화
+            submitButton.disabled = false;
+            submitButton.textContent = '가입하기';
+        }
+    }
+
+    // ========== 메시지 표시 함수 ==========
+    function showMessage(message, type) {
+        const messageBox = document.getElementById('messageBox');
+        messageBox.textContent = message;
+        messageBox.style.display = 'block';
+        messageBox.style.padding = '10px';
+        messageBox.style.marginBottom = '15px';
+        messageBox.style.borderRadius = '5px';
+        messageBox.style.fontSize = '14px';
+        messageBox.style.fontWeight = '500';
+
+        if (type === 'success') {
+            messageBox.style.backgroundColor = '#d4edda';
+            messageBox.style.color = '#155724';
+            messageBox.style.border = '1px solid #c3e6cb';
+        } else if (type === 'error') {
+            messageBox.style.backgroundColor = '#f8d7da';
+            messageBox.style.color = '#721c24';
+            messageBox.style.border = '1px solid #f5c6cb';
+        }
+
+        // 3초 후 자동 숨김
+        setTimeout(() => {
+            messageBox.style.display = 'none';
+        }, 3000);
+    }
+
+    // ========== 이메일 유효성 검사 ==========
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
 
 </script>
+
 </html>

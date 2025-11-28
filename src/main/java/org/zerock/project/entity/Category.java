@@ -1,4 +1,4 @@
-package org.zerock.project.domain;
+package org.zerock.project.entity;
 
 public enum Category {
     TOP("상의"),
