@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Closet</title>
-    <link rel="stylesheet" href="/css/myPage.css">
+    <link rel="stylesheet" href="../../static/css/myPage.css">
 </head>
 <body>
 <header>
@@ -45,7 +45,7 @@
             <div class="profile-card">
                 <div class="profile-img">
                     <!--                샘플 이미지-->
-                    <img src="/image/user/user-img.jpg" alt="">
+                    <img src="../../static/image/user/user-img.jpg" alt="">
                 </div>
                 <div class="profile-text">
                     <h3 id="user-name">000님 안녕하세요</h3>
@@ -74,6 +74,8 @@
         </div>
         <div class="image-area">
             <!--            샘플 이미지 디자인만 보세요.-->
+            <input type="file" id="img-upload">
+            <label for="img-upload">사진 저장하기</label>
             <div id="imageCount">티셔츠 3개</div>
             <div id="closetContainer" class="image-grid">
                 <img src="../../static/image/user/tShirt1.jpg" alt="">
@@ -88,6 +90,7 @@
     /** ---------- 사용자 정보 셋업 ---------- **/
     const userId = "user123"; // 로그인 시 서버에서 전달받도록 변경 예정
 
+    document.addEventListener("DOMContentLoaded", () => {
     /** ---------- 달력 렌더링 ---------- **/
     const today = new Date();
     let currentMonth = today.getMonth();
@@ -149,8 +152,8 @@
         }
         renderCalendar();
     });
-
-
+    renderCalendar();
+    });
     // /** ---------- 옷 불러오기 API 연동 ---------- **/
     // const closetContainer = document.getElementById("closetContainer");
     // const imageCount = document.getElementById("imageCount");
