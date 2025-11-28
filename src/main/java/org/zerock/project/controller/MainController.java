@@ -27,4 +27,9 @@ public class MainController {
         return "user/join";
     }
 
+    @GetMapping("/community")
+    public String communityList() {
+        return "community/usercommunity";
+    }
+
 }
