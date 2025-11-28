@@ -55,14 +55,20 @@ header nav a {
     margin-left: 10px;
 }
 
+.date-like {
+    display: block;
+    justify-content: center;
+    align-items: center;
+}
+
 .date-input {
     border-radius: 5px;
     font-size: 15px;
     border: none;
-    text-align: right;
+    text-align: center;
     margin-bottom: 10px;
-    width: 210px;
-
+    width: 150px;
+    transform: translateX(7px);
 }
 
 .slider {
@@ -132,16 +138,16 @@ header nav a {
     align-items: center;
     justify-content: center;
     gap: 20px;
-    margin-right: 10px;
     margin-bottom: 10px;
+    margin-right: 10px;
 }
 
 .like-btn, .dislike-btn {
-    padding: 10px 20px;
+    padding: 5px 10px;
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 15px;
 }
 
 .like-btn {

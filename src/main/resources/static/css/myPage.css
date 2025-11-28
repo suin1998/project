@@ -32,7 +32,7 @@ header nav a {
 }
 
 .container {
-    width: 1200px;
+    width: 1100px;
     margin: auto;
     padding: 30px;
     background: white;
@@ -44,8 +44,8 @@ header nav a {
     display: flex;
     gap: 20px;
     padding: 20px;
-    justify-content: center;
     flex: 1;
+    border-bottom: 1px solid #ccc;
 }
 
 .dashboard {
@@ -58,6 +58,7 @@ header nav a {
     padding: 20px;
     width: 85%;
     background: #e7e7ea;
+    align-items: center;
 }
 
 .calendar-header {
@@ -98,12 +99,8 @@ header nav a {
 
 .profile {
     width: 100%;
-    display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     gap: 20px;
-    background: #e7e7ea;
     border-radius: 10px;
 }
 
@@ -117,11 +114,10 @@ header nav a {
 }
 
 .profile-img img {
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid white;
 }
 
 .feature-icon {
@@ -146,12 +142,10 @@ header nav a {
 
 .container-editors {
     display: flex;
-    flex: 1;
     justify-content: space-between;
     align-items: center;
     gap: 20px;
     padding: 20px;
-    width: 50%;
     margin: 0 auto;
 }
 
@@ -161,7 +155,7 @@ header nav a {
     background: white;
     border-radius: 10px;
     padding: 20px;
-    width: 30%;
+    width: 20%;
     max-height: 355px;
     box-shadow: 0 4px 14px rgba(0,0,0,0.4);
 }
@@ -204,6 +198,13 @@ header nav a {
     box-shadow: 0 4px 14px rgba(0,0,0,0.4);
 }
 
+#imageCount {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
 .image-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -215,5 +216,29 @@ header nav a {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+
+.image-area input[type="file"] {
+    display: none;
+}
+
+.image-area label {
+    padding: 5px 8px;
+    background: #eee;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    text-align: center;
+    font-size: 15px;
+    color: black;
+    margin-bottom: 10px;
+}
+
+.image-area input[type="file"]:checked + .image-area label {
+    background: #777;
+    border: none;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
 
 
