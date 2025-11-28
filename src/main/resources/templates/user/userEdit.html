@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/userEdit.css">
+</head>
+<body>
+<header>
+    <div class="logo"></div>
+    <nav>
+        <a href="#" id="logout"></a>
+        <a href="#" id="main"></a>
+        <a href="#" id="AICoordinator"></a>
+    </nav>
+</header>
+<div class="container">
+    <section class="profile-card">
+        <div class="profile-img-wrap">
+<!--            예시 이미지-->
+            <img id="profile-img" src="/image/user/user-img.jpg" alt="">
+            <button type="button" class="edit-img-btn">✏️</button>
+        </div>
+        <div class="profile-info">
+            <div class="user-email"></div>
+        </div>
+    </section>
+
+    <section class="profile-section">
+
+        <div class="info-list">
+            <div class="item">
+                <label for="user-nickname">닉네임</label>
+                <input type="text" id="user-nickname" readonly>
+
+                <label>성별</label>
+                <div class="form-gender">
+                    <input type="radio" id="gender1" name="gender" value="M" disabled>
+                    <label for="gender1" class="gender-card">남성</label>
+
+                    <input type="radio" id="gender2" name="gender" value="F" disabled>
+                    <label for="gender2" class="gender-card">여성</label>
+                </div>
+                <label for="birth">생년월일</label>
+                <input type="text" id="birth" readonly>
+
+                <div id="birth-dropdowns" class="birth-dropdowns" style="display:none;">
+                    <div class="dropdown-group">
+                        <div class="dropdown">
+                            <button type="button" class="dropdown-btn" id="year-btn">년도 선택</button>
+                            <div class="dropdown-list" id="year-list"></div>
+                        </div>
+
+                        <div class="dropdown">
+                            <button type="button" class="dropdown-btn" id="month-btn">월 선택</button>
+                            <div class="dropdown-list" id="month-list"></div>
+                        </div>
+
+                        <div class="dropdown">
+                            <button type="button" class="dropdown-btn" id="day-btn">일 선택</button>
+                            <div class="dropdown-list" id="day-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <label for="password1">비밀번호</label>
+                <input id="password1" class="password" type="password" placeholder="-" readonly>
+
+                <div class="password-check" style="display: none">
+                    <label for="password2">비밀번호 확인</label>
+                    <input id="password2" class="password" type="password">
+                </div>
+
+                <div class="edit-actions" style="display:none;">
+                    <button class="save-btn">저장하기</button>
+                    <button class="cancel-btn">취소</button>
+                </div>
+
+                <button type="button" class="edit-btn">수정하기</button>
+            </div>
+        </div>
+
+        <div class="delete-account">
+            <button type="button" class="delete-account-btn">계정 삭제</button>
+        </div>
+    </section>
+</div>
+<!-- 프로필 이미지 수정 모달 -->
+<div id="profile-modal" class="modal">
+    <div class="modal-content">
+        <h3>프로필 이미지 변경</h3>
+<!--        예시 이미지-->
+        <div class="image-list">
+            <img src="/image/user/user-img.jpg" class="selectable-img" alt="">
+            <img src="/image/user/user-img.jpg" class="selectable-img" alt="">
+        </div>
+
+        <label class="upload-label">새 이미지 업로드
+            <input type="file" id="upload-img" accept="image/*" hidden>
+        </label>
+
+        <button class="delete-img-btn">선택 이미지 삭제</button>
+
+        <div class="modal-actions">
+            <button class="modal-save-btn">저장</button>
+            <button class="modal-close-btn">닫기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 임의 작업입니다.
+    document.addEventListener("DOMContentLoaded", () => {
+        // ---------- 기본값 ----------
+        const DEFAULT = {
+            nickname: "user123",
+            gender: "M",
+            birth: "2025-11-26",
+            password: "",
+            profileImg: "../image/user/user-img.jpg",
+            email: "user@example.com",
+        };
+
+        // ---------- 요소 ----------
+        const profileImgEl = document.getElementById("profile-img");
+        const userEmailEl = document.querySelector(".user-email");
+
+        const nicknameEl = document.getElementById("user-nickname");
+        const birthEl = document.getElementById("birth");
+        const pw1El = document.getElementById("password1");
+        const pw2Wrapper = document.querySelector(".password-check");
+        const pw2El = document.getElementById("password2");
+
+        const genderInputs = document.querySelectorAll("input[name='gender']");
+
+        const editBtn = document.querySelector(".edit-btn");
+        const saveBtn = document.querySelector(".save-btn");
+        const cancelBtn = document.querySelector(".cancel-btn");
+        const editActions = document.querySelector(".edit-actions");
+
+        const editImgBtn = document.querySelector(".edit-img-btn");
+        const modal = document.getElementById("profile-modal");
+        const modalCloseBtn = document.querySelector(".modal-close-btn");
+        const modalSaveBtn = document.querySelector(".modal-save-btn");
+        const deleteImgBtn = document.querySelector(".delete-img-btn");
+        const uploadInput = document.getElementById("upload-img");
+        const imageList = document.querySelector(".image-list");
+
+        const deleteAccountBtn = document.querySelector(".delete-account-btn");
+
+        // ▼▼ 추가되는 요소: 생년월일 드롭다운 ▼▼
+        let birthDropdown = null;
+
+        // 내부 변수
+        let previousValues = null;
+        let selectedImage = null;
+
+        // ---------- 드롭다운 생성 ----------
+        function createBirthDropdown() {
+            const wrapper = document.createElement("div");
+            wrapper.classList.add("birth-dropdown");
+
+            const yearSelect = document.createElement("select");
+            const monthSelect = document.createElement("select");
+            const daySelect = document.createElement("select");
+
+            yearSelect.className = "birth-year";
+            monthSelect.className = "birth-month";
+            daySelect.className = "birth-day";
+
+            // 년도: 1970 ~ 현재
+            const currentYear = new Date().getFullYear();
+            for (let y = currentYear; y >= 1970; y--) {
+                const op = document.createElement("option");
+                op.value = y;
+                op.textContent = `${y}년`;
+                yearSelect.appendChild(op);
+            }
+
+            // 월: 1 ~ 12
+            for (let m = 1; m <= 12; m++) {
+                const op = document.createElement("option");
+                op.value = m;
+                op.textContent = `${m}월`;
+                monthSelect.appendChild(op);
+            }
+
+            // 일: 1 ~ 31
+            for (let d = 1; d <= 31; d++) {
+                const op = document.createElement("option");
+                op.value = d;
+                op.textContent = `${d}일`;
+                daySelect.appendChild(op);
+            }
+
+            wrapper.appendChild(yearSelect);
+            wrapper.appendChild(monthSelect);
+            wrapper.appendChild(daySelect);
+
+            wrapper.style.display = "none";
+            birthEl.insertAdjacentElement("afterend", wrapper);
+
+            return wrapper;
+        }
+
+        // ---------- 초기 로드 ----------
+        function loadProfileData() {
+            const saved = JSON.parse(localStorage.getItem("profileData")) || DEFAULT;
+
+            nicknameEl.value = saved.nickname;
+            pw1El.value = saved.password || "";
+            profileImgEl.src = saved.profileImg || DEFAULT.profileImg;
+
+            userEmailEl.textContent = saved.email;
+
+            if (saved.gender === "M") document.getElementById("gender1").checked = true;
+            else document.getElementById("gender2").checked = true;
+
+            // Birth 값 표시
+            birthEl.value = saved.birth;
+
+            // 드롭다운 초기화
+            const [yy, mm, dd] = saved.birth.split("-").map(Number);
+            birthDropdown.querySelector(".birth-year").value = yy;
+            birthDropdown.querySelector(".birth-month").value = mm;
+            birthDropdown.querySelector(".birth-day").value = dd;
+
+            setReadOnlyMode(true);
+        }
+
+        // ---------- 읽기/쓰기 모드 ----------
+        function setReadOnlyMode(isReadOnly) {
+            if (isReadOnly) {
+                nicknameEl.setAttribute("readonly", true);
+                birthEl.setAttribute("readonly", true);
+                pw1El.setAttribute("readonly", true);
+                genderInputs.forEach(i => i.disabled = true);
+                pw2Wrapper.style.display = "none";
+                editActions.style.display = "none";
+
+                birthDropdown.style.display = "none";
+            } else {
+                nicknameEl.removeAttribute("readonly");
+                pw1El.removeAttribute("readonly");
+                genderInputs.forEach(i => i.disabled = false);
+                pw2Wrapper.style.display = "block";
+                editActions.style.display = "block";
+
+                birthDropdown.style.display = "flex";
+            }
+        }
+
+        // 드롭다운 생성 후 적용
+        birthDropdown = createBirthDropdown();
+        loadProfileData();
+
+        // ---------- 수정 버튼 ----------
+        editBtn.addEventListener("click", () => {
+            previousValues = {
+                nickname: nicknameEl.value,
+                birth: birthEl.value,
+                password: pw1El.value,
+                gender: document.querySelector("input[name='gender']:checked").value,
+                profileImg: profileImgEl.src
+            };
+
+            setReadOnlyMode(false);
+        });
+
+        // ---------- 저장 버튼 ----------
+        saveBtn.addEventListener("click", () => {
+            const pw1 = pw1El.value;
+            const pw2 = pw2El.value;
+
+            if (pw1 !== pw2) {
+                alert("비밀번호가 일치하지 않습니다.");
+                return;
+            }
+
+            // 생년월일 반영
+            const y = birthDropdown.querySelector(".birth-year").value;
+            const m = birthDropdown.querySelector(".birth-month").value;
+            const d = birthDropdown.querySelector(".birth-day").value;
+
+            const birthStr = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+            birthEl.value = birthStr;
+
+            const toSave = {
+                nickname: nicknameEl.value,
+                birth: birthStr,
+                password: pw1 || "",
+                gender: document.querySelector("input[name='gender']:checked").value,
+                profileImg: profileImgEl.src,
+                email: userEmailEl.textContent,
+            };
+
+            localStorage.setItem("profileData", JSON.stringify(toSave));
+            setReadOnlyMode(true);
+
+            pw2El.value = "";
+        });
+
+        // ---------- 취소 ----------
+        cancelBtn.addEventListener("click", () => {
+            nicknameEl.value = previousValues.nickname;
+            pw1El.value = previousValues.password;
+            profileImgEl.src = previousValues.profileImg;
+
+            const [yy, mm, dd] = previousValues.birth.split("-").map(Number);
+            birthEl.value = previousValues.birth;
+            birthDropdown.querySelector(".birth-year").value = yy;
+            birthDropdown.querySelector(".birth-month").value = mm;
+            birthDropdown.querySelector(".birth-day").value = dd;
+
+            document.querySelector(`input[name='gender'][value='${previousValues.gender}']`).checked = true;
+
+            setReadOnlyMode(true);
+            pw2El.value = "";
+        });
+
+        // ---------- 프로필 이미지 모달 (기존 코드 유지) ----------
+        editImgBtn.addEventListener("click", () => {
+            selectedImage = null;
+            imageList.querySelectorAll(".selectable-img").forEach(i => i.classList.remove("selected"));
+            modal.style.display = "flex";
+        });
+
+        modalCloseBtn.addEventListener("click", () => modal.style.display = "none");
+
+        imageList.addEventListener("click", (e) => {
+            if (e.target.classList.contains("selectable-img")) {
+                imageList.querySelectorAll(".selectable-img").forEach(i => i.classList.remove("selected"));
+                e.target.classList.add("selected");
+                selectedImage = e.target.src;
+            }
+        });
+
+        uploadInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const temp = imageList.querySelector(".temp-upload");
+                if (temp) temp.remove();
+
+                const img = document.createElement("img");
+                img.src = ev.target.result;
+                img.className = "selectable-img temp-upload selected";
+                imageList.appendChild(img);
+
+                imageList.querySelectorAll(".selectable-img:not(.temp-upload)").forEach(i => i.classList.remove("selected"));
+                selectedImage = img.src;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        deleteImgBtn.addEventListener("click", () => {
+            selectedImage = DEFAULT.profileImg;
+            alert("기본 이미지로 변경됩니다. 저장을 눌러 적용하세요.");
+        });
+
+        modalSaveBtn.addEventListener("click", () => {
+            if (selectedImage) {
+                profileImgEl.src = selectedImage;
+                const saved = JSON.parse(localStorage.getItem("profileData")) || DEFAULT;
+                saved.profileImg = selectedImage;
+                localStorage.setItem("profileData", JSON.stringify(saved));
+            }
+            modal.style.display = "none";
+        });
+
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) modal.style.display = "none";
+        });
+
+        // ---------- 계정 삭제 ----------
+        deleteAccountBtn.addEventListener("click", () => {
+            if (!confirm("정말 삭제하시겠습니까?")) return;
+
+            localStorage.removeItem("profileData");
+            loadProfileData();
+            alert("계정이 삭제되었습니다.");
+        });
+    });
+</script>
+</body>
+</html>

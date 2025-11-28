@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+<main class="login">
+    <div class="login-Box">
+        <header class="logo">
+            <h1>Fit Maker</h1>
+        </header>
+
+        <div class="form-control">
+            <label for="email">이메일</label>
+            <input id="email" class="user_email" type="email" placeholder="email">
+
+            <label for="password">비밀번호</label>
+            <input id="password" class="password" type="password" placeholder="password">
+
+            <div class="loginBtn">
+                <button class="btn btn-primary" id="loginSubmitBtn" type="submit">로그인</button>
+
+                <button class="btn btn-outline" id="signupBtn" type="button">회원가입</button>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+</main>
+<script>
+    // ========== 전역 변수 ==========
+    const LOGIN_API_URL = '/auth/login'; // Spring Boot 컨트롤러의 로그인 엔드포인트
+
+    document.addEventListener('DOMContentLoaded', function() {
+        attachEventListeners();
+    });
+
+    // ========== 이벤트 리스너 등록 ==========
+    function attachEventListeners() {
+        document.getElementById('loginSubmitBtn').addEventListener('click', handleLogin);
+        document.getElementById('signupBtn').addEventListener('click', redirectToSignup);
+    }
+
+    // ========== 로그인 처리 함수 ==========
+    async function handleLogin() {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const loginButton = document.getElementById('loginSubmitBtn');
+
+        if (!email || !password) {
+            alert('이메일과 비밀번호를 모두 입력해주세요.');
+            return;
+        }
+
+        // 버튼 비활성화 (중복 제출 방지)
+        loginButton.disabled = true;
+        loginButton.textContent = '로그인 중...';
+
+        try {
+            const response = await fetch(LOGIN_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: email,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // 1. 로그인 성공
+                alert('로그인 성공!');
+
+                // 2. 토큰 저장 (AuthResponseDTO에 포함된 토큰을 localStorage에 저장)
+                if (data.accessToken) {
+                    localStorage.setItem('accessToken', data.accessToken);
+                    localStorage.setItem('refreshToken', data.refreshToken);
+                }
+
+                // 3. 메인 페이지로 이동
+                window.location.href = '/'; // 메인 페이지 경로 (루트)
+
+            } else {
+                // 4. 로그인 실패 (서버에서 받은 메시지 표시)
+                alert(data.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+
+                // 버튼 다시 활성화
+                loginButton.disabled = false;
+                loginButton.textContent = '로그인';
+            }
+
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
+
+            // 버튼 다시 활성화
+            loginButton.disabled = false;
+            loginButton.textContent = '로그인';
+        }
+    }
+
+    // ========== 회원가입 페이지 이동 함수 ==========
+    function redirectToSignup() {
+        window.location.href = '/join'; // 회원가입 페이지 경로
+    }
+
+</script>
+</body>
+</html>
+
+</body>
+</html>

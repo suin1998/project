@@ -6,7 +6,7 @@ import lombok.Data;
 public class OutfitRequestDto {
     private WeatherResponseDto weatherResponseDto;
     private String gender;
-    private double userage;
+    private double userAge;
     private String style1; //list
     private String style2; //list
     private String tpo;

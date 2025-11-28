@@ -115,7 +115,7 @@ body {
 
 .birthForm .select-group {
     display: flex;
-    gap: 10px;
+        gap: 10px;
 }
 
 .form-gender {
@@ -172,14 +172,5 @@ body {
     background: #444;
     color: white;
     transition: 0.3s ease;
-}
-
-#passwordMatchError {
-    color: #e53e3e; /* Tailwind red-600 */
-    font-size: 12px;
-    margin-top: 5px;
-    padding-left: 0;
-    display: none; /* 초기에는 숨김 */
-    font-weight: 500;
 }
 
