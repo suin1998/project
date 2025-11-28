@@ -17,7 +17,7 @@ import org.zerock.project.service.WeatherService;
 public class WeatherController {
     private final WeatherService weatherService;
 
-   @GetMapping("/weather")
+   @ResponseBody
     public ResponseEntity<WeatherResponseDto> getWeatherForecast(@ModelAttribute WeatherRequestDto request) {
 
        if (request.getSiDo() == null || request.getInputDate() == null) {
