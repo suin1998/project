@@ -3,14 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>main</title>
-    <link rel="stylesheet" href="../../static/css/main.css">
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
 <header>
-    <div class="logo">Logo</div>
+    <div class="logo">Fit Maker</div>
     <nav>
-        <a href="#">Login / Join</a>
-        <a href="#">My Closet</a>
+        <div class="headerBtn">
+            <div id="authButtons" style="display: none;"><a href="/login">Login</a>
+                <a href="/join">Join</a></div>
+
+            <div id="logoutButtons" style="display: none;">
+                <a href="/logout" id="logoutLink">Logout</a>
+            </div>
+            <a href="/mycloset">My Closet</a>
+        </div>
     </nav>
 </header>
 
@@ -25,7 +32,7 @@
     </div>
     <div class="container">
         <div class="card">
-            <img src="image/main/clothes_pic.jpg" alt="">
+            <img src="/image/main/clothes_pic.jpg" alt="">
             <h2>My Closet</h2>
             <p>사진을 찍어 올려서 내가 가진 옷을 정리할 수 있어요.</p>
             <div class="btn">
@@ -33,7 +40,7 @@
             </div>
         </div>
         <div class="card">
-            <img src="image/main/clothes.jpg" alt="">
+            <img src="/image/main/clothes.jpg" alt="">
             <h2>AI Coordinator</h2>
             <p>AI에게 코디를 물어볼 수 있어요.</p>
             <div class="btn">
@@ -41,14 +48,74 @@
             </div>
         </div>
         <div class="card">
-            <img src="image/main/clothes_coord.png" alt="">
+            <img src="/image/main/clothes_coord.jpg" alt="">
             <h2>Community</h2>
             <p>내가 가진 코디를 공유하거나 다른 사람의 코디 정보를 볼 수 있어요.</p>
             <div class="btn">
-                <button>Community</button>
+                <button id="communityButton">Community</button>
             </div>
         </div>
     </div>
 </section>
 </body>
+
+<script>
+
+    function redirectToCommunity() {
+        // 커뮤니티 페이지를 렌더링하는 서버 경로로 수정해주세요.
+        // 예를 들어, /community로 매핑된 컨트롤러가 community.html 템플릿을 보여줍니다.
+        window.location.href = '/community';
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
+        updateAuthButtons();
+
+        // 2. 로그아웃 버튼 클릭 이벤트 연결
+        const logoutLink = document.getElementById('logoutLink');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', handleLogout);
+        }
+
+        const communityButton = document.getElementById('communityButton');
+        if (communityButton) {
+            communityButton.addEventListener('click', redirectToCommunity);
+        }
+    });
+
+    // ========== 인증 상태에 따라 버튼을 업데이트하는 핵심 함수 ==========
+    function updateAuthButtons() {
+        // localStorage에서 JWT 토큰 존재 여부 확인
+        const accessToken = localStorage.getItem('accessToken');
+        const authButtons = document.getElementById('authButtons');
+        const logoutButtons = document.getElementById('logoutButtons');
+
+        if (accessToken) {
+            // 토큰이 존재하면 (로그인 상태)
+            if (authButtons) authButtons.style.display = 'none';
+            if (logoutButtons) logoutButtons.style.display = 'flex'; // 혹은 block
+        } else {
+            // 토큰이 없으면 (비로그인 상태)
+            if (authButtons) authButtons.style.display = 'flex'; // 혹은 block
+            if (logoutButtons) logoutButtons.style.display = 'none';
+        }
+    }
+
+    // ========== 로그아웃 처리 함수 ==========
+    function handleLogout(event) {
+        event.preventDefault(); // <a> 태그의 기본 동작(페이지 이동) 방지
+
+        // 1. JWT 토큰 제거
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+
+        // 2. 버튼 상태를 비로그인으로 업데이트
+        updateAuthButtons();
+
+        alert('로그아웃되었습니다.');
+
+        // 3. (선택) 메인 페이지 새로고침
+        // window.location.reload();
+    }
+</script>
+
 </html>

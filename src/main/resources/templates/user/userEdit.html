@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="../../static/css/userEdit.css">
+    <link rel="stylesheet" href="/css/userEdit.css">
 </head>
 <body>
 <header>
-    <div class="logo">Logo</div>
+    <div class="logo"></div>
     <nav>
-        <a href="#">Logout</a>
-        <a href="#">Main</a>
+        <a href="#" id="logout"></a>
+        <a href="#" id="main"></a>
+        <a href="#" id="AICoordinator"></a>
     </nav>
 </header>
 <div class="container">
     <section class="profile-card">
         <div class="profile-img-wrap">
-            <img id="profile-img" src="../image/user/user-img.jpg" alt="">
+<!--            예시 이미지-->
+            <img id="profile-img" src="/image/user/user-img.jpg" alt="">
             <button type="button" class="edit-img-btn">✏️</button>
         </div>
         <div class="profile-info">
@@ -87,10 +89,10 @@
 <div id="profile-modal" class="modal">
     <div class="modal-content">
         <h3>프로필 이미지 변경</h3>
-
+<!--        예시 이미지-->
         <div class="image-list">
-            <img src="../image/user/user-img.jpg" class="selectable-img" alt="">
-            <img src="../image/user/user-img.jpg" class="selectable-img" alt="">
+            <img src="/image/user/user-img.jpg" class="selectable-img" alt="">
+            <img src="/image/user/user-img.jpg" class="selectable-img" alt="">
         </div>
 
         <label class="upload-label">새 이미지 업로드

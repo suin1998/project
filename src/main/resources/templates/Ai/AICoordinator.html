@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="../../static/css/AICoordinator.css">
+    <link rel="stylesheet" href="/css/AICoordinator.css">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
@@ -11,9 +11,9 @@
 <header>
     <div class="logo">Logo</div>
     <nav>
-        <a href="#">Logout</a>
-        <a href="#">My Closet</a>
-        <a href="#">Main</a>
+        <a href="#" id="logout"></a>
+        <a href="#" id="myPage"></a>
+        <a href="#" id="Main"></a>
     </nav>
 </header>
 <div class="wrapper">
@@ -267,7 +267,7 @@
 
         let excelData = [];
 
-        fetch("/static/sub_file/Korea_area.xlsx")  // 여기에 실제 경로 넣기
+        fetch("/sub_file/Korea_area.xlsx")  // 여기에 실제 경로 넣기
             .then(response => response.arrayBuffer())
             .then(buffer => {
                 const workbook = XLSX.read(buffer, {type: "array"});
