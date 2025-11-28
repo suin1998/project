@@ -13,19 +13,24 @@ import java.util.List;
 @Entity
 @Table(
         name = "closet",
-        indexes = {@Index(name = "idx_user_category", columnList = "userId, category")}
+        indexes = {@Index(name = "idx_user_category", columnList = "user_id, category")}
 )
-@Getter @Setter
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Closet {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    private Long userId;
+    // User 엔티티와 정식 연관관계 설정
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -52,5 +57,4 @@ public class Closet {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-
 }
