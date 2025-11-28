@@ -1,139 +1,79 @@
 body {
     margin: 0;
-    background: white;
-    color: dimgray;
-}
-
-header {
     display: flex;
-    justify-content: space-between;
+    min-height: 100vh;
     align-items: center;
-    max-width: 1000px;
-    padding: 20px 40px;
-    background: white;
-    border-bottom: 1px solid #eaeaea;
-    margin: auto;
+    justify-content: center;
+    padding: 24px;
 }
 
-header .logo {
-    font-size: 22px;
-    font-weight: bold;
-}
-
-header nav a {
-    margin-left: 20px;
-    text-decoration: none;
-    color: #333;
-    font-size: 16px;
-}
-
-.headerBtn {
-    display: flex;
-}
-
-.hero {
-    position: relative;
+.login {
     width: 100%;
-    height: 430px;
-    background: url('/image/main/background_img.jpg') center/cover no-repeat;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: #ffffff;
-}
-
-.hero h1 {
-    font-size: 40px;
-    margin: 0;
-    font-weight: 600;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-}
-
-.hero p {
-    font-size: 18px;
-    margin-top: 10px;
-    opacity: 0.9;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-}
-
-.service {
-    margin-top: 60px;
-    margin-bottom: 100px;
-    background: white;
-}
-
-.service .title {
-    display: flex;
-    justify-content: center;
-    color: black;
-    text-align: center;
-}
-
-.service .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    max-width: 800px;
-    margin: auto;
-}
-
-.service .card {
-    justify-content: center;
-    background: white;
-    padding: 30px 20px;
-    border-radius: 10px;
-    border: 1px solid #eaeaea;
-    text-align: center;
-    height: 320px;
-    width: auto;
-    margin: 10px 5px;
-}
-
-.service .card img {
-    width: 200px;
-    height: 200px;
-    border-radius: 5px;
-    object-fit: cover;
-}
-
-.service .card h3 {
-    color: #444;
-    margin-bottom: 10px;
-    word-wrap: break-word;
-    word-break: keep-all;
-}
-
-.service .card p {
-    font-size: 16px;
-    word-wrap: break-word;
-    word-break: keep-all;
-}
-
-.service .card .btn {
-    margin-top: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transform: translateX(-3px);
-}
-
-.service .card .btn button {
-    width: 150px;
-    height: 50px;
-    font-size: 18px;
-    text-align: center;
+    max-width: 420px;
+    padding: 8px 4px;
     color: white;
-    background-color: black;
-    border: none;
-    border-radius: 20px;
-    transition: .5s ease;
 }
 
-.service .btn button:hover {
-    transition: .5s ease;
-    border: 2px solid black;
-    background: transparent;
-    color: black;
+.login .logo {
+    text-align: center;
+    margin-bottom: 30px;
 }
+
+.login .logo h1 {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 800;
+    color: #444;
+    letter-spacing: -0.5px;
+}
+
+.form-control label {
+    display: block;
+    margin: 15px 0 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #444;
+}
+
+.form-control input {
+    width: 100%;
+    height: 50px;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 0 14px;
+    font-size: 15px;
+    outline: none;
+    transition: 0.15s ease;
+    background: white;
+}
+
+.form-control input:hover{
+    border: 1px solid lightgray;
+    transition: 0.15s ease;
+}
+.form-control .loginBtn {
+    margin-top: 20px;
+}
+
+.form-control .btn {
+    margin-top: 15px;
+    width: 100%;
+    height: 50px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.3s ease;
+    border: 1px solid #444;
+    transform: translateX(13px);
+}
+
+.form-control .btn:hover {
+    background: #444;
+    color: white;
+    transition: 0.3s ease;
+}
+
+.form-control .btn .btn-primary {
+}
+
