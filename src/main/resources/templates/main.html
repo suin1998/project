@@ -9,8 +9,15 @@
 <header>
     <div class="logo">Fit Maker</div>
     <nav>
-        <a href="/login">Login / Join</a>
-        <a href="/mycloset">My Closet</a>
+        <div class="headerBtn">
+            <div id="authButtons" style="display: none;"><a href="/login">Login</a>
+                <a href="/join">Join</a></div>
+
+            <div id="logoutButtons" style="display: none;">
+                <a href="/logout" id="logoutLink">Logout</a>
+            </div>
+            <a href="/mycloset">My Closet</a>
+        </div>
     </nav>
 </header>
 
