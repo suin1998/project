@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080/main/AI';
+const API_URL = 'http://localhost:8080/AI';
 
 const $siDo = document.getElementById('sido');
 const $siGunGu = document.getElementById('sigungu');
@@ -6,6 +6,7 @@ const $dong = document.getElementById('dong');
 const $datePicker = document.getElementById('datePicker');
 const $weatherDisplay = document.getElementById('weatherDisplay');
 
+const $checkWeatherBtn = document.getElementById('checkBtn');
 // 선택된 지역 및 날짜 저장 변수
 let selectedRegion = {
     siDo: '',
@@ -13,6 +14,20 @@ let selectedRegion = {
     dong: ''
 };
 let selectedDate = '';
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ... (기존 초기화 함수 호출: setupDropdownToggles(), setupFlatpickr(), setupRegionEventListeners() 등) ...
+
+    // 💡 날씨 조회 버튼 이벤트 리스너 추가
+    $checkWeatherBtn.addEventListener('click', fetchWeather);
+
+    // 초기 날짜 및 지역 값 설정 (HTML에서 값을 가져오도록)
+    selectedDate = $datePicker.value;
+    selectedRegion.siDo = $siDo.value;
+    selectedRegion.siGunGu = $siGunGu.value;
+    selectedRegion.dong = $dong.value;
+});
+
 
 function isWeatherQueryReady() {
     return selectedRegion.siDo && selectedRegion.siGunGu && selectedRegion.dong && selectedDate;
