@@ -7,9 +7,10 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.zerock.project.dto.WeatherRequestDto;
 import org.zerock.project.dto.WeatherResponseDto;
 import org.zerock.project.model.GridLocation;
-import org.zerock.project.util.getRegionCode;
+import org.zerock.project.model.StnLocation;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -17,14 +18,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Iterator;
+
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 
 public class WeatherService {
-
-    private final getRegionCode getRegionCode;
     //    private final RestTemplate restTemplate;
     @Value("${weather.api.key}")
     private String serviceKey;
@@ -35,30 +37,35 @@ public class WeatherService {
 
 
     private final GridService gridService;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final StnService stnService;
+//    private final RestTemplate restTemplate = new RestTemplate();
 
-    public WeatherResponseDto getWeather(String sido, String sigungu, String dong, String inputdate) {
+    public WeatherResponseDto getWeather(WeatherRequestDto  weatherRequestDto) {
+        String sido = weatherRequestDto.getSiDo();
+        String sigungu = weatherRequestDto.getSiGunGu();
+        String dong = weatherRequestDto.getDong();
+        LocalDate targetDate = weatherRequestDto.getInputDate();
+
         GridLocation location = gridService.getGridLocation(sido, sigungu, dong);
-//        String regionCode = getRegionCode(req.getSido(), req.getSigungu());
+        StnLocation stnLocation = stnService.getStnLocation(sido, sigungu);
 
         int nx = location.getNx();
         int ny = location.getNy();
-
-        LocalDate targetDate = LocalDate.parse(inputdate);
+        String regionCode =  stnLocation.getRegionCode();
 
         WeatherResponseDto.ShortTermWeather shortTerm = null;
         WeatherResponseDto.MidTermWeather midTerm = null;
 
-        if(targetDate.isBefore(LocalDate.now().plusDays(3))) {
+        if(targetDate.isBefore(LocalDate.now().plusDays(4))) {
             shortTerm = getShortTermForecast(nx, ny, targetDate);
 
         }else{
-//            midTerm = getMidTermForecast(targetDate, regionCode);
+            midTerm = getMidTermForecast(regionCode, targetDate);
         }
-        return new WeatherResponseDto(targetDate.toString(), shortTerm, midTerm);
+        return new WeatherResponseDto(targetDate, shortTerm, midTerm);
     }
 
-    private JSONObject callJson(String urlStr){
+    public JSONObject callJson(String urlStr){
         try{
             URL url = new URL(urlStr);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -90,7 +97,7 @@ public class WeatherService {
 
         String url = short_api_url + "?"
                 +"authKey="+serviceKey
-                +"numOfRows=1000"
+                +"&numOfRows=1000"
                 +"&pageNo=1"
                 +"&dataType=JSON"
                 + "&base_date=" + baseDate
@@ -100,49 +107,136 @@ public class WeatherService {
 
         JSONObject json = callJson(url);
 
-        JSONArray items = json.getJSONArray("items");
 
-        String sky = null;
-        String pty = null;
-        String rainProb = null;
-        String tMin = null;
-        String tMax = null;
+        JSONObject response = json.getJSONObject("response");
+        JSONObject body = response.getJSONObject("body");
+        JSONObject items = body.getJSONObject("items");
+        JSONArray itemArrays = items.getJSONArray("item");
+        String targetDateStr =  targetDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        for(int i = 0; i < items.length(); i++){
-            JSONObject obj = items.getJSONObject(i);
-            String targetDateStr =  targetDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        double sumSky = 0;
+        double sumPty = 0;
+        double sumRainProb = 0;
+        int tMin = 0;
+        int tMax = 0;
 
-            if (targetDateStr.equals(obj.getString("fcstDate"))){
+        double count = 0;
+        double sky = 0;
+        double pty = 0 ;
+        double rainProb = 0;
 
-                switch (obj.getString("category")){
-                    case "SKY": sky = obj.getString("fcstValue"); break;
-                    case "PTY": pty = obj.getString("fcstValue"); break;
-                    case "POP": rainProb = obj.getString("fcstValue"); break;
-                    case "TMN": tMin = obj.getString("fcstValue"); break;
-                    case "TMX": tMax = obj.getString("fcstValue"); break;
-                }
+        for(int i = 0; i < itemArrays.length(); i++){
+            JSONObject obj = itemArrays.getJSONObject(i);
+
+            if (!targetDateStr.equals(obj.getString("fcstDate"))) {
+                continue;
             }
-            else{
-                return null;
+            switch (obj.getString("category")) {
+                case "SKY":
+                    sumSky += obj.getDouble("fcstValue");
+                    break;
+                case "PTY":
+                    sumPty += obj.getDouble("fcstValue");
+                    break;
+                case "POP":
+                    sumRainProb += obj.getDouble("fcstValue");
+                    count++;
+                    break;
+                case "TMN":
+                    tMin = obj.getInt("fcstValue");
+                    break;
+                case "TMX":
+                    tMax = obj.getInt("fcstValue");
+                    break;
             }
+            sky = Math.round(sumRainProb/count);
+            pty = Math.round(sumPty/count);
+            rainProb = Math.round(sumSky/count);
+
         }
-
+        log.info(new WeatherResponseDto.ShortTermWeather(sky, pty, rainProb, tMin, tMax));
         return new WeatherResponseDto.ShortTermWeather(sky, pty, rainProb, tMin, tMax);
 
     }
 
 
-//    private WeatherResponseDto.MidTermWeather getMidTermForecast(LocalDate targetDate, String regionCode) {
-//        int dayDiff = (int) ChronoUnit.DAYS.between(targetDate, LocalDate.now());
-//
-//        if (dayDiff < 4 || dayDiff > 10) throw new IllegalArgumentException("중기예보는 D+4~D+10일만 제공됩니다.");
-//
-//        String skyUrl = mid_sky_api_url + "?"
-//                +"authKey="+serviceKey
-//                +"&dataType=JSON"
-//                +"&regId=" + regionCode;
-//    }
+    private WeatherResponseDto.MidTermWeather getMidTermForecast(String regionCode, LocalDate targetDate) {
+        int dayDiff = (int) ChronoUnit.DAYS.between(LocalDate.now(), targetDate);
 
+        if (dayDiff < 4 || dayDiff > 10) throw new IllegalArgumentException("중기예보는 D+4~D+10일만 제공됩니다.");
 
+        String baseDate =  LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String targetDateStr =  targetDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        String skyUrl = mid_sky_api_url + "?"
+                +"authKey="+serviceKey
+                +"&dataType=JSON"
+                +"&regId=" + regionCode
+                +"&pageNo=1"
+                +"&numOfRows=10"
+                +"&tmFc="+baseDate+"0600";
+
+        JSONObject json = callJson(skyUrl);
+
+        JSONObject response = json.getJSONObject("response");
+        JSONObject body = response.getJSONObject("body");
+        JSONObject items = body.getJSONObject("items");
+        JSONArray itemArrays = items.getJSONArray("item");
+
+        double rainProb = 0;
+        double sumRainProb = 0;
+
+        JSONObject obj = itemArrays.getJSONObject(0);
+
+        Iterator<String> keys = obj.keys();
+        String searchPattern = "rnSt" + dayDiff;
+
+        while(keys.hasNext()){
+            String key = keys.next();
+            if(key.contains(searchPattern)){
+                try{
+                    if (dayDiff >= 4 || dayDiff <= 7){
+                        sumRainProb += obj.getDouble(key);
+                    }else {
+                        rainProb = obj.getDouble(key);
+                    }
+
+                }catch(Exception e) {
+                    log.warn("RainProb key found but value is not a number or parsing failed for key: {}", key);
+                }
+
+            }
+
+        }
+        if (dayDiff >= 4 || dayDiff <= 7) {
+            rainProb = Math.round(sumRainProb / 2);
+        }
+
+        String tempUrl = mid_temp_api_url + "?"
+                +"authKey="+serviceKey
+                +"&dataType=JSON"
+                +"&regId=" + regionCode
+                +"&pageNo=1"
+                +"&numOfRows=10"
+                +"&tmFc="+baseDate+"0600";
+
+        JSONObject temp = callJson(skyUrl);
+
+        JSONObject temp_response = temp.getJSONObject("response");
+        JSONObject temp_body = response.getJSONObject("body");
+        JSONObject temp_items = body.getJSONObject("items");
+        JSONArray temp_itemArrays = items.getJSONArray("item");
+
+        int tMin = 0;
+        int tMax = 0;
+
+        JSONObject forcast = temp_itemArrays.getJSONObject(0);
+        tMin = forcast.getInt("taMin"+dayDiff);
+        tMax = forcast.getInt("taMax"+dayDiff);
+
+        log.info(new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax));
+        return new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax);
+
+    }
 
 }
