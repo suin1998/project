@@ -1,7 +1,7 @@
 package org.zerock.project.service;
 
-import org.zerock.project.domain.Category;
-import org.zerock.project.domain.Closet;
+import org.zerock.project.entity.Category;
+import org.zerock.project.entity.Closet;
 import org.zerock.project.dto.ClosetRequestDTO;
 import org.zerock.project.dto.ClosetResponseDTO;
 import org.zerock.project.repository.ClosetRepository;

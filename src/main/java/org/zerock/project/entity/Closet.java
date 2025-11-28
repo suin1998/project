@@ -1,4 +1,4 @@
-package org.zerock.project.domain;
+package org.zerock.project.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "closet")
+@Table(
+        name = "closet",
+        indexes = {@Index(name = "idx_user_category", columnList = "userId, category")}
+)
 @Getter @Setter
 @Builder
 @NoArgsConstructor

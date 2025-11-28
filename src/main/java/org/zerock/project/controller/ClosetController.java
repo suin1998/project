@@ -1,7 +1,7 @@
 package org.zerock.project.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.zerock.project.domain.Category;
+import org.zerock.project.entity.Category;
 import org.zerock.project.dto.ClosetRequestDTO;
 import org.zerock.project.dto.ClosetResponseDTO;
 import org.zerock.project.service.ClosetService;
