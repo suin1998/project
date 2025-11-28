@@ -16,7 +16,7 @@
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
             </div>
-            <a href="/mycloset">My Closet</a>
+            <a href="/MyPage">My Closet</a>
         </div>
     </nav>
 </header>
@@ -36,7 +36,7 @@
             <h2>My Closet</h2>
             <p>사진을 찍어 올려서 내가 가진 옷을 정리할 수 있어요.</p>
             <div class="btn">
-                <button>My Closet</button>
+                <button id="MyPageButton">My Closet</button>
             </div>
         </div>
         <div class="card">
@@ -44,7 +44,7 @@
             <h2>AI Coordinator</h2>
             <p>AI에게 코디를 물어볼 수 있어요.</p>
             <div class="btn">
-                <button>AI Coordinator</button>
+                <button id="AICoordinatorButton">AI Coordinator</button>
             </div>
         </div>
         <div class="card">
@@ -66,6 +66,15 @@
         // 예를 들어, /community로 매핑된 컨트롤러가 community.html 템플릿을 보여줍니다.
         window.location.href = '/community';
     }
+
+    function redirectToAICoordinator() {
+        window.location.href ='/AICoordinator';
+    }
+
+    function redirectToMyPage() {
+        window.location.href ='/MyPage';
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
         updateAuthButtons();
@@ -79,6 +88,16 @@
         const communityButton = document.getElementById('communityButton');
         if (communityButton) {
             communityButton.addEventListener('click', redirectToCommunity);
+        }
+
+        const AICoordinatorButton = document.getElementById('AICoordinatorButton');
+        if(AICoordinatorButton) {
+            AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
+        }
+
+        const MyPageButton = document.getElementById('MyPageButton');
+        if(MyPageButton) {
+            MyPageButton.addEventListener('click', redirectToMyPage);
         }
     });
 
@@ -116,6 +135,10 @@
         // 3. (선택) 메인 페이지 새로고침
         // window.location.reload();
     }
+
+
+
+
 </script>
 
 </html>
