@@ -16,9 +16,15 @@ public class MainController {
         return "main";
     }
 
+    @GetMapping("/login")
+    public String loginPage() {
+        return "user/login";
+    }
+
     @GetMapping("/join")
     public String joinPage() {
         log.info("GET /join 요청: 회원가입 페이지로 이동");
         return "user/join";
     }
+
 }
