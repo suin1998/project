@@ -32,4 +32,14 @@ public class MainController {
         return "community/usercommunity";
     }
 
+    @GetMapping("/AICoordinator")
+    public String aiCoordinator() {
+        return "Ai/AICoordinator";
+    }
+
+    @GetMapping("/MyPage")
+    public String myPage() {
+        return "user/myPage";
+    }
+
 }
