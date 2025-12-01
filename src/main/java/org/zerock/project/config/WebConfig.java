@@ -1,11 +1,14 @@
 package org.zerock.project.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+    @Value("${app.upload.dir}")
+    private String uploadDir;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -25,6 +28,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/sub_file/**");
 
         registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:" + uploadDir + "/");
+  
                 .addResourceLocations("file:C:/project/uploads/");
     }
   

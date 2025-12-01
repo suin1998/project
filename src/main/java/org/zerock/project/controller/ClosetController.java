@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.zerock.project.service.UserService;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -63,6 +64,19 @@ public class ClosetController {
         String userId = principal.getName();
         dto.setUserId(userId); // DTO에 userId 세팅
         return ResponseEntity.ok(closetService.update(closetId, dto, image));
+    }
+
+    // 라벨 목록 추출
+    @GetMapping("/api/categories")
+    public ResponseEntity<List<Map<String, String>>> getCategories() {
+        List<Map<String, String>> categories = Arrays.stream(Category.values())
+                .map(c -> Map.of(
+                        "code", c.name(),       // enum 이름 (TOP, BOTTOM...)
+                        "label", c.getLabel()   // 화면에 보여줄 라벨
+                ))
+                .toList();
+
+        return ResponseEntity.ok(categories);
     }
 
     // 태그 검색

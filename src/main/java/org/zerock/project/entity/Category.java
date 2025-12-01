@@ -29,7 +29,8 @@ public enum Category {
         return List.of(values()); // 불변 리스트 반환
     }
 
-    public static List<String> getAllLabels() {
+    // 라벨 목록만 추출 기능
+    public static List<String> getLabelList() {
         return Arrays.stream(values())
                 .map(Category::getLabel)
                 .toList();

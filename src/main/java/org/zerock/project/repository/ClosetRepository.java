@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ClosetRepository extends JpaRepository<Closet, String> {
 
-    // User 객체 기반 조회 (JPA 정석)
+    // User 객체 기반 조회 (특정 유저의 옷장 아이템 조회)
     List<Closet> findByUser(User user);
 
     // User + Category 조회
