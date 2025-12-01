@@ -27,6 +27,7 @@ public class UserService {
     private final EmailService emailService;
 
 
+    @Transactional
     public String verifyCode(String email, String code) {
         String savedCode = emailService.getCode(email);
 
@@ -204,7 +205,7 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(Long userId) {
+    public void deleteUser(String userId) {
         log.info("User deletion request for userId: {}", userId);
 
         User user = userRepository.findById(userId)

@@ -16,7 +16,7 @@
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
             </div>
-            <a href="/mycloset">My Closet</a>
+            <a href="/mypage">My Closet</a>
         </div>
     </nav>
 </header>
@@ -36,7 +36,7 @@
             <h2>My Closet</h2>
             <p>사진을 찍어 올려서 내가 가진 옷을 정리할 수 있어요.</p>
             <div class="btn">
-                <button>My Closet</button>
+                <button id="myClosetButton">My Closet</button>
             </div>
         </div>
         <div class="card">
@@ -44,7 +44,7 @@
             <h2>AI Coordinator</h2>
             <p>AI에게 코디를 물어볼 수 있어요.</p>
             <div class="btn">
-                <button>AI Coordinator</button>
+                <button id="aiCoordinatorButton">AI Coordinator</button>
             </div>
         </div>
         <div class="card">
@@ -61,11 +61,29 @@
 
 <script>
 
+    function redirectToMyCloset() {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            // 토큰이 없으면 로그인 페이지로 안내
+            alert('My Closet은 로그인 후 이용 가능합니다.');
+            window.location.href = '/login';
+        } else {
+            // 토큰이 있으면 MyPage로 이동 시도
+            window.location.href = '/MyPage';
+        }
+    }
+
+    // AI Coordinator 버튼 클릭 시 /AICoordinator 경로로 이동합니다.
+    function redirectToAICoordinator() {
+        window.location.href = '/AICoordinator';
+    }
+
+    // Community 버튼 클릭 시 /community 경로로 이동합니다.
     function redirectToCommunity() {
-        // 커뮤니티 페이지를 렌더링하는 서버 경로로 수정해주세요.
-        // 예를 들어, /community로 매핑된 컨트롤러가 community.html 템플릿을 보여줍니다.
         window.location.href = '/community';
     }
+
     document.addEventListener('DOMContentLoaded', function () {
         // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
         updateAuthButtons();
@@ -76,6 +94,19 @@
             logoutLink.addEventListener('click', handleLogout);
         }
 
+        // 3. My Closet 버튼 이벤트 연결 (수정 및 정리된 부분)
+        const myClosetButton = document.getElementById('myClosetButton');
+        if (myClosetButton) {
+            myClosetButton.addEventListener('click', redirectToMyCloset);
+        }
+
+        // 4. AI Coordinator 버튼 이벤트 연결
+        const aiCoordinatorButton = document.getElementById('aiCoordinatorButton');
+        if (aiCoordinatorButton) {
+            aiCoordinatorButton.addEventListener('click', redirectToAICoordinator);
+        }
+
+        // 5. Community 버튼 이벤트 연결
         const communityButton = document.getElementById('communityButton');
         if (communityButton) {
             communityButton.addEventListener('click', redirectToCommunity);
