@@ -15,19 +15,32 @@ import java.time.LocalDateTime;
 public class Board {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long boardNumber;
+    @Column(length = 36)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
+    @Column(nullable = false, length = 50)
     private String userId;
+
     private String userNickname;
     private String title;
     private String content;
     private String userStyle;
     private String mainImageUrl;
-    private LocalDateTime regDate;
-    private Long viewCount;
-    private Integer likeCount;
-    private Integer dislikeCount;
-    private boolean deleted;
+
+    @Builder.Default
+    private LocalDateTime regDate = LocalDateTime.now();
+
+    @Builder.Default
+    private Long viewCount = 0L;
+
+    @Builder.Default
+    private Integer likeCount = 0;
+
+    @Builder.Default
+    private Integer dislikeCount = 0; // 기본값 설정
+
+    @Builder.Default
+    private boolean deleted = false;
 
 }

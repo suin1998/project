@@ -29,17 +29,12 @@ public class MainController {
 
     @GetMapping("/community")
     public String communityList() {
-        return "community/usercommunity";
+        return "community/userCommunity";
     }
 
     @GetMapping("/AICoordinator")
     public String aiCoordinator() {
         return "Ai/AICoordinator";
-    }
-
-    @GetMapping("/MyPage")
-    public String myPage() {
-        return "user/myPage";
     }
 
 }

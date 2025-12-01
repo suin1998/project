@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface BoardRepository extends JpaRepository<Board, Long> {
+public interface BoardRepository extends JpaRepository<Board, String> {
 
     Page<Board> findAllByDeletedFalse(Pageable pageable);
 
@@ -17,5 +17,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     List<Board> findByUserIdAndDeletedFalse(String userId);
 
-    Optional<Board> findByBoardNumberAndDeletedFalse(Long boardNumber);
+    Optional<Board> findByIdAndDeletedFalse(String id);
 }

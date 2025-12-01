@@ -19,15 +19,15 @@ public class WeatherResponseDto {
         private Double sky;
         private Double precipitationType;
         private Double rainProbability;
-        private Integer tempMin;
-        private Integer tempMax;
+        private Double tempMin;
+        private Double tempMax;
     }
 
     @Data
     @AllArgsConstructor
     public static class MidTermWeather {
         private Double rainProbability;
-        private Integer tempMin;
-        private Integer tempMax;
+        private Double tempMin;
+        private Double tempMax;
     }
 }

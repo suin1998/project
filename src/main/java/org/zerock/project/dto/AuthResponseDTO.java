@@ -29,7 +29,7 @@ public class AuthResponseDTO {
     @AllArgsConstructor
     @Builder
     public static class UserInfo {
-        private Long id;
+        private String id;
         private String username;
         private String email;
         private String nickname;

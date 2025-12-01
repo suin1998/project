@@ -16,7 +16,7 @@
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
             </div>
-            <a href="/mycloset">My Closet</a>
+            <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
         </div>
     </nav>
 </header>
@@ -36,7 +36,7 @@
             <h2>My Closet</h2>
             <p>사진을 찍어 올려서 내가 가진 옷을 정리할 수 있어요.</p>
             <div class="btn">
-                <button>My Closet</button>
+                <button id="MyPageButton">My Closet</button>
             </div>
         </div>
         <div class="card">
@@ -44,7 +44,7 @@
             <h2>AI Coordinator</h2>
             <p>AI에게 코디를 물어볼 수 있어요.</p>
             <div class="btn">
-                <button>AI Coordinator</button>
+                <button id="AICoordinatorButton">AI Coordinator</button>
             </div>
         </div>
         <div class="card">
@@ -60,12 +60,49 @@
 </body>
 
 <script>
+    const accessToken = localStorage.getItem('accessToken');
+    const authButtons = document.getElementById('authButtons');
+    const logoutButtons = document.getElementById('logoutButtons');
 
+    function redirectToMyCloset() {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            // 토큰이 없으면 로그인 페이지로 안내
+            alert('My Closet은 로그인 후 이용 가능합니다.');
+            window.location.href = '/login';
+        } else {
+            // 토큰이 있으면 MyPage로 이동 시도
+            window.location.href = '/MyPage';
+        }
+    }
+
+    // AI Coordinator 버튼 클릭 시 /AICoordinator 경로로 이동합니다.
+    function redirectToAICoordinator() {
+        window.location.href = '/AICoordinator';
+    }
+
+    // Community 버튼 클릭 시 /community 경로로 이동합니다.
     function redirectToCommunity() {
-        // 커뮤니티 페이지를 렌더링하는 서버 경로로 수정해주세요.
-        // 예를 들어, /community로 매핑된 컨트롤러가 community.html 템플릿을 보여줍니다.
         window.location.href = '/community';
     }
+
+    function redirectToAICoordinator() {
+        if(!accessToken) {
+            window.location.href = '/login';
+        } else {
+        window.location.href ='/AICoordinator';
+        }
+    }
+
+    function redirectToMyPage() {
+        if(!accessToken) {
+            window.location.href = '/login';
+        } else {
+            window.location.href = '/MyPage';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
         updateAuthButtons();
@@ -76,18 +113,38 @@
             logoutLink.addEventListener('click', handleLogout);
         }
 
+        // 3. My Closet 버튼 이벤트 연결 (수정 및 정리된 부분)
+        const myClosetButton = document.getElementById('myClosetButton');
+        if (myClosetButton) {
+            myClosetButton.addEventListener('click', redirectToMyCloset);
+        }
+
+        // 4. AI Coordinator 버튼 이벤트 연결
+        const aiCoordinatorButton = document.getElementById('aiCoordinatorButton');
+        if (aiCoordinatorButton) {
+            aiCoordinatorButton.addEventListener('click', redirectToAICoordinator);
+        }
+
+        // 5. Community 버튼 이벤트 연결
         const communityButton = document.getElementById('communityButton');
         if (communityButton) {
             communityButton.addEventListener('click', redirectToCommunity);
+        }
+
+        const AICoordinatorButton = document.getElementById('AICoordinatorButton');
+        if(AICoordinatorButton) {
+            AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
+        }
+
+        const MyPageButton = document.getElementById('MyPageButton');
+        if(MyPageButton) {
+            MyPageButton.addEventListener('click', redirectToMyPage);
         }
     });
 
     // ========== 인증 상태에 따라 버튼을 업데이트하는 핵심 함수 ==========
     function updateAuthButtons() {
-        // localStorage에서 JWT 토큰 존재 여부 확인
-        const accessToken = localStorage.getItem('accessToken');
-        const authButtons = document.getElementById('authButtons');
-        const logoutButtons = document.getElementById('logoutButtons');
+        // 토큰 밖에 빼뒀습니다. 사유 - AI코디네이터 페이지와 마이 클로젯 페이지 이동 시 로그인 여부 확인
 
         if (accessToken) {
             // 토큰이 존재하면 (로그인 상태)
@@ -114,8 +171,20 @@
         alert('로그아웃되었습니다.');
 
         // 3. (선택) 메인 페이지 새로고침
-        // window.location.reload();
+        window.location.reload();
     }
+
+    // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
+    function checkLogin() {
+        if(!accessToken) {
+            window.location.href = '/login';
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
 </script>
 
 </html>
