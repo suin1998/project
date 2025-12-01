@@ -279,7 +279,6 @@ header nav a {
 
 .weather-display {
     padding: 15px;
-    margin-bottom: 20px;
     border-radius: 8px;
     background-color: #f9f9f9;
     min-height: 80px;
@@ -289,8 +288,6 @@ header nav a {
     text-align: center;
     transition: all 0.3s ease;
     font-size: 16px;
-    word-break: keep-all;
-    white-space: pre-line;
 }
 .check-group {
     text-align: center;
