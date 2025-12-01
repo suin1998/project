@@ -203,7 +203,7 @@
         const weatherDisplay = document.getElementById("weatherDisplay");
 
         // (선택한 지역과 날짜의 값, 현재는 값이 없으나 선택 후 값이 생김)
-        let selectedRegion = null;
+        let selectedRegion = { siDo: null, siGunGu: null, dong: null };
         let selectedDate = null;
 
         let savedRegion = null;
@@ -246,7 +246,7 @@
 
                 // 드롭다운 닫고 텍스트 위로 값이 나오게 하기
                 onChange: function (selectedDates, dateStr, instance) {
-                    selectedDate = `${dateStr}`;
+                    selectedDate = dateStr;
                     dateBtn.textContent = selectedDate;
                     calendarPanel.style.display = "none";
 
@@ -338,8 +338,12 @@
 
         // 드롭다운 닫고 텍스트 위로 값이 나오게 하기(지역 값)
         dongSelect.addEventListener("change", () => {
-            selectedRegion = `${sidoSelect.value} ${sigunguSelect.value} ${dongSelect.value}`;
-            regionBtn.textContent = selectedRegion;
+            selectedRegion = {
+                siDo: sidoSelect.value,
+                siGunGu: sigunguSelect.value,
+                dong: dongSelect.value
+            }
+            regionBtn.textContent = `${selectedRegion.siDo} ${selectedRegion.siGunGu} ${selectedRegion.dong}`;
 
             regionDropdown.style.display = "none";
             togglecheckgroupbtn();
@@ -354,21 +358,90 @@
             }
         }
 
+        const API_URL = '/AI/weather';
+
+        function displayWeatherResult(data) {
+            let html = `<p><strong>📍 ${data.targetDate} (${selectedRegion.siDo} ${selectedRegion.siGunGu} ${selectedRegion.dong})</strong></p>`;
+
+            if (data.shortTerm) {
+                const s = data.shortTerm;
+                html += `
+            <div class="weather-forecast short-term">
+                <p>최저 기온: ${s.tMin}°C</p>
+                <p>최고 기온: ${s.tMax}°C</p>
+                <p>강수 확률 (POP): ${s.rainProb}%</p>
+            </div>
+        `;
+            } else if (data.midTerm) {
+                const m = data.midTerm;
+                html += `
+            <div class="weather-forecast mid-term">
+                <p>최저 기온: ${m.tMin}°C</p>
+                <p>최고 기온: ${m.tMax}°C</p>
+                <p>강수 확률: ${m.rainProb}%</p>
+                </div>
+        `;
+            } else {
+                html += '<p>해당 날짜에 유효한 날씨 데이터가 없습니다.</p>';
+            }
+
+            weatherDisplay.innerHTML = html;
+        }
+
+        async function fetchWeather() {
+            // if (!isWeatherQueryReady()) return;
+            // let dateToFormat = new Date(selectedDate.replace(/(\d{4})년 (\d{1,2})월 (\d{1,2})일/, '$1-$2-$3'));
+            let formattedDate = '';
+
+            const dateRegex = /(\d{4})년 (\d{1,2})월 (\d{1,2})일/;
+            const match = selectedDate.match(dateRegex);
+
+            if (match) {
+                // match[1]=YYYY, match[2]=M(M), match[3]=D(D)
+                const yyyy = match[1];
+                // 월(MM)과 일(DD)을 2자리로 패딩 (예: 1월 -> 01)
+                const mm = String(match[2]).padStart(2, '0');
+                const dd = String(match[3]).padStart(2, '0');
+
+                formattedDate = `${yyyy}-${mm}-${dd}`; // 최종 형식: "2025-12-01"
+            } else {
+                // 날짜 파싱 실패 시 에러 처리 또는 기본값 설정 (선택 사항)
+                console.error("날짜 파싱 실패: 예상 형식과 다릅니다.", selectedDate);
+                $weatherDisplay.innerHTML = '<p class="error">날짜 형식 변환에 실패했습니다.</p>';
+                return;
+            }
+            // 1. 요청 URL 구성
+            const params = new URLSearchParams({
+                siDo: selectedRegion.siDo,
+                siGunGu: selectedRegion.siGunGu,
+                dong: selectedRegion.dong,
+                inputDate: formattedDate
+            });
+
+            const fullUrl = `${API_URL}?${params.toString()}`;
+            weatherDisplay.innerHTML = '<p>날씨 정보 조회 중...</p>';
+
+            try {
+                const response = await fetch(fullUrl);
+                const data = await response.json();
+
+                if (response.ok) {
+                    // 200 OK
+                    displayWeatherResult(data);
+                } else {
+                    // 4xx, 5xx 에러 처리
+                    weatherDisplay.innerHTML = `<p class="error">조회 실패: ${data.message || 'API 호출에 실패했습니다.'}</p>`;
+                    console.error('API Error Response:', data);
+                }
+            } catch (error) {
+                weatherDisplay.innerHTML = `<p class="error">네트워크 오류 또는 JSON 파싱 오류</p>`;
+                console.error('Fetch Error:', error);
+            }
+        }
+
         // 지역 값과 날씨 값 저장 및 출력
-        // checkBtn.addEventListener("click", () => {
-        //     savedRegion = selectedRegion;
-        //     savedDate = selectedDate;
-        //
-        //     const weatherDisplayhtml =
-        //         `${savedRegion}에
-        //         ${savedDate} 날씨는
-        //         (나중에 날씨와 온도, 강수량으로 나옵니다.) 입니다.`;
-        //
-        //     weatherDisplay.textContent = weatherDisplayhtml;
-        //
-        //     checkGroup.style.display = "none";
-        //
-        // })
+        checkBtn.addEventListener("click", fetchWeather);
+
 
 
         /* ===============================

@@ -32,6 +32,9 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
+
+
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -76,7 +79,10 @@ public class SecurityConfig {
                         "/image/**",
                         "/images/**",
                         "/static/**",
-                        "/AI"
+                        "/AI",
+                        "/AI/weather",
+                        "/sub_file/**"
+
                 ).permitAll()
 
                 // 2️⃣ 인증 없이 접근 가능한 API
