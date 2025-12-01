@@ -1,6 +1,7 @@
 package org.zerock.project.entity;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public enum Category {
@@ -25,7 +26,13 @@ public enum Category {
 
     // 전체 카테고리를 리스트로 반환
     public static List<Category> getAll() {
-        return Arrays.asList(values());
+        return List.of(values()); // 불변 리스트 반환
+    }
+
+    public static List<String> getAllLabels() {
+        return Arrays.stream(values())
+                .map(Category::getLabel)
+                .toList();
     }
 
     // 라벨 → enum 변환
