@@ -61,13 +61,13 @@ header nav a {
     align-items: center;
 }
 
-.calendar-herder {
+.calendar-header {
   display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.calendar-herder button {
+.calendar-header button {
     padding: 5px 10px;
     border: none;
     background: #777777;

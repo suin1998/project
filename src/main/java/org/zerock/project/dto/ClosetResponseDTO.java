@@ -14,8 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClosetResponseDTO {
-    private Long id;
-    private Long userId;
+    private String id;
+    private String userId;
     private Category category;
     private String imageUrl;
     private String color;
@@ -24,3 +24,4 @@ public class ClosetResponseDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
+

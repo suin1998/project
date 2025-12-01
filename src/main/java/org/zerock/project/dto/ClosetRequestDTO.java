@@ -1,5 +1,7 @@
 package org.zerock.project.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,10 +15,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClosetRequestDTO {
-    private Long userId;
+
+    @NotNull
+    private String userId;
+
+    @NotNull
     private Category category;
+
+    @NotBlank
     private String imageUrl;
+
     private String color;
     private String brand;
+
     private List<String> tags;
 }
+
