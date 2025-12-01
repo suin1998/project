@@ -7,9 +7,9 @@ import org.zerock.project.entity.Board;
 
 public interface BoardService {
 
-    Long register(BoardDTO dto);
+    String register(BoardDTO dto);
 
-    BoardDTO get(Long boardNumber);
+    BoardDTO get(String id);
 
     void modify(BoardDTO dto);
 
@@ -19,7 +19,7 @@ public interface BoardService {
 
     Board dtoToEntity(BoardDTO dto);
 
-    void remove(Long boardNumber);
+    void remove(String id);
 
     PageResponseDTO<BoardDTO, Board> getList(PageRequestDTO pageRequestDTO);
 }

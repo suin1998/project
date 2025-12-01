@@ -9,10 +9,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 
 public class BoardDTO {
 
-    private Long boardNumber;
+    private String id;
     private String userId;
     private String userNickname;
     private String title;

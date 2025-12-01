@@ -17,10 +17,15 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/js/**")
                 .addResourceLocations("classpath:/static/js/");
-      
+
+        registry.addResourceHandler("/sub_file/**")
+                .addResourceLocations("classpath:/static/xlsx/");
+
+        registry.addResourceHandler("/xlsx/**")
+                .addResourceLocations("classpath:/sub_file/**");
+
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:C:/project/uploads/");
-  
     }
   
   

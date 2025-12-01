@@ -100,7 +100,7 @@ public class AuthController {
      * 회원 탈퇴
      */
     @DeleteMapping("/user/{userId}")
-    public ResponseEntity<Map<String, String>> deleteUser(@PathVariable Long userId) {
+    public ResponseEntity<Map<String, String>> deleteUser(@PathVariable String userId) {
 
         log.info("=== User Deletion Request ===");
         userService.deleteUser(userId);

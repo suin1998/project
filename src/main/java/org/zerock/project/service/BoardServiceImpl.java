@@ -12,7 +12,9 @@ import org.zerock.project.dto.BoardDTO;
 import org.zerock.project.dto.PageRequestDTO;
 import org.zerock.project.dto.PageResponseDTO;
 import org.zerock.project.entity.Board;
+import org.zerock.project.entity.User;
 import org.zerock.project.repository.BoardRepository;
+import org.zerock.project.repository.UserRepository;
 
 import java.time.LocalDateTime;
 
@@ -25,16 +27,18 @@ import java.util.function.Function;
 public class BoardServiceImpl implements BoardService{
 
     private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Board dtoToEntity(BoardDTO dto) {
+
         return Board.builder()
-                .boardNumber(dto.getBoardNumber())
                 .userId(dto.getUserId())
                 .userNickname(dto.getUserNickname())
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .userStyle(dto.getUserStyle())
+                .mainImageUrl(dto.getMainImageUrl())
                 .regDate(dto.getRegDate())
                 .viewCount(dto.getViewCount())
                 .likeCount(dto.getLikeCount())
@@ -47,7 +51,7 @@ public class BoardServiceImpl implements BoardService{
     public BoardDTO entityToDto(Board entity) {
 
         BoardDTO dto = new BoardDTO(
-                entity.getBoardNumber(),
+                entity.getId(),
                 entity.getUserId(),
                 entity.getUserNickname(),
                 entity.getTitle(),
@@ -65,7 +69,7 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public Long register(BoardDTO dto) {
+    public String register(BoardDTO dto) {
         Board entity = Board.builder()
                 .userId(dto.getUserId())
                 .userNickname(dto.getUserNickname())
@@ -81,23 +85,23 @@ public class BoardServiceImpl implements BoardService{
 
         boardRepository.save(entity);
 
-        return entity.getBoardNumber();
+        return entity.getId();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public BoardDTO get(Long boardNumber) {
-        Optional<Board> result = boardRepository.findByBoardNumberAndDeletedFalse(boardNumber);
+    public BoardDTO get(String id) {
+        Optional<Board> result = boardRepository.findByIdAndDeletedFalse(id);
 
         return result.map(this::entityToDto)
-                .orElseThrow(() -> new EntityNotFoundException("해당 게시물(번호: " + boardNumber + ")을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("해당 게시물(ID: " + id + ")을 찾을 수 없습니다."));
     }
 
     @Override
     @Transactional
     public void modify(BoardDTO dto) {
-        Board entity = boardRepository.findById(dto.getBoardNumber()).orElseThrow(() -> new EntityNotFoundException
-                ("수정할 게시물(번호 :" + dto.getBoardNumber() + ")을 찾을 수 없습니다."));
+        Board entity = boardRepository.findById(dto.getId()).orElseThrow(() -> new EntityNotFoundException
+                ("수정할 게시물(ID :" + dto.getId() + ")을 찾을 수 없습니다."));
 
         entity.setTitle(dto.getTitle());
         entity.setContent(dto.getContent());
@@ -107,8 +111,8 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     @Transactional
-    public void remove(Long boardNumber) {
-        Board entity = boardRepository.findById(boardNumber)
+    public void remove(String id) {
+        Board entity = boardRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("삭제할 게시물을 찾을 수 없습니다."));
 
         entity.setDeleted(true);
@@ -117,9 +121,9 @@ public class BoardServiceImpl implements BoardService{
     @Override
     @Transactional(readOnly = true)
     public PageResponseDTO<BoardDTO, Board> getList(PageRequestDTO pageRequestDTO) {
-       Pageable pageable = pageRequestDTO.getPageable(Sort.by("boardNumber").descending());
-       Page<Board> result = boardRepository.findAllByDeletedFalse(pageable);
-       Function<Board, BoardDTO> fn = this::entityToDto;
-       return new PageResponseDTO<>(result, fn);
+        Pageable pageable = pageRequestDTO.getPageable(Sort.by("regDate").descending());
+        Page<Board> result = boardRepository.findAllByDeletedFalse(pageable);
+        Function<Board, BoardDTO> fn = this::entityToDto;
+        return new PageResponseDTO<>(result, fn);
     }
 }

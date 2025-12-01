@@ -22,11 +22,11 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping
-    public ResponseEntity<Long> registerBoard(@RequestBody BoardDTO boardDTO) {
+    public ResponseEntity<String> registerBoard(@RequestBody BoardDTO boardDTO) {
 
-        Long boardNumber = boardService.register(boardDTO);
+        String id = boardService.register(boardDTO);
 
-        return new ResponseEntity<>(boardNumber, HttpStatus.CREATED);
+        return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -38,20 +38,20 @@ public class BoardController {
 
     }
 
-    @GetMapping("/{boardNumber}")
-    public ResponseEntity<BoardDTO> getBoard(@PathVariable Long boardNumber) {
+    @GetMapping("/{id}")
+    public ResponseEntity<BoardDTO> getBoard(@PathVariable String id) {
         try {
-            BoardDTO boardDTO = boardService.get(boardNumber);
+            BoardDTO boardDTO = boardService.get(id);
             return new ResponseEntity<>(boardDTO, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @PutMapping("/{boardNumber}")
-    public ResponseEntity<Void> modifyBoard(@PathVariable Long boardNumber, @RequestBody BoardDTO boardDTO) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> modifyBoard(@PathVariable String id, @RequestBody BoardDTO boardDTO) {
         try {
-            boardDTO.setBoardNumber(boardNumber);
+            boardDTO.setId(id);
             boardService.modify(boardDTO);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
@@ -59,10 +59,10 @@ public class BoardController {
         }
     }
 
-    @DeleteMapping("/{boardNumber}")
-    public ResponseEntity<Void> removeBoard(@PathVariable Long boardNumber) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> removeBoard(@PathVariable String id) {
         try {
-            boardService.remove(boardNumber);
+            boardService.remove(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
