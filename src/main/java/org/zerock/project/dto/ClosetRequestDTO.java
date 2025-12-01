@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ClosetRequestDTO {
 
-    @NotNull
+    @NotBlank
     private String userId;
 
     @NotNull

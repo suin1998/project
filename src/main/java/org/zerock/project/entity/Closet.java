@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(
@@ -25,7 +26,6 @@ public class Closet {
 
     @Id
     @Column(length = 36)
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     // User 엔티티와 정식 연관관계 설정
@@ -58,4 +58,12 @@ public class Closet {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    // ------------------ UUID 자동 생성 ------------------
+    @PrePersist
+    public void prePersist() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID().toString();
+        }
+    }
 }
