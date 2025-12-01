@@ -117,8 +117,8 @@ public class WeatherService {
         double sumSky = 0;
         double sumPty = 0;
         double sumRainProb = 0;
-        int tMin = 0;
-        int tMax = 0;
+        double tMin = 0;
+        double tMax = 0;
 
         double count = 0;
         double sky = 0;
@@ -143,10 +143,10 @@ public class WeatherService {
                     count++;
                     break;
                 case "TMN":
-                    tMin = obj.getInt("fcstValue");
+                    tMin = obj.getDouble("fcstValue");
                     break;
                 case "TMX":
-                    tMax = obj.getInt("fcstValue");
+                    tMax = obj.getDouble("fcstValue");
                     break;
             }
             sky = Math.round(sumRainProb/count);
@@ -227,12 +227,12 @@ public class WeatherService {
         JSONObject temp_items = body.getJSONObject("items");
         JSONArray temp_itemArrays = items.getJSONArray("item");
 
-        int tMin = 0;
-        int tMax = 0;
+        double tMin = 0;
+        double tMax = 0;
 
         JSONObject forcast = temp_itemArrays.getJSONObject(0);
-        tMin = forcast.getInt("taMin"+dayDiff);
-        tMax = forcast.getInt("taMax"+dayDiff);
+        tMin = forcast.getDouble("taMin"+dayDiff);
+        tMax = forcast.getDouble("taMax"+dayDiff);
 
         log.info(new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax));
         return new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax);
