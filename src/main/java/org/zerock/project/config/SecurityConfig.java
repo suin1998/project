@@ -77,7 +77,7 @@ public class SecurityConfig {
                         // 정적 리소스
                         "/css/**", "/js/**", "/img/**", "/image/**", "/images/**", "/static/**", "/sub_file/**",
                         // 공개 API 및 페이지
-                        "/", "/main", "/home", "/login", "/join", "/community", "/AICoordinator", "/AI", "/search/tags",
+                        "/", "/main", "/home", "/login", "/join", "/community", "/AICoordinator", "/AI", "/AI/weather","/search/tags",
                         "/auth/signup", "/auth/login", "/auth/health", "/auth/**" // auth 하위 모든 경로는 허용
                 ).permitAll()
 
