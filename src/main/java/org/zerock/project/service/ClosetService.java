@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +41,7 @@ public class ClosetService {
         }
 
         Closet closet = Closet.builder()
-                .id(dto.getUserId())
+                .id(UUID.randomUUID().toString()) // 직접 생성
                 .user(user)
                 .category(dto.getCategory())
                 .imageUrl(dto.getImageUrl() != null ? dto.getImageUrl() : imageUrl)
@@ -116,7 +117,7 @@ public class ClosetService {
     private ClosetResponseDTO toDTO(Closet closet) {
         return ClosetResponseDTO.builder()
                 .id(closet.getId())
-                .userId(closet.getUser().getUserId())
+                .userId(closet.getUser().getId())
                 .category(closet.getCategory())
                 .imageUrl(closet.getImageUrl())
                 .color(closet.getColor())

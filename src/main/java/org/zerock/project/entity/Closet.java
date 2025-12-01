@@ -24,7 +24,8 @@ import java.util.List;
 public class Closet {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(length = 36)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     // User 엔티티와 정식 연관관계 설정

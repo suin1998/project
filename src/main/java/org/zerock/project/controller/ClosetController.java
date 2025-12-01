@@ -8,8 +8,9 @@ import org.zerock.project.dto.ClosetResponseDTO;
 import org.zerock.project.service.ClosetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.zerock.project.service.UserService;
 
-import java.security.Principal; // 🔑 추가
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class ClosetController {
     public ResponseEntity<ClosetResponseDTO> uploadClothes(
             @RequestPart("data") ClosetRequestDTO dto,
             @RequestPart(value = "image", required = false) MultipartFile image,
-            Principal principal // 🔑 로그인 사용자 정보
+            Principal principal // 로그인 사용자 정보
     ) {
         String userId = principal.getName(); // 로그인된 userId
         dto.setUserId(userId); // DTO에 userId 세팅
