@@ -32,8 +32,8 @@ public class WeatherService {
     private String serviceKey;
 
     private static final String short_api_url = "https://apihub.kma.go.kr/api/typ02/openApi/VilageFcstInfoService_2.0/getVilageFcst";
-    private static final String mid_temp_api_url = "https://apihub.kma.go.kr/api/typ02/openApi/MidFcstInfoService/getMidTa?";
-    private static final String mid_sky_api_url = "https://apihub.kma.go.kr/api/typ02/openApi/MidFcstInfoService/getMidLandFcst?";
+    private static final String mid_temp_api_url = "https://apihub.kma.go.kr/api/typ02/openApi/MidFcstInfoService/getMidTa";
+    private static final String mid_sky_api_url = "https://apihub.kma.go.kr/api/typ02/openApi/MidFcstInfoService/getMidLandFcst";
 
 
     private final GridService gridService;
@@ -149,9 +149,9 @@ public class WeatherService {
                     tMax = obj.getDouble("fcstValue");
                     break;
             }
-            sky = Math.round(sumRainProb/count);
+            sky = Math.round(sumSky/count);
             pty = Math.round(sumPty/count);
-            rainProb = Math.round(sumSky/count);
+            rainProb = Math.round(sumRainProb/count);
 
         }
         log.info(new WeatherResponseDto.ShortTermWeather(sky, pty, rainProb, tMin, tMax));
@@ -230,9 +230,11 @@ public class WeatherService {
         double tMin = 0;
         double tMax = 0;
 
+        String tMinkey = "taMin" + dayDiff;
+        String tMaxkey = "taMax" + dayDiff;
         JSONObject forcast = temp_itemArrays.getJSONObject(0);
-        tMin = forcast.getDouble("taMin"+dayDiff);
-        tMax = forcast.getDouble("taMax"+dayDiff);
+        tMin = forcast.getDouble(tMinkey);
+        tMax = forcast.getDouble(tMaxkey);
 
         log.info(new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax));
         return new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax);
