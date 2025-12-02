@@ -16,8 +16,6 @@ public class WeatherResponseDto {
     @Data
     @AllArgsConstructor
     public static class ShortTermWeather{
-        private Double sky;
-        private Double precipitationType;
         private Double rainProbability;
         private Double tempMin;
         private Double tempMax;

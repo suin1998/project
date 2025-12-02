@@ -19,6 +19,8 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 
@@ -114,15 +116,11 @@ public class WeatherService {
         JSONArray itemArrays = items.getJSONArray("item");
         String targetDateStr =  targetDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        double sumSky = 0;
-        double sumPty = 0;
-        double sumRainProb = 0;
+        ArrayList<Double> rainList = new ArrayList<>();
         double tMin = 0;
         double tMax = 0;
 
-        double count = 0;
-        double sky = 0;
-        double pty = 0 ;
+
         double rainProb = 0;
 
         for(int i = 0; i < itemArrays.length(); i++){
@@ -132,15 +130,8 @@ public class WeatherService {
                 continue;
             }
             switch (obj.getString("category")) {
-                case "SKY":
-                    sumSky += obj.getDouble("fcstValue");
-                    break;
-                case "PTY":
-                    sumPty += obj.getDouble("fcstValue");
-                    break;
                 case "POP":
-                    sumRainProb += obj.getDouble("fcstValue");
-                    count++;
+                    rainList.add(obj.getDouble("fcstValue"));
                     break;
                 case "TMN":
                     tMin = obj.getDouble("fcstValue");
@@ -149,13 +140,11 @@ public class WeatherService {
                     tMax = obj.getDouble("fcstValue");
                     break;
             }
-            sky = Math.round(sumSky/count);
-            pty = Math.round(sumPty/count);
-            rainProb = Math.round(sumRainProb/count);
 
         }
-        log.info(new WeatherResponseDto.ShortTermWeather(sky, pty, rainProb, tMin, tMax));
-        return new WeatherResponseDto.ShortTermWeather(sky, pty, rainProb, tMin, tMax);
+        rainProb = Collections.max(rainList);
+        log.info(new WeatherResponseDto.ShortTermWeather(rainProb, tMin, tMax));
+        return new WeatherResponseDto.ShortTermWeather(rainProb, tMin, tMax);
 
     }
 
@@ -163,6 +152,8 @@ public class WeatherService {
     private WeatherResponseDto.MidTermWeather getMidTermForecast(String regionCode, LocalDate targetDate) {
         int dayDiff = (int) ChronoUnit.DAYS.between(LocalDate.now(), targetDate);
 
+
+//        log.info(dayDiff);
         if (dayDiff < 4 || dayDiff > 10) throw new IllegalArgumentException("중기예보는 D+4~D+10일만 제공됩니다.");
 
         String baseDate =  LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -184,7 +175,7 @@ public class WeatherService {
         JSONArray itemArrays = items.getJSONArray("item");
 
         double rainProb = 0;
-        double sumRainProb = 0;
+        ArrayList<Double> sumRainList = new ArrayList<>();
 
         JSONObject obj = itemArrays.getJSONObject(0);
 
@@ -196,7 +187,7 @@ public class WeatherService {
             if(key.contains(searchPattern)){
                 try{
                     if (dayDiff >= 4 || dayDiff <= 7){
-                        sumRainProb += obj.getDouble(key);
+                        sumRainList.add(obj.getDouble(key));
                     }else {
                         rainProb = obj.getDouble(key);
                     }
@@ -209,9 +200,10 @@ public class WeatherService {
 
         }
         if (dayDiff >= 4 || dayDiff <= 7) {
-            rainProb = Math.round(sumRainProb / 2);
+            rainProb = Collections.max(sumRainList);
         }
 
+//        log.info(rainProb);
         String tempUrl = mid_temp_api_url + "?"
                 +"authKey="+serviceKey
                 +"&dataType=JSON"
@@ -220,21 +212,21 @@ public class WeatherService {
                 +"&numOfRows=10"
                 +"&tmFc="+baseDate+"0600";
 
-        JSONObject temp = callJson(skyUrl);
+        JSONObject temp = callJson(tempUrl);
 
         JSONObject temp_response = temp.getJSONObject("response");
-        JSONObject temp_body = response.getJSONObject("body");
-        JSONObject temp_items = body.getJSONObject("items");
-        JSONArray temp_itemArrays = items.getJSONArray("item");
+        JSONObject temp_body = temp_response.getJSONObject("body");
+        JSONObject temp_items = temp_body.getJSONObject("items");
+        JSONArray temp_itemArrays = temp_items.getJSONArray("item");
 
         double tMin = 0;
         double tMax = 0;
 
-        String tMinkey = "taMin" + dayDiff;
-        String tMaxkey = "taMax" + dayDiff;
-        JSONObject forcast = temp_itemArrays.getJSONObject(0);
-        tMin = forcast.getDouble(tMinkey);
-        tMax = forcast.getDouble(tMaxkey);
+        String tMinKey = "taMin" + dayDiff;
+        String tMaxKey = "taMax" + dayDiff;
+        JSONObject forCast = temp_itemArrays.getJSONObject(0);
+        tMin = forCast.getDouble(tMinKey);
+        tMax = forCast.getDouble(tMaxKey);
 
         log.info(new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax));
         return new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax);
