@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler { // 모든 종류의 예외 처리
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<Void> handleNoResourceFoundException(NoResourceFoundException ex) {
@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class) // 페이지 검증시 어느부분 오류인지 확인
     public ResponseEntity<ErrorResponseDTO> handleValidationException(
             MethodArgumentNotValidException ex,
             HttpServletRequest request) {
