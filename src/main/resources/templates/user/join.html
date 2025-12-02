@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>회원가입</title>
+    <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
     <link rel="stylesheet" href="/css/join.css">
 </head>
 <body>
@@ -37,20 +38,34 @@
                 <input id="userId" class="user_id" type="text" placeholder="사용할 아이디" minlength="8" required
                        oninput="checkFormValidity()">
                 <p id="idWarning" class="msg" style="display: none">아이디는 최소 4자 이상이어야 합니다.</p>
+                <p id="idGapWarning" class="msg" style="display: none">공백이 포함될 수 없습니다.</p>
 
                 <label for="nickname">닉네임</label>
                 <input id="nickname" class="user_nickname" type="text" placeholder="닉네임" required
                        oninput="checkFormValidity()">
                 <p id="nameWarning" class="msg" style="display: none">닉네임은 최소 4자 이상이어야 합니다.</p>
+                <p id="nameGapWarning" class="msg" style="display: none">공백이 포함될 수 없습니다.</p>
 
                 <label for="password1">비밀번호</label>
-                <input id="password1" class="password" type="password" placeholder="비밀번호(8자이상)" required
-                       minlength="8" oninput="checkFormValidity()">
+                <div class="password-check">
+                    <input id="password1" class="password" type="password" placeholder="비밀번호(8자이상)" required
+                           minlength="8" oninput="checkFormValidity()">
+                    <button type="button" id="passwordCheckBtn" class="passwordBtn">
+                        <i id="passwordIcon" class="far fa-eye"></i>
+                    </button>
+                </div>
                 <p id="passwordMatchError2" class="msg" style="display: none;">비밀번호는 영어와 숫자를 모두 포함해야 합니다.</p>
+                <p id="passwordMatchError3" class="msg" style="display: none;">비밀번호에는 한글을 포함할 수 없습니다.</p>
+                <p id="passwordGapWarning" class="msg" style="display: none">공백이 포함될 수 없습니다.</p>
 
                 <label for="password2">비밀번호 확인</label>
-                <input id="password2" class="password" type="password" placeholder="비밀번호 재확인" required
-                       minlength="8" oninput="checkFormValidity()">
+                <div class="password-check">
+                    <input id="password2" class="password" type="password" placeholder="비밀번호 재확인" required
+                           minlength="8" oninput="checkFormValidity()">
+                    <button type="button" id="passwordCheckBtn2" class="passwordBtn">
+                        <i id="passwordIcon2" class="far fa-eye"></i>
+                    </button>
+                </div>
                 <p id="passwordMatchError" class="msg" style="display: none;">비밀번호가 일치하지 않습니다.</p>
 
                 <div class="birthForm">
@@ -91,8 +106,13 @@
     let isEmailVerified = false;
     let verificationCode = '';
 
+    // 딜레이를 줄이기 위한 저장할 변수들
+    // let email, userId, nickname, password1, password2, birthYear, birthMonth, birthDay, gender, submitButton;
+
+    const password = document.getElementById('password1').value;
+
     // ========== 페이지 로드 시 초기화 ==========
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         initializeDateSelects();
         attachEventListeners();
     });
@@ -205,7 +225,7 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email: email })
+                body: JSON.stringify({email: email})
             });
 
             const data = await response.json();
@@ -282,16 +302,36 @@
 
     // ============ 비밀번호 영어+숫자 필수, 영어와 숫자만 넣기(한글x) ============
     function validatePasswordFormat() {
-        const password =document.getElementById('password1').value;
+        const password = document.getElementById('password1').value;
         const MatchErrorMsg = document.getElementById('passwordMatchError2');
+        const koreaErrorMsg = document.getElementById('passwordMatchError3');
+        const passwordGapWarning = document.getElementById('passwordGapWarning');
 
         const formatRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/;
+        const koreanRegex = /[가-힣ㄱ-ㅎㅏ-ㅣ]/;
+        const gap = /\s/;
 
-        if (password.length > 0 && !formatRegex.test(password)) {
-            MatchErrorMsg.style.display = 'block';
+        let isTure = true;
+
+        if (password.length > 0 && gap.test(password)) {
+            passwordGapWarning.style.display = "block";
+            isTure = false;
+        }
+        if (password.length > 0 && koreanRegex.test(password)) {
+            koreaErrorMsg.style.display = "block";
+            isTure = false;
+        }
+        if(!isTure) {
             return false;
-        } else {
-            MatchErrorMsg.style.display = 'none';
+        }
+        if (password.length > 0 && !formatRegex.test(password)) {
+            MatchErrorMsg.style.display = "block";
+            return false;
+        }
+        else {
+            MatchErrorMsg.style.display = "none";
+            koreaErrorMsg.style.display = "none";
+            passwordGapWarning.style.display = "none";
             return true;
         }
     }
@@ -300,35 +340,51 @@
     function checkId() {
         const userid = document.getElementById("userId").value;
         const idWarning = document.getElementById("idWarning");
+        const idGapWarning = document.getElementById('idGapWarning');
 
-            if(userid.length > 0 && userid.length < 4) {
-                idWarning.style.display = "block";
-                return false;
-            } else {
-                idWarning.style.display = "none";
-                return true;
-            }
+        const gap = /\s/;
+
+        if (userid.length > 0 && userid.length < 4) {
+            idWarning.style.display = "block";
+            return false;
+        }
+        if (gap.test(userid)) {
+            idGapWarning.style.display = "block";
+            return false;
+        } else {
+            idWarning.style.display = "none";
+            idGapWarning.style.display = "none";
+            return true;
+        }
     }
 
     // ============ 닉네임 글자 수 확인 ============
     function checkNickname() {
         const nickname = document.getElementById('nickname').value;
         const nameWarning = document.getElementById('nameWarning');
+        const nameGapWarning = document.getElementById('nameGapWarning');
 
-            if(nickname.length > 0 && nickname.length < 4) {
-                nameWarning.style.display = "block";
-                return false;
-            } else {
-                nameWarning.style.display = "none";
-                return true;
-            }
+        const gap = /\s/;
+
+        if (nickname.length > 0 && nickname.length < 4) {
+            nameWarning.style.display = "block";
+            return false;
+        }
+        if (gap.test(nickname)) {
+            nameGapWarning.style.display = "block";
+            return false;
+        } else {
+            nameWarning.style.display = "none";
+            nameGapWarning.style.display = "none";
+            return true;
+        }
     }
 
     // ========== 폼 유효성 검사 ==========
     function checkFormValidity() {
-        const email = document.getElementById('email').value.trim();
-        const userId = document.getElementById('userId').value.trim();
-        const nickname = document.getElementById('nickname').value.trim();
+        const email = document.getElementById('email').value;
+        const userId = document.getElementById('userId').value;
+        const nickname = document.getElementById('nickname').value;
         const password1 = document.getElementById('password1').value;
         const password2 = document.getElementById('password2').value;
         const birthYear = document.getElementById('birthYear').value;
@@ -385,23 +441,10 @@
             return;
         }
 
-        if (!validatePasswordFormat()) {
-            showMessage('비밀번호는 영어와 숫자가 필수로 들어갑니다.', 'error');
-            return;
-        }
-
-        if (!checkId()) {
-            return;
-        }
-
-        if (!checkNickname()) {
-            return;
-        }
-
         // 폼 데이터 수집
-        const email = document.getElementById('email').value.trim();
-        const username = document.getElementById('userId').value.trim();
-        const nickname = document.getElementById('nickname').value.trim();
+        const email = document.getElementById('email').value;
+        const username = document.getElementById('userId').value;
+        const nickname = document.getElementById('nickname').value;
         const password = document.getElementById('password1').value;
         const confirmPassword = document.getElementById('password2').value;
 
@@ -443,7 +486,7 @@
             const data = await response.json();
 
             if (response.ok && data.success) {
-                showMessage('회원가입이 완료되었습니다!', 'success');
+                showMessage('회원가입이 완료되었습니다. 환영합니다!', 'success');
 
                 // 토큰 저장
                 if (data.accessToken) {
@@ -514,6 +557,38 @@
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
     }
+
+    // 비밀번호 보이게 하기 (다시 숨기기도)
+    document.addEventListener('DOMContentLoaded', function () {
+        const password = document.getElementById('password1');
+        const password2 = document.getElementById('password2');
+        const passwordCheck = document.getElementById('passwordCheckBtn');
+        const passwordCheck2 = document.getElementById('passwordCheckBtn2');
+
+        passwordCheck.addEventListener('click', function() {
+            const passwordType = password.getAttribute('type');
+
+            if (passwordType === 'password') {
+                password.setAttribute('type', 'text');
+                document.getElementById("passwordCheckBtn").innerHTML = "<i class=\"far fa-eye-slash\"></i>";
+            } else {
+                password.setAttribute('type', 'password');
+                document.getElementById("passwordCheckBtn").innerHTML = "<i class=\"far fa-eye\"></i>";
+            }
+        });
+
+        passwordCheck2.addEventListener('click', function() {
+            const passwordType2 = password2.getAttribute('type');
+
+            if (passwordType2 === 'password') {
+                password2.setAttribute('type', 'text');
+                document.getElementById("passwordCheckBtn2").innerHTML = "<i class=\"far fa-eye-slash\"></i>";
+            } else {
+                password2.setAttribute('type', 'password');
+                document.getElementById("passwordCheckBtn2").innerHTML = "<i class=\"far fa-eye\"></i>";
+            }
+        });
+    });
 </script>
 
 </html>
