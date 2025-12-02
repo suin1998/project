@@ -7,21 +7,33 @@
 </head>
 <body>
 <header>
-    <div class="logo"></div>
+    <div class="logo">Fit Maker</div>
     <nav>
-        <a href="#" id="logout"></a>
-        <a href="#" id="myPage"></a>
-        <a href="#" id="Main"></a>
+        <div class="headerBtn">
+            <div id="authButtons" style="display: none;"><a href="/login">Login</a>
+                <a href="/join">Join</a></div>
+
+            <div id="logoutButtons" style="display: none;">
+                <a href="/logout" id="logoutLink">Logout</a>
+                <button id="MyPageButton2">My Closet</button>
+            </div>
+<!--            <a href="/MyPage" onclick="return checkLogin()">My Closet</a>-->
+        </div>
     </nav>
 </header>
 
-<div class="layout">
-    <aside class="sidebar">
-        <button>메뉴 1</button>
-        <button>메뉴 2</button>
-        <button>메뉴 3</button>
-        <button>메뉴 4</button>
-    </aside>
+<!--<div class="layout">-->
+<!--    <aside class="sidebar">-->
+<!--        <button id="MainBtn">Main</button>-->
+<!--        <button id="MyPageBtn">My Closet</button>-->
+<!--        <button id="AICoordinatorBtn">AI Coordinator</button>-->
+<!--        <div class="loginButton" style="display: none">-->
+<!--            <button id="loginBtn">로그인</button>-->
+<!--        </div>-->
+<!--        <div class="logoutButton" style="display: none">-->
+<!--            <button id="logoutBtn">로그아웃</button>-->
+<!--        </div>-->
+<!--    </aside>-->
 
     <div class="container">
         <div class="top-bar">
@@ -33,7 +45,7 @@
                 </select>
             </div>
 
-            <button class="newPost-btn" id="newPost">글쓰기</button>
+<!--            <button class="newPost-btn" id="newPost">글쓰기</button>-->
         </div>
         <div id="gallery" class="gallery"></div>
 
@@ -46,6 +58,98 @@
 </div>
 
 <script>
+    // 로그인 / 로그아웃 토큰
+    const accessToken = localStorage.getItem('accessToken');
+    const authButtons = document.getElementById('authButtons');
+    const logoutButtons = document.getElementById('logoutButtons');
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
+        updateAuthButtons();
+
+        // 2. 로그아웃 버튼 클릭 이벤트 연결
+        const logoutLink = document.getElementById('logoutLink');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', handleLogout);
+        }
+
+        // const loginButton = document.getElementById('loginBtn');
+        // if (loginButton) {
+        //     loginButton.addEventListener('click');
+        // }
+        //
+        // const logoutButton = document.getElementById('logoutBtn');
+        // if (logoutButton) {
+        //     logoutButton.addEventListener('click');
+        // }
+        //
+        // const MainButton = document.getElementById('MainBtn');
+        // if (MainButton) {
+        //     MainButton.addEventListener('click', redirectToMain);
+        // }
+        //
+        // const AICoordinatorButton = document.getElementById('AICoordinatorBtn');
+        // if (AICoordinatorButton) {
+        //     AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
+        // }
+        //
+        // const MyPageButton = document.getElementById('MyPageBtn');
+        // if (MyPageButton) {
+        //     MyPageButton.addEventListener('click', redirectToMyPage);
+        // }
+    });
+
+    // ========== 인증 상태에 따라 버튼을 업데이트하는 핵심 함수 ==========
+    function updateAuthButtons() {
+
+        if (accessToken) {
+            // 토큰이 존재하면 (로그인 상태)
+            if (authButtons) authButtons.style.display = 'none';
+            if (logoutButtons) logoutButtons.style.display = 'flex'; // 혹은 block
+        } else {
+            // 토큰이 없으면 (비로그인 상태)
+            if (authButtons) authButtons.style.display = 'flex'; // 혹은 block
+            if (logoutButtons) logoutButtons.style.display = 'none';
+        }
+    }
+
+    // ========== 로그아웃 처리 함수 ==========
+    function handleLogout(event) {
+        event.preventDefault(); // <a> 태그의 기본 동작(페이지 이동) 방지
+
+        // 1. JWT 토큰 제거
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+
+        // 2. 버튼 상태를 비로그인으로 업데이트
+        updateAuthButtons();
+
+        alert('로그아웃되었습니다.');
+
+        // 3. (선택) 메인 페이지 새로고침
+        window.location.reload();
+    }
+
+    // function redirectToMain() {
+    //     window.location.href = '/';
+    // }
+    //
+    // function redirectToAICoordinator() {
+    //     if (!accessToken) {
+    //         window.location.href = '/login';
+    //     } else {
+    //         window.location.href = '/AICoordinator';
+    //     }
+    // }
+    //
+    // function redirectToMyPage() {
+    //     if (!accessToken) {
+    //         window.location.href = '/login';
+    //     } else {
+    //         window.location.href = '/MyPage';
+    //     }
+    // }
+
     // 예시 게시글 데이터
     const sampleData = Array.from({length: 30}).map((_, i) => ({
         id: i + 1,
@@ -55,10 +159,13 @@
         coordi: "여기에 코디 정보가 들어갑니다."
     }));
 
+
+    // 게시글 보이는 페이지 관련
     const gallery = document.getElementById("gallery");
     const pageNumbers = document.getElementById("page-numbers");
+    // 시작 ~ 끝 (총 14개 출력)
     let currentPage = 1;
-    const itemsPerPage = 9;
+    const itemsPerPage = 12;
 
     // 갤러리 출력
     function renderGallery() {

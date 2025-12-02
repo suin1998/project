@@ -36,10 +36,10 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 950px;
+    max-width: 1200px;
     padding: 20px 40px;
     margin: auto;
-    transform: translateX(80px);
+    color: white;
 }
 
 header .logo {
@@ -59,8 +59,17 @@ header nav a {
     display: flex;
 }
 
+#MyPageButton2 {
+    border: none;
+    color: white;
+    font-size: 16px;
+    margin-left: 20px;
+    background: none;
+    transform: translateY(3px);
+}
+
 .container {
-    width: 900px;
+    width: 1200px;
     margin: auto;
     padding: 30px;
     background: white;
@@ -111,7 +120,7 @@ header nav a {
 .gallery {
     margin-top: 25px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 22px;
 }
 
