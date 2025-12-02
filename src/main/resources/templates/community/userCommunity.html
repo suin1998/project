@@ -17,7 +17,7 @@
                 <a href="/logout" id="logoutLink">Logout</a>
                 <button id="MyPageButton2">My Closet</button>
             </div>
-<!--            <a href="/MyPage" onclick="return checkLogin()">My Closet</a>-->
+            <!--            <a href="/MyPage" onclick="return checkLogin()">My Closet</a>-->
         </div>
     </nav>
 </header>
@@ -35,26 +35,43 @@
 <!--        </div>-->
 <!--    </aside>-->
 
-    <div class="container">
-        <div class="top-bar">
-            <div class="filter-bar" id="filter-bar">
-                <select id="filter-list" class="filter-list">
-                    <option value="latest">최신순</option>
-                    <option value="recommend">추천순</option>
-                    <option value="view">조회순</option>
-                </select>
-            </div>
-
-<!--            <button class="newPost-btn" id="newPost">글쓰기</button>-->
+<div class="container">
+    <div class="top-bar">
+        <div class="filter-bar" id="filter-bar">
+            <select id="filter-list" class="filter-list">
+                <option value="latest">최신순</option>
+                <option value="recommend">추천순</option>
+                <option value="view">조회순</option>
+            </select>
         </div>
-        <div id="gallery" class="gallery"></div>
 
-        <div class="pagination">
-            <button class="page-btn" id="prev"> <</button>
-            <div id="page-numbers"></div>
-            <button class="page-btn" id="next"> ></button>
-        </div>
+        <!--            <button class="newPost-btn" id="newPost">글쓰기</button>-->
     </div>
+    <div id="gallery" class="gallery">
+    </div>
+    <template id="gallery-item-template">
+        <div class="gallery-item">
+            <div class="img-box">
+                <img src="" alt="">
+                <div class="overlay" onclick=""></div>
+            </div>
+            <div class="gallery-like">
+                <button type="button" class="like-btn" data-action="like">
+                    👍 <span class="like-count"></span>
+                </button>
+                <button type="button" class="dislike-btn" data-action="dislike">
+                    👎 <span class="dislike-count"></span>
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <div class="pagination">
+        <button class="page-btn" id="prev"> <</button>
+        <div id="page-numbers"></div>
+        <button class="page-btn" id="next"> ></button>
+    </div>
+</div>
 </div>
 
 <script>
@@ -171,21 +188,41 @@
     function renderGallery() {
         gallery.innerHTML = "";
 
+        const template = document.getElementById('gallery-item-template');
+
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
 
         sampleData.slice(start, end).forEach(post => {
-            gallery.innerHTML += `
-            <div class="gallery-item">
-                <div class="img-box">
-                    <img src="${post.img}" alt="">
-                    <div class="overlay" onclick="goDetail(${post.id})">${post.coordi}</div>
-                </div>
-                <div class="gallery-info">
-                    <div class="gallery-like">👍 ${post.like} &nbsp; 👎 ${post.dislike}</div>
-                </div>
-        </div>`;
+            // 템플릿 복사
+            const clone = template.content.cloneNode(true);
+
+            const item = clone.querySelector('.gallery-item');
+            const img = clone.querySelector('img');
+            const overlay = clone.querySelector('.overlay');
+            const like = clone.querySelector('.like-count');
+            const dislike = clone.querySelector('.dislike-count');
+
+            img.src = post.img;
+            overlay.textContent = post.coordi;
+            overlay.setAttribute('onclick', `goDetail(${post.id})`);
+            like.textContent = post.like;
+            dislike.textContent = post.dislike;
+
+            gallery.appendChild(clone);
         });
+        // sampleData.slice(start, end).forEach(post => {
+        //     gallery.innerHTML += `
+        //     <div class="gallery-item">
+        //         <div class="img-box">
+        //             <img src="${post.img}" alt="">
+        //             <div class="overlay" onclick="goDetail(${post.id})">${post.coordi}</div>
+        //         </div>
+        //         <div class="gallery-info">
+        //             <div class="gallery-like">👍 ${post.like} &nbsp; 👎 ${post.dislike}</div>
+        //         </div>
+        // </div>`;
+        // });
     }
 
     //게시글 상세 페이지 이동

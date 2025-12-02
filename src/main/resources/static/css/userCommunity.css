@@ -141,14 +141,11 @@ header nav a {
     object-fit: cover;
 }
 
-.gallery-info {
-    padding: 10px;
-}
-
 .gallery-like {
     font-size: 14px;
     color: #777;
     margin-bottom: 3px;
+    padding: 10px;
 }
 
 .overlay {
