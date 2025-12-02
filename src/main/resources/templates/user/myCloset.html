@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Closet</title>
+    <link rel="stylesheet" href="/css/myCloset.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">My Closet</div>
+    <nav>
+        <a href="#" id="logout">로그아웃</a>
+        <a href="#" id="main">메인</a>
+        <a href="#" id="AICoordinator">AI 코디 추천</a>
+    </nav>
+</header>
+
+<div class="container">
+
+    <!-- ---------------- Dashboard: Calendar + Profile ---------------- -->
+    <div class="container-dashboard">
+        <section class="dashboard">
+            <div class="calendar-card">
+                <div class="calendar-header">
+                    <button id="prev"><</button>
+                    <h3 id="monthYear"></h3>
+                    <button id="next">></button>
+                </div>
+                <table id="calendar">
+                    <thead>
+                    <tr>
+                        <th>Sun</th><th>Mon</th><th>Tue</th>
+                        <th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+                    </tr>
+                    </thead>
+                    <tbody id="calendarBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="profile">
+            <div class="profile-card">
+                <div class="profile-img">
+                    <img src="/image/user/user-img.jpg" alt="">
+                </div>
+                <div class="profile-text">
+                    <h3 id="user-name">000님 안녕하세요</h3>
+                    <a href="#" id="profile-edit">정보수정</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ---------------- Category + Closet Images ---------------- -->
+    <div class="container-editors">
+
+        <!-- CATEGORY LEFT SIDEBAR -->
+        <div class="tag-list" id="categoryList">
+            <!-- 서버에서 가져온 카테고리 자동 생성됨 -->
+        </div>
+
+        <!-- IMAGE AREA -->
+        <div class="image-area">
+            <input type="file" id="img-upload">
+            <label for="img-upload">사진 저장하기</label>
+
+            <div id="imageCount"></div>
+
+            <div id="closetContainer" class="image-grid">
+                <!-- 옷 이미지 자동 로드 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ---------------- Tag Search ---------------- -->
+    <div class="image-area" style="margin-top:30px;">
+        <h2>태그 검색</h2>
+        <input type="text" id="searchTags" class="form-box" placeholder="검색 태그 입력 (콤마 구분)">
+        <button class="submit-btn" onclick="searchByTags()">검색</button>
+
+        <div id="searchResults" class="image-grid" style="margin-top:20px;"></div>
+    </div>
+</div>
+
+<script>
+    const userId = "user123"; // 나중에 로그인 정보로 교체
+    const apiBase = "/api/closet";
+
+    /* ---------------------------- 달력 렌더링 ---------------------------- */
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const today = new Date();
+        let currentMonth = today.getMonth();
+        let currentYear = today.getFullYear();
+
+        const monthYear = document.getElementById("monthYear");
+        const calendarBody = document.getElementById("calendarBody");
+
+        function renderCalendar() {
+            calendarBody.innerHTML = "";
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            monthYear.textContent = `${currentYear}년 ${currentMonth + 1}월`;
+
+            let row = document.createElement("tr");
+
+            for (let i = 0; i < firstDay; i++) {
+                row.appendChild(document.createElement("td"));
+            }
+
+            for (let day = 1; day <= lastDate; day++) {
+                if (row.children.length === 7) {
+                    calendarBody.appendChild(row);
+                    row = document.createElement("tr");
+                }
+
+                const cell = document.createElement("td");
+                cell.textContent = day;
+
+                if (
+                    currentYear === today.getFullYear() &&
+                    currentMonth === today.getMonth() &&
+                    day === today.getDate()
+                ) {
+                    cell.classList.add("today");
+                }
+
+                row.appendChild(cell);
+            }
+
+            calendarBody.appendChild(row);
+        }
+
+        document.getElementById("prev").addEventListener("click", () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+
+        document.getElementById("next").addEventListener("click", () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
+
+        renderCalendar();
+    });
+
+    /* ---------------------------- 카테고리 자동 로딩 ---------------------------- */
+    async function loadCategories() {
+        const res = await fetch(`${apiBase}/categories`);
+        const categories = await res.json();
+
+        const categoryList = document.getElementById("categoryList");
+
+        categories.forEach((c, idx) => {
+            const id = "cat" + idx;
+
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = "category";
+            radio.id = id;
+            radio.value = c.code;
+            if (idx === 0) radio.checked = true;
+            radio.addEventListener("change", () => loadCloset(c.code));
+
+            const label = document.createElement("label");
+            label.className = "btn";
+            label.setAttribute("for", id);
+            label.textContent = c.label;
+
+            categoryList.appendChild(radio);
+            categoryList.appendChild(label);
+        });
+    }
+
+    /* ---------------------------- 옷 목록 로딩 ---------------------------- */
+    const closetContainer = document.getElementById("closetContainer");
+    const imageCount = document.getElementById("imageCount");
+
+    async function loadCloset(category) {
+        const res = await fetch(`${apiBase}/${userId}/${category}`);
+        const items = await res.json();
+        renderCloset(items, category);
+    }
+
+    function renderCloset(items, category) {
+        closetContainer.innerHTML = "";
+
+        items.forEach(item => {
+            const img = document.createElement("img");
+            img.src = item.imageUrl;
+            img.alt = category;
+            img.loading = "lazy";
+            closetContainer.appendChild(img);
+        });
+
+        imageCount.textContent = `${category} ${items.length}개`;
+    }
+
+    /* ---------------------------- 태그 검색 ---------------------------- */
+    async function searchByTags() {
+        const tags = document.getElementById("searchTags").value.split(",").map(v => v.trim());
+
+        const params = new URLSearchParams();
+        tags.forEach(t => params.append("tags", t));
+
+        const res = await fetch(`${apiBase}/search/tags?${params.toString()}`);
+        const list = await res.json();
+
+        const container = document.getElementById("searchResults");
+        container.innerHTML = "";
+
+        list.forEach(item => {
+            const img = document.createElement("img");
+            img.src = item.imageUrl;
+            container.appendChild(img);
+        });
+    }
+
+    /* ---------------------------- 초기 실행 ---------------------------- */
+    loadCategories();
+    setTimeout(() => {
+        // 기본 카테고리가 로딩될 때 첫 번째 카테고리 로딩
+        const firstRadio = document.querySelector("input[name='category']");
+        if (firstRadio) loadCloset(firstRadio.value);
+    }, 200);
+
+</script>
+
+</body>
+</html>

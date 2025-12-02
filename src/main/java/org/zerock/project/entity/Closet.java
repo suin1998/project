@@ -40,7 +40,6 @@ public class Closet {
     @Column(nullable = false)
     private String imageUrl;
 
-    private String color;
     private String brand;
 
     @ElementCollection(fetch = FetchType.LAZY)
