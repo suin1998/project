@@ -16,7 +16,7 @@
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
             </div>
-            <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
+            <a href="/myCloset" onclick="return checkLogin()">My Closet</a>
         </div>
     </nav>
 </header>
@@ -73,7 +73,7 @@
             window.location.href = '/login';
         } else {
             // 토큰이 있으면 MyPage로 이동 시도
-            window.location.href = '/MyPage';
+            window.location.href = '/myCloset';
         }
     }
 
@@ -94,7 +94,7 @@
         if(!accessToken) {
             window.location.href = '/login';
         } else {
-            window.location.href = '/MyPage';
+            window.location.href = '/myCloset';
         }
     }
 

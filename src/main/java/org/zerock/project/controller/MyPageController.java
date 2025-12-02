@@ -15,7 +15,6 @@ import org.zerock.project.dto.MyPageUpdateRequestDTO;
 import org.zerock.project.service.MyPageService;
 
 @Controller // 뷰 이름(String)을 반환하는 컨트롤러
-@RequestMapping("/mypage") // 기본 경로를 소문자로 설정
 @RequiredArgsConstructor
 @Slf4j
 public class MyPageController {
@@ -24,14 +23,14 @@ public class MyPageController {
 
     /**
      * [GET] 마이페이지 뷰 로드 및 데이터 전달 (SSR 방식)
-     * URL: /mypage
+     * URL: /myCloset
      * @param authentication 현재 로그인 사용자 정보
      * @param model 뷰로 전달할 데이터 객체
-     * @return 뷰 이름 (예: user/myPage.html)
+     * @return 뷰 이름 (예: user/myCloset.html)
      */
-    @GetMapping
+    @GetMapping("/myCloset")
     public String getMyPageView(Authentication authentication, Model model) {
-        log.info("GET /mypage 요청: 마이페이지 데이터 로드 시작");
+        log.info("GET /myCloset 요청: 마이페이지 데이터 로드 시작");
 
         // 1. 인증 확인
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -49,7 +48,7 @@ public class MyPageController {
             model.addAttribute("myPageData", myPageData);
 
             // 5. 뷰 이름 반환 (src/main/resources/templates/user/myPage.html을 찾게 됨)
-            return "user/mypage";
+            return "user/myCloset";
 
         } catch (EntityNotFoundException e) {
             log.error("마이페이지 로드 중 사용자 정보를 찾을 수 없음: {}", e.getMessage());
@@ -69,7 +68,7 @@ public class MyPageController {
      * @param updateDto 수정 요청 DTO (닉네임, 비밀번호 등)
      * @return 수정된 사용자 정보 DTO (JSON)
      */
-    @PutMapping("/update")
+    @PutMapping("/myCloset/update")
     @ResponseBody // JSON 데이터를 반환하기 위해 @ResponseBody 사용
     public ResponseEntity<?> updateUserInfo(
             Authentication authentication,

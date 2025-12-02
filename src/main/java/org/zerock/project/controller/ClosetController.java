@@ -67,7 +67,7 @@ public class ClosetController {
     }
 
     // 라벨 목록 추출
-    @GetMapping("/api/categories")
+    @GetMapping("/categories")
     public ResponseEntity<List<Map<String, String>>> getCategories() {
         List<Map<String, String>> categories = Arrays.stream(Category.values())
                 .map(c -> Map.of(
