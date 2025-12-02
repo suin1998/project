@@ -161,6 +161,8 @@
     </main>
 
 </div>
+<script src = "https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src = "https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
 <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
 <script>
     // =========================================================
@@ -206,9 +208,6 @@
         let selectedRegion = { siDo: null, siGunGu: null, dong: null };
         let selectedDate = null;
 
-        let savedRegion = null;
-        let savedDate = null;
-
         // 지역 드롭다운 토글
         regionBtn.addEventListener("click", () => {
             regionDropdown.style.display =
@@ -231,10 +230,10 @@
             const today = new Date();
             const datePickerInput = document.getElementById("datePicker");
 
-            if (typeof flatpickr === 'undefined') {
-                setTimeout(initializeFlatpickr, 100);
-                return;
-            }
+            // if (typeof flatpickr === 'undefined') {
+            //     setTimeout(initializeFlatpickr, 100);
+            //     return;
+            // }
 
             window.flatpickrInstance = flatpickr(datePickerInput, {
                 inline: true,
@@ -361,26 +360,24 @@
         const API_URL = '/AI/weather';
 
         function displayWeatherResult(data) {
-            let html = `<p><strong>📍 ${data.targetDate} (${selectedRegion.siDo} ${selectedRegion.siGunGu} ${selectedRegion.dong})</strong></p>`;
+            let html = ``;
 
             if (data.shortTerm) {
                 const s = data.shortTerm;
                 html += `
             <div class="weather-forecast short-term">
-                <p>최저 기온: ${s.tMin}°C</p>
-                <p>최고 기온: ${s.tMax}°C</p>
-                <p>강수 확률 (POP): ${s.rainProb}%</p>
-            </div>
-        `;
+                <p>최저 기온: ${s.tempMin}°C</p>
+                <p>최고 기온: ${s.tempMax}°C</p>
+                <p>강수 확률: ${s.rainProbability}%</p>
+            </div>`;
             } else if (data.midTerm) {
                 const m = data.midTerm;
                 html += `
             <div class="weather-forecast mid-term">
-                <p>최저 기온: ${m.tMin}°C</p>
-                <p>최고 기온: ${m.tMax}°C</p>
-                <p>강수 확률: ${m.rainProb}%</p>
-                </div>
-        `;
+                <p>최저 기온: ${m.tempMin}°C</p>
+                <p>최고 기온: ${m.tempMax}°C</p>
+                <p>강수 확률: ${m.rainProbability}%</p>
+                </div>`;
             } else {
                 html += '<p>해당 날짜에 유효한 날씨 데이터가 없습니다.</p>';
             }
@@ -389,8 +386,6 @@
         }
 
         async function fetchWeather() {
-            // if (!isWeatherQueryReady()) return;
-            // let dateToFormat = new Date(selectedDate.replace(/(\d{4})년 (\d{1,2})월 (\d{1,2})일/, '$1-$2-$3'));
             let formattedDate = '';
 
             const dateRegex = /(\d{4})년 (\d{1,2})월 (\d{1,2})일/;
