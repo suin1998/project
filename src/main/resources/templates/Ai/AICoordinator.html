@@ -208,9 +208,6 @@
         let selectedRegion = { siDo: null, siGunGu: null, dong: null };
         let selectedDate = null;
 
-        let savedRegion = null;
-        let savedDate = null;
-
         // 지역 드롭다운 토글
         regionBtn.addEventListener("click", () => {
             regionDropdown.style.display =
@@ -363,7 +360,7 @@
         const API_URL = '/AI/weather';
 
         function displayWeatherResult(data) {
-            let html = `<p><strong>📍 ${data.targetDate} (${selectedRegion.siDo} ${selectedRegion.siGunGu} ${selectedRegion.dong})</strong></p>`;
+            let html = ``;
 
             if (data.shortTerm) {
                 const s = data.shortTerm;
@@ -372,8 +369,7 @@
                 <p>최저 기온: ${s.tempMin}°C</p>
                 <p>최고 기온: ${s.tempMax}°C</p>
                 <p>강수 확률: ${s.rainProbability}%</p>
-            </div>
-        `;
+            </div>`;
             } else if (data.midTerm) {
                 const m = data.midTerm;
                 html += `
@@ -381,8 +377,7 @@
                 <p>최저 기온: ${m.tempMin}°C</p>
                 <p>최고 기온: ${m.tempMax}°C</p>
                 <p>강수 확률: ${m.rainProbability}%</p>
-                </div>
-        `;
+                </div>`;
             } else {
                 html += '<p>해당 날짜에 유효한 날씨 데이터가 없습니다.</p>';
             }
@@ -391,8 +386,6 @@
         }
 
         async function fetchWeather() {
-            // if (!isWeatherQueryReady()) return;
-            // let dateToFormat = new Date(selectedDate.replace(/(\d{4})년 (\d{1,2})월 (\d{1,2})일/, '$1-$2-$3'));
             let formattedDate = '';
 
             const dateRegex = /(\d{4})년 (\d{1,2})월 (\d{1,2})일/;
