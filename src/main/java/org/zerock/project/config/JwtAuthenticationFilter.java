@@ -21,10 +21,10 @@ import io.jsonwebtoken.MalformedJwtException; // 예외 처리용 import
 
 import java.io.IOException;
 
-@Component
+@Component //spring bean 등록 후 security 사용
 @RequiredArgsConstructor // JwtService, UserDetailsService 주입을 위한 Lombok 어노테이션
 @Slf4j
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter { //딱 한번 실행 보장
 
     // 1️⃣ 의존성 주입
     private final JwtService jwtService;

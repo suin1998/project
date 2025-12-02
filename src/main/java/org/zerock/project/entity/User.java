@@ -11,6 +11,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -82,6 +84,9 @@ public class User {
     @Column
     private LocalDateTime lastLoginAt;
 
+    @Builder.Default // Builder 패턴 사용 시 List 초기화
+    @OneToMany(mappedBy = "writer", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // 'writer' 필드가 주인임을 명시
+    private List<Board> boardList = new ArrayList<>();
 
     public enum Gender {
         MALE,FEMALE
@@ -112,23 +117,11 @@ public class User {
         this.lastLoginAt = LocalDateTime.now();
     }
 
-    // 이메일 인증 완료
-    public void verifyEmail() {
-        this.emailVerified = true;
-        this.emailVerificationToken = null;
-        this.emailVerificationExpiry = null;
-    }
 
     // 이메일 인증 토큰 설정
     public void setEmailVerificationToken(String token, int expiryHours) {
         this.emailVerificationToken = token;
         this.emailVerificationExpiry = LocalDateTime.now().plusHours(expiryHours);
-    }
-
-    // 이메일 인증 토큰 만료 여부 확인
-    public boolean isEmailVerificationTokenExpired() {
-        return emailVerificationExpiry == null ||
-                LocalDateTime.now().isAfter(emailVerificationExpiry);
     }
 
     // 나이 계산

@@ -92,6 +92,22 @@
     const authButtons = document.getElementById('authButtons');
     const logoutButtons = document.getElementById('logoutButtons');
 
+    function redirectToMyCloset() {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            // 토큰이 없으면 로그인 페이지로 안내
+            alert('My Closet은 로그인 후 이용 가능합니다.');
+            window.location.href = '/login';
+        } else {
+            // 토큰이 있으면 MyPage로 이동 시도
+            window.location.href = '/MyPage';
+        }
+    }
+
+    // AI Coordinator 버튼 클릭 시 /AICoordinator 경로로 이동합니다.
+
+    // Community 버튼 클릭 시 /community 경로로 이동합니다.
     function redirectToCommunity() {
         // 커뮤니티 페이지를 렌더링하는 서버 경로로 수정해주세요.
         // 예를 들어, /community로 매핑된 컨트롤러가 community.html 템플릿을 보여줍니다.

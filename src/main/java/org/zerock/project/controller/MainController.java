@@ -27,10 +27,10 @@ public class MainController {
         return "user/join";
     }
 
-    @GetMapping("/community")
-    public String communityList() {
-        return "community/userCommunity";
-    }
+//    @GetMapping("/community")
+//    public String communityList() {
+//        return "community/userCommunity";
+//    }
 
     @GetMapping("/AICoordinator")
     public String aiCoordinator() {

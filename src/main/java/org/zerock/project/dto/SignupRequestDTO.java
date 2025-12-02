@@ -43,7 +43,7 @@ public class SignupRequestDTO {
 
     @NotNull(message = "성별은 필수입니다.")
     private User.Gender gender;
-    
+
     public boolean isPasswordMatching() {
         return password != null && password.equals(confirmPassword);
     }

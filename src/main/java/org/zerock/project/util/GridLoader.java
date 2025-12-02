@@ -18,7 +18,7 @@ public class GridLoader {
         Map<String, GridLocation> gridMap = new HashMap<>();
         ZipSecureFile.setMinInflateRatio(0.0d);
         try{
-            InputStream is = getClass().getClassLoader().getResourceAsStream("sub_file/kma_shrt_grid_202504.xlsx");
+            InputStream is = getClass().getClassLoader().getResourceAsStream("static/sub_file/kma_shrt_grid_202504.xlsx");
             Workbook workbook = WorkbookFactory.create(is);
             Sheet sheet = workbook.getSheetAt(0);
 

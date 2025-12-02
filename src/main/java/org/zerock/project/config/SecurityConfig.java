@@ -22,6 +22,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -31,7 +32,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(
@@ -48,7 +48,7 @@ public class SecurityConfig {
             // ... (기존 CORS 설정 유지)
             config.setAllowCredentials(true);
             config.setAllowedOriginPatterns(List.of("*"));
-            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
             config.setAllowedHeaders(List.of("*"));
             return config;
         }));
@@ -74,14 +74,20 @@ public class SecurityConfig {
                 .requestMatchers(
                         // 정적 리소스
                         "/css/**", "/js/**", "/img/**", "/image/**", "/images/**", "/static/**", "/sub_file/**",
+                        "/favicon.ico",
                         // 공개 API 및 페이지
-                        "/", "/main", "/home", "/login", "/join", "/community", "/AICoordinator", "/AI", "/AI/weather","/search/tags",
-                        "/auth/signup", "/auth/login", "/auth/health", "/auth/**" // auth 하위 모든 경로는 허용
+                        "/", "/main", "/home", "/login", "/join", "/community", "/board",
+                        "/AICoordinator", "/AI", "/search/tags", "/AI/weather", "/MyCloset","/post/**",
+                        "/board/**",
+                        "/auth/signup", "/auth/login", "/auth/health", "/auth/**", "/MyPage" // auth 하위 모든 경로는 허용
                 ).permitAll()
+
+                // 🚨 B. 관리자 페이지 및 API는 ADMIN 권한 필요 (새로 추가)
+                .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
 
                 // B. 마이페이지는 인증된 사용자만 접근 허용 (수정된 부분)
                 // MyCloset 버튼 경로가 마이페이지라면 이 설정이 필요합니다.
-                .requestMatchers("/mypage/**").authenticated()
+                .requestMatchers("/MyPage/**", "/api/**").authenticated()
 
                 // C. 나머지 모든 요청은 인증 필요 (AnyRequest)
                 .anyRequest().authenticated()
