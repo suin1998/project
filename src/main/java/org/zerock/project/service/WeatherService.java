@@ -55,16 +55,19 @@ public class WeatherService {
         int ny = location.getNy();
         String regionCode =  stnLocation.getRegionCode();
 
-        WeatherResponseDto.ShortTermWeather shortTerm = null;
-        WeatherResponseDto.MidTermWeather midTerm = null;
+        Double tMin = null;
+        Double tMax = null;
+        Double pop = null;
+
+        WeatherResponseDto responseDto = null;
 
         if(targetDate.isBefore(LocalDate.now().plusDays(4))) {
-            shortTerm = getShortTermForecast(nx, ny, targetDate);
+            responseDto = getShortTermForecast(nx, ny, targetDate);
 
         }else{
-            midTerm = getMidTermForecast(regionCode, targetDate);
+            responseDto = getMidTermForecast(regionCode, targetDate);
         }
-        return new WeatherResponseDto(targetDate, shortTerm, midTerm);
+        return responseDto;
     }
 
     public JSONObject callJson(String urlStr){
@@ -93,7 +96,7 @@ public class WeatherService {
     }
 
 
-    private WeatherResponseDto.ShortTermWeather getShortTermForecast(int nx, int ny, LocalDate targetDate) {
+    private WeatherResponseDto getShortTermForecast(int nx, int ny, LocalDate targetDate) {
         String baseDate =  LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String baseTime = "0500";
 
@@ -140,20 +143,17 @@ public class WeatherService {
                     tMax = obj.getDouble("fcstValue");
                     break;
             }
-
         }
         rainProb = Collections.max(rainList);
-        log.info(new WeatherResponseDto.ShortTermWeather(rainProb, tMin, tMax));
-        return new WeatherResponseDto.ShortTermWeather(rainProb, tMin, tMax);
+
+        return new WeatherResponseDto(targetDate, rainProb, tMin, tMax);
 
     }
 
 
-    private WeatherResponseDto.MidTermWeather getMidTermForecast(String regionCode, LocalDate targetDate) {
+    private WeatherResponseDto getMidTermForecast(String regionCode, LocalDate targetDate) {
         int dayDiff = (int) ChronoUnit.DAYS.between(LocalDate.now(), targetDate);
 
-
-//        log.info(dayDiff);
         if (dayDiff < 4 || dayDiff > 10) throw new IllegalArgumentException("중기예보는 D+4~D+10일만 제공됩니다.");
 
         String baseDate =  LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -228,8 +228,7 @@ public class WeatherService {
         tMin = forCast.getDouble(tMinKey);
         tMax = forCast.getDouble(tMaxKey);
 
-        log.info(new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax));
-        return new WeatherResponseDto.MidTermWeather(rainProb, tMin, tMax);
+        return new WeatherResponseDto(targetDate, rainProb, tMin, tMax);
 
     }
 
