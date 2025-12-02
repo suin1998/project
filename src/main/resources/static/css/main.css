@@ -31,6 +31,14 @@ header nav a {
     display: flex;
 }
 
+#MyPageButton2 {
+    border: none;
+    color: #333;
+    font-size: 16px;
+    margin-left: 20px;
+    background: none;
+}
+
 .hero {
     position: relative;
     width: 100%;
@@ -86,7 +94,7 @@ header nav a {
     border-radius: 10px;
     border: 1px solid #eaeaea;
     text-align: center;
-    height: 320px;
+    height: auto;
     width: auto;
     margin: 10px 5px;
 }
@@ -136,4 +144,28 @@ header nav a {
     border: 2px solid black;
     background: transparent;
     color: black;
+}
+
+.explanation {
+    margin: 0 auto 30px auto;
+    padding: 30px 0;
+    background: white;
+    max-width: 750px;
+    border-top: 3px solid #444;
+}
+
+.explanation_text {
+    text-align: left;
+
+}
+
+.explanation_text h1 {
+    margin-top: 20px;
+    color: black;
+}
+
+.explanation_text p {
+    font-size: 20px;
+    word-break: keep-all;
+    white-space: pre-line;
 }

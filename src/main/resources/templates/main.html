@@ -15,8 +15,9 @@
 
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
+<!--                <a href="/MyPage" onclick="return checkLogin()">My Closet</a>-->
+                <button id="MyPageButton2">My Closet</button>
             </div>
-            <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
         </div>
     </nav>
 </header>
@@ -33,30 +34,57 @@
     <div class="container">
         <div class="card">
             <img src="/image/main/clothes_pic.jpg" alt="">
-            <h2>My Closet</h2>
-            <p>사진을 찍어 올려서 내가 가진 옷을 정리할 수 있어요.</p>
+            <!--            <h2>My Closet</h2>-->
+            <!--            <p>사진을 찍어 올려서 내가 가진 옷을 정리할 수 있어요.</p>-->
             <div class="btn">
                 <button id="MyPageButton">My Closet</button>
             </div>
         </div>
         <div class="card">
             <img src="/image/main/clothes.jpg" alt="">
-            <h2>AI Coordinator</h2>
-            <p>AI에게 코디를 물어볼 수 있어요.</p>
+            <!--            <h2>AI Coordinator</h2>-->
+            <!--            <p>AI에게 코디를 물어볼 수 있어요.</p>-->
             <div class="btn">
                 <button id="AICoordinatorButton">AI Coordinator</button>
             </div>
         </div>
         <div class="card">
             <img src="/image/main/clothes_coord.jpg" alt="">
-            <h2>Community</h2>
-            <p>내가 가진 코디를 공유하거나 다른 사람의 코디 정보를 볼 수 있어요.</p>
+            <!--            <h2>Community</h2>-->
+            <!--            <p>내가 가진 코디를 공유하거나 다른 사람의 코디 정보를 볼 수 있어요.</p>-->
             <div class="btn">
                 <button id="communityButton">Community</button>
             </div>
         </div>
     </div>
 </section>
+<div class="explanation">
+    <div class="explanation_text">
+        <h1>핏 메이커가 당신의 코디를 만들어 드립니다.</h1>
+        <p>핏 메이커는 여러분들의 옷장 속 옷을 활용하여 여러분들이 원하는 지역, 날짜, 스타일, 상황에 따라 코디를 만드는 사이트입니다.
+            내가 가진 옷을 활용하고 내가 가진 옷이 무엇이 있는지 확인 해보기도 하며 내가 가진 옷을 관리 할 수도 있습니다.
+            내 옷을 확인 못해 비슷한 옷을 여러 벌 구매하거나 뒤늦게 옷을 사야겠다라는 생각이 들지 않으셨나요?
+            <br> 핏 메이커가 이런 여러분들을 위한 관리자이자 코디네이터가 되어 줄 겁니다. AI를 활용한 코디를 활용하여 여러분들의 멋있는 스타일을 만들어 봅시다.</p>
+    </div>
+</div>
+<div class="explanation">
+    <div class="explanation_text">
+        <h1>핏 메이커가 당신의 코디를 만들어 드립니다.</h1>
+        <p>핏 메이커는 여러분들의 옷장 속 옷을 활용하여 여러분들이 원하는 지역, 날짜, 스타일, 상황에 따라 코디를 만드는 사이트입니다.
+            내가 가진 옷을 활용하고 내가 가진 옷이 무엇이 있는지 확인 해보기도 하며 내가 가진 옷을 관리 할 수도 있습니다.
+            내 옷을 확인 못해 비슷한 옷을 여러 벌 구매하거나 뒤늦게 옷을 사야겠다라는 생각이 들지 않으셨나요?
+            <br> 핏 메이커가 이런 여러분들을 위한 관리자이자 코디네이터가 되어 줄 겁니다. AI를 활용한 코디를 활용하여 여러분들의 멋있는 스타일을 만들어 봅시다.</p>
+    </div>
+</div>
+<div class="explanation">
+    <div class="explanation_text">
+        <h1>핏 메이커가 당신의 코디를 만들어 드립니다.</h1>
+        <p>핏 메이커는 여러분들의 옷장 속 옷을 활용하여 여러분들이 원하는 지역, 날짜, 스타일, 상황에 따라 코디를 만드는 사이트입니다.
+            내가 가진 옷을 활용하고 내가 가진 옷이 무엇이 있는지 확인 해보기도 하며 내가 가진 옷을 관리 할 수도 있습니다.
+            내 옷을 확인 못해 비슷한 옷을 여러 벌 구매하거나 뒤늦게 옷을 사야겠다라는 생각이 들지 않으셨나요?
+            <br> 핏 메이커가 이런 여러분들을 위한 관리자이자 코디네이터가 되어 줄 겁니다. AI를 활용한 코디를 활용하여 여러분들의 멋있는 스타일을 만들어 봅시다.</p>
+    </div>
+</div>
 </body>
 
 <script>
@@ -81,22 +109,24 @@
 
     // Community 버튼 클릭 시 /community 경로로 이동합니다.
     function redirectToCommunity() {
+        // 커뮤니티 페이지를 렌더링하는 서버 경로로 수정해주세요.
+        // 예를 들어, /community로 매핑된 컨트롤러가 community.html 템플릿을 보여줍니다.
         window.location.href = '/community';
     }
 
     function redirectToAICoordinator() {
-        if(!accessToken) {
+        if (!accessToken) {
             window.location.href = '/login';
         } else {
-        window.location.href ='/AICoordinator';
+            window.location.href = '/AICoordinator';
         }
     }
 
     function redirectToMyPage() {
-        if(!accessToken) {
+        if (!accessToken) {
             window.location.href = '/login';
         } else {
-            window.location.href = '/MyPage';
+            window.location.href = '/myCloset';
         }
     }
 
@@ -110,32 +140,21 @@
             logoutLink.addEventListener('click', handleLogout);
         }
 
-        // 3. My Closet 버튼 이벤트 연결 (수정 및 정리된 부분)
-        const myClosetButton = document.getElementById('myClosetButton');
-        if (myClosetButton) {
-            myClosetButton.addEventListener('click', redirectToMyCloset);
-        }
-
-        // 4. AI Coordinator 버튼 이벤트 연결
-        const aiCoordinatorButton = document.getElementById('aiCoordinatorButton');
-        if (aiCoordinatorButton) {
-            aiCoordinatorButton.addEventListener('click', redirectToAICoordinator);
-        }
-
-        // 5. Community 버튼 이벤트 연결
         const communityButton = document.getElementById('communityButton');
         if (communityButton) {
             communityButton.addEventListener('click', redirectToCommunity);
         }
 
         const AICoordinatorButton = document.getElementById('AICoordinatorButton');
-        if(AICoordinatorButton) {
+        if (AICoordinatorButton) {
             AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
         }
 
         const MyPageButton = document.getElementById('MyPageButton');
-        if(MyPageButton) {
+        const MyPageButton2 = document.getElementById('MyPageButton2');
+        if (MyPageButton || MyPageButton2) {
             MyPageButton.addEventListener('click', redirectToMyPage);
+            MyPageButton2.addEventListener('click', redirectToMyPage);
         }
     });
 
@@ -171,15 +190,15 @@
         window.location.reload();
     }
 
-    // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
-    function checkLogin() {
-        if(!accessToken) {
-            window.location.href = '/login';
-            return false;
-        } else {
-            return true;
-        }
-    }
+    // // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
+    // function checkLogin() {
+    //     if(!accessToken) {
+    //         window.location.href = '/login';
+    //         return false;
+    //     } else {
+    //         return true;
+    //     }
+    // }
 
 
 </script>

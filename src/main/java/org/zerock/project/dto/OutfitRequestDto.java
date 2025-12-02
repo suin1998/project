@@ -1,21 +1,23 @@
 package org.zerock.project.dto;
 
-import lombok.Data;
+import com.nimbusds.openid.connect.sdk.claims.Gender;
+import lombok.*;
 
-@Data
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class OutfitRequestDto {
-    private WeatherResponseDto weatherResponseDto;
-    private String gender;
-    private double userAge;
-    private String style1; //list
-    private String style2; //list
+    public WeatherResponseDto weatherResponseDto;
+    public WeatherRequestDto weatherRequestDto;
+    private Gender gender;
+    private Double userAge;
+    private String fashion;
+    private String tempStyle;
     private String tpo;
-
-    private String top;
-    private String bottom;
-    private String shoes;
-    private String bag;
-    private String accessory;
-    private String hat;
-
+    private String cloths;
 }
+
+

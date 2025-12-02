@@ -16,7 +16,7 @@ public interface ClosetRepository extends JpaRepository<Closet, String> {
     List<Closet> findByUserAndCategory(User user, Category category);
 
     // 태그 검색
-    List<Closet> findByUserAndTagsIn(User user, List<String> tags);
+   List<Closet> findByUserAndTagsIn(User user, List<String> tags);
 
 }
 

@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +43,6 @@ public class ClosetService {
                 .user(user)
                 .category(dto.getCategory())
                 .imageUrl(dto.getImageUrl() != null ? dto.getImageUrl() : imageUrl)
-                .color(dto.getColor())
                 .brand(dto.getBrand())
                 .tags(dto.getTags() != null ? dto.getTags() : List.of())
                 .build();
@@ -92,7 +90,6 @@ public class ClosetService {
         }
 
         closet.setCategory(dto.getCategory());
-        closet.setColor(dto.getColor());
         closet.setBrand(dto.getBrand());
         closet.setTags(dto.getTags());
         closet.setUpdatedAt(LocalDateTime.now());
@@ -119,7 +116,6 @@ public class ClosetService {
                 .userId(closet.getUser().getId())
                 .category(closet.getCategory())
                 .imageUrl(closet.getImageUrl())
-                .color(closet.getColor())
                 .brand(closet.getBrand())
                 .tags(closet.getTags())
                 .createdAt(closet.getCreatedAt())
