@@ -28,7 +28,6 @@ public class ClosetRequestDTO {
     @NotBlank
     private String imageUrl;
 
-    private String color;
     private String brand;
 
     private List<String> tags;
@@ -39,7 +38,6 @@ public class ClosetRequestDTO {
                 .user(user)
                 .category(this.category)
                 .imageUrl(this.imageUrl)
-                .color(this.color)
                 .brand(this.brand)
                 .tags(this.tags != null ? this.tags : new ArrayList<>())
                 .build();

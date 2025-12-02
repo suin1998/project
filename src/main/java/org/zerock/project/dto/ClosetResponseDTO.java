@@ -19,7 +19,6 @@ public class ClosetResponseDTO {
     private String userId;
     private Category category;
     private String imageUrl;
-    private String color;
     private String brand;
     private List<String> tags;
     private LocalDateTime createdAt;
@@ -31,7 +30,6 @@ public class ClosetResponseDTO {
                 .userId(closet.getUser().getId())
                 .category(closet.getCategory())
                 .imageUrl(closet.getImageUrl())
-                .color(closet.getColor())
                 .brand(closet.getBrand())
                 .tags(closet.getTags())
                 .createdAt(closet.getCreatedAt())
