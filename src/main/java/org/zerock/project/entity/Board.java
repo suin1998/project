@@ -22,7 +22,7 @@ public class Board {
     // 🚨 [수정 1] 작성자 정보를 User 엔티티와 ManyToOne 관계로 매핑
     // FetchType.LAZY: 필요할 때만 User 정보를 로드하여 성능 최적화
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false) // User 테이블의 ID 컬럼을 참조
+    @JoinColumn(name = "writer", nullable = false) // User 테이블의 ID 컬럼을 참조
     private User writer;
 
     // 기존의 String userId와 userNickname 필드는 삭제
