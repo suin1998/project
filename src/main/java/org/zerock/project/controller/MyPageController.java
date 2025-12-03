@@ -1,6 +1,7 @@
 package org.zerock.project.controller;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -8,13 +9,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.zerock.project.dto.AuthResponseDTO;
 import org.zerock.project.dto.MyPageResponseDTO;
 import org.zerock.project.dto.MyPageUpdateRequestDTO;
 import org.zerock.project.service.MyPageService;
 
-@Controller // 뷰 이름(String)을 반환하는 컨트롤러
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
+
+@Controller
 @RequiredArgsConstructor
 @Slf4j
 public class MyPageController {
@@ -22,78 +27,85 @@ public class MyPageController {
     private final MyPageService myPageService;
 
     /**
-     * [GET] 마이페이지 뷰 로드 및 데이터 전달 (SSR 방식)
-     * URL: /myCloset
-     * @param authentication 현재 로그인 사용자 정보
-     * @param model 뷰로 전달할 데이터 객체
-     * @return 뷰 이름 (예: user/myCloset.html)
+     * [GET] /myCloset
+     * SSR(서버 렌더링) 방식으로 myCloset.html을 보여주는 엔드포인트
      */
     @GetMapping("/myCloset")
-    public String getMyPageView(Authentication authentication, Model model) {
-        log.info("GET /myCloset 요청: 마이페이지 데이터 로드 시작");
+    public String getMyPageView(Authentication authentication, Model model, HttpServletRequest request) {
+        log.info("GET /myCloset");
 
-        // 1. 인증 확인
+        // 인증 확인 (로그인 안 되어있으면 로그인 페이지로 이동)
         if (authentication == null || !authentication.isAuthenticated()) {
-            return "redirect:/login"; // 인증되지 않았다면 로그인 페이지로 리다이렉트
+            return "redirect:/login";
         }
 
-        try {
-            // 2. Security Context에서 사용자 ID (String)를 가져옴
-            String userId = authentication.getName();
+        String userId = authentication.getName();
 
-            // 3. MyPageService를 통해 모든 데이터 로드
+        try {
+            // 1. 마이페이지 전체 데이터 조회
             MyPageResponseDTO myPageData = myPageService.getMyPageInfo(userId);
 
-            // 4. 데이터를 모델에 담아 뷰로 전달 (myPageData 라는 이름으로 접근 가능)
+            // 2. 뷰로 전달
             model.addAttribute("myPageData", myPageData);
 
-            // 5. 뷰 이름 반환 (src/main/resources/templates/user/myPage.html을 찾게 됨)
+            // 3. templates/user/myCloset.html 렌더링
             return "user/myCloset";
 
         } catch (EntityNotFoundException e) {
-            log.error("마이페이지 로드 중 사용자 정보를 찾을 수 없음: {}", e.getMessage());
-            // 사용자 정보를 찾지 못하는 경우 에러 처리
-            return "redirect:/error";
+            log.warn("마이페이지 로드 실패: 사용자 없음");
+            return "error/404";
         } catch (Exception e) {
-            log.error("마이페이지 로드 중 예상치 못한 오류 발생", e);
-            return "redirect:/error";
+            log.error("마이페이지 로드 중 오류", e);
+            return "error/500";
         }
     }
 
 
     /**
-     * [PUT] 사용자 정보 수정 (REST API 방식)
-     * URL: /mypage/update
-     * @param authentication 현재 로그인 사용자 정보
-     * @param updateDto 수정 요청 DTO (닉네임, 비밀번호 등)
-     * @return 수정된 사용자 정보 DTO (JSON)
+     * [PUT] /myCloset/update
+     * 마이페이지 정보 수정 (REST API)
      */
     @PutMapping("/myCloset/update")
-    @ResponseBody // JSON 데이터를 반환하기 위해 @ResponseBody 사용
+    @ResponseBody
     public ResponseEntity<?> updateUserInfo(
             Authentication authentication,
-            @RequestBody MyPageUpdateRequestDTO updateDto) {
+            @Valid @RequestBody MyPageUpdateRequestDTO updateDto,
+            BindingResult bindingResult) {
 
+        // 인증되지 않았으면 401
         if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증되지 않은 사용자입니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("인증되지 않은 사용자입니다.");
+        }
+
+        // DTO 유효성 검사 실패 → 400 반환
+        if (bindingResult.hasErrors()) {
+            var errors = bindingResult.getFieldErrors()
+                    .stream()
+                    .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(errors);
         }
 
         try {
             String userId = authentication.getName();
 
-            AuthResponseDTO.UserInfo updatedInfo = myPageService.updateUserInfo(userId, updateDto);
+            // 서비스에 수정 요청
+            AuthResponseDTO.UserInfo updatedInfo =
+                    myPageService.updateUserInfo(userId, updateDto);
 
             return ResponseEntity.ok(updatedInfo);
 
         } catch (IllegalArgumentException e) {
-            log.warn("사용자 정보 수정 실패: {}", e.getMessage());
-            // 닉네임 중복 등 비즈니스 로직 오류
+            log.warn("수정 실패: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 정보를 찾을 수 없습니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("사용자를 찾을 수 없습니다.");
         } catch (Exception e) {
-            log.error("사용자 정보 수정 중 예상치 못한 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
+            log.error("수정 처리 중 오류", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("서버 오류가 발생했습니다.");
         }
     }
 }
