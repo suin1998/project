@@ -16,7 +16,6 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
     max-width: 1000px;
     padding: 20px 40px;
     background: white;
@@ -25,8 +24,19 @@ header {
 }
 
 header .logo {
+    position: relative;
     font-size: 22px;
     font-weight: bold;
+}
+
+#logoMain {
+    position: absolute;
+    left: 0;
+    height: 32px;
+    width: 101px;
+    background: none;
+    border: none;
+    padding: 0;
 }
 
 header nav a {
@@ -36,6 +46,18 @@ header nav a {
     font-size: 16px;
 }
 
+.headerBtn {
+    display: flex;
+}
+
+#AICoordinatorButton {
+    border: none;
+    color: #333;
+    font-size: 16px;
+    margin-left: 20px;
+    background: none;
+    transform: translateY(3px);
+}
 
 /* -------------------- Container -------------------- */
 .container {

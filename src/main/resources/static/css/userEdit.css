@@ -10,19 +10,36 @@ header {
     align-items: center;
     max-width: 1000px;
     padding: 20px 40px;
+    background: white;
+    border-bottom: 1px solid #eaeaea;
     margin: auto;
 }
 
 header .logo {
+    position: relative;
     font-size: 22px;
     font-weight: bold;
+}
+
+#logoMain {
+    position: absolute;
+    left: 0;
+    height: 32px;
+    width: 101px;
+    background: none;
+    border: none;
+    padding: 0;
 }
 
 header nav a {
     margin-left: 20px;
     text-decoration: none;
-    color: white;
+    color: #333;
     font-size: 16px;
+}
+
+.headerBtn {
+    display: flex;
 }
 
 .container {

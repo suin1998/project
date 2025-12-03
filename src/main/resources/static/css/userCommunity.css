@@ -10,27 +10,27 @@ body {
     margin: auto;
 }
 
-.sidebar {
-    width: 150px;
-    padding: 20px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+/*.sidebar {*/
+/*    width: 150px;*/
+/*    padding: 20px 10px;*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    gap: 15px;*/
+/*}*/
 
-.sidebar button {
-    padding: 10px;
-    border: 1px solid #aaa;
-    border-radius: 5px;
-    background: white;
-    cursor: pointer;
-    transition: 0.2s;
-}
+/*.sidebar button {*/
+/*    padding: 10px;*/
+/*    border: 1px solid #aaa;*/
+/*    border-radius: 5px;*/
+/*    background: white;*/
+/*    cursor: pointer;*/
+/*    transition: 0.2s;*/
+/*}*/
 
-.sidebar button:hover {
-    background: #444;
-    color: white;
-}
+/*.sidebar button:hover {*/
+/*    background: #444;*/
+/*    color: white;*/
+/*}*/
 
 header {
     display: flex;
@@ -48,6 +48,16 @@ header .logo {
     color: white;
 }
 
+#logoMain {
+    position: absolute;
+    left: 0;
+    height: 32px;
+    width: 101px;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
 header nav a {
     margin-left: 20px;
     text-decoration: none;
@@ -59,9 +69,18 @@ header nav a {
     display: flex;
 }
 
-#MyPageButton2 {
+#MyClosetButton {
     border: none;
     color: white;
+    font-size: 16px;
+    margin-left: 20px;
+    background: none;
+    transform: translateY(3px);
+}
+
+#AICoordinatorButton {
+    border: none;
+    color: #333;
     font-size: 16px;
     margin-left: 20px;
     background: none;
@@ -146,6 +165,11 @@ header nav a {
     color: #777;
     margin-bottom: 3px;
     padding: 10px;
+}
+
+.gallery-like .btn {
+    border: none;
+    background: none;
 }
 
 .overlay {

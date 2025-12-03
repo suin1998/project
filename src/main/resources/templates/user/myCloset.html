@@ -7,13 +7,15 @@
     <link rel="stylesheet" href="/css/myCloset.css">
 </head>
 <body>
-
+<!--헤더 관련 수정했습니다.-->
 <header>
-    <div class="logo">My Closet</div>
+    <div class="logo">Fit Maker<button id="logoMain"></button>
+    </div>
     <nav>
-        <a href="#" id="logout">로그아웃</a>
-        <a href="#" id="main">메인</a>
-        <a href="#" id="AICoordinator">AI 코디 추천</a>
+        <div class="headerBtn">
+            <a href="/logout" id="logoutLink">Logout</a>
+            <button id="AICoordinatorButton">AI Coordinator</button>
+        </div>
     </nav>
 </header>
 
@@ -85,6 +87,47 @@
 </div>
 
 <script>
+
+    // 헤더 관련으로 추가하였습니다.
+    // 페이지 이동 관련 (로고 클릭 시 메인으로 이동합니다.)
+    const accessToken = localStorage.getItem('accessToken');
+
+    function redirectToAICoordinator() {
+        window.location.href = '/AICoordinator';
+    }
+
+    function redirectToMain() {
+        window.location.href = '/';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const logoutLink = document.getElementById('logoutLink');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', handleLogout);
+        }
+
+        const AICoordinatorButton = document.getElementById('AICoordinatorButton');
+        if (AICoordinatorButton) {
+            AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
+        }
+
+        const logoMainButton = document.getElementById('logoMain');
+        if(logoMainButton) {
+            logoMainButton.addEventListener('click', redirectToMain);
+        }
+
+    });
+
+    function handleLogout(event) {
+        event.preventDefault(); // <a> 태그의 기본 동작(페이지 이동) 방지
+
+        localStorage.removeItem('accessToken');
+
+        // 로그아웃 시, 메인으로 가기
+        window.location.href = '/';
+    }
+
+
     const userId = "user123"; // 나중에 로그인 정보로 교체
     const apiBase = "/api/closet";
 
