@@ -58,4 +58,8 @@ public class Board {
         this.content = content;
         this.mainImageUrl = mainImageUrl;
     }
+    //조회수 증가 메서드
+    public void increaseViewCount() {
+        this.viewCount = this.viewCount + 1;
+    }
 }
