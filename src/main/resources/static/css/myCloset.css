@@ -1,17 +1,22 @@
+/* -------------------- Global -------------------- */
 body {
     margin: 0;
     padding: 0;
     background: white;
     color: dimgray;
-    display: block;
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    font-family: Arial, sans-serif;
 }
 
+
+/* -------------------- Header -------------------- */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
     max-width: 1000px;
     padding: 20px 40px;
     background: white;
@@ -31,20 +36,23 @@ header nav a {
     font-size: 16px;
 }
 
+
+/* -------------------- Container -------------------- */
 .container {
-    width: 1100px;
+    width: 100%;
+    max-width: 1100px;
     margin: auto;
     padding: 30px;
     background: white;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .container-dashboard {
     display: flex;
     gap: 20px;
     padding: 20px;
-    flex: 1;
+    width: 100%;
     border-bottom: 1px solid #ccc;
 }
 
@@ -53,24 +61,28 @@ header nav a {
     min-width: 300px;
 }
 
+
+/* -------------------- Calendar -------------------- */
 .calendar-card {
     border-radius: 10px;
     padding: 20px;
     width: 85%;
     background: #e7e7ea;
+    display: flex;
+    flex-direction: column;
     align-items: center;
 }
 
 .calendar-header {
-  display: flex;
+    display: flex;
     justify-content: space-between;
-    align-items: center;
+    width: 100%;
 }
 
 .calendar-header button {
     padding: 5px 10px;
     border: none;
-    background: #777777;
+    background: #777;
     color: white;
     border-radius: 6px;
     cursor: pointer;
@@ -82,11 +94,7 @@ header nav a {
     margin-top: 10px;
 }
 
-#calendar th {
-    text-align: center;
-    padding: 8px 0;
-}
-
+#calendar th,
 #calendar td {
     text-align: center;
     padding: 8px 0;
@@ -97,16 +105,17 @@ header nav a {
     cursor: pointer;
 }
 
+
+/* -------------------- Profile -------------------- */
 .profile {
-    width: 100%;
+    display: flex;
     flex-direction: column;
     gap: 20px;
-    border-radius: 10px;
+    width: 100%;
 }
 
 .profile-card {
     display: flex;
-    justify-content: left;
     align-items: center;
     padding: 20px;
     width: 85%;
@@ -120,33 +129,33 @@ header nav a {
     object-fit: cover;
 }
 
-.feature-icon {
-    font-size: 50px;
-    margin-right: 20px;
-}
-
 .profile-card h3 {
     margin: 5px 15px;
     font-size: 25px;
     color: #444;
 }
+
 .profile-card a {
     margin: 5px 15px;
     text-decoration: none;
     color: #3f51b5;
     font-size: 16px;
-    text-align: left;
     font-weight: bold;
-
 }
 
+.feature-icon {
+    font-size: 50px;
+    margin-right: 20px;
+}
+
+
+/* -------------------- Tag List -------------------- */
 .container-editors {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     gap: 20px;
     padding: 20px;
-    margin: 0 auto;
+    width: 100%;
 }
 
 .tag-list {
@@ -160,10 +169,12 @@ header nav a {
     box-shadow: 0 4px 14px rgba(0,0,0,0.4);
 }
 
+/* 숨겨진 라디오 버튼 */
 .tag-list input[type="radio"] {
     display: none;
 }
 
+/* 버튼 공통 스타일 */
 .btn {
     padding: 12px 20px;
     border: 1px solid black;
@@ -177,19 +188,15 @@ header nav a {
     margin: 3px 0;
 }
 
+/* 선택된 경우 */
 .tag-list input[type="radio"]:checked + .btn {
     background: #777;
     border: none;
     color: white;
-    transition: 0.2s ease;
 }
 
-.tag-list .btn:checked {
-    background: #444;
-    color: white;
-    transition: 0.3s ease;
-}
 
+/* -------------------- Image Area -------------------- */
 .image-area {
     background: white;
     border-radius: 10px;
@@ -217,6 +224,7 @@ header nav a {
     border-radius: 5px;
 }
 
+/* 파일 업로드 버튼 숨기고 label로 대체 */
 .image-area input[type="file"] {
     display: none;
 }
@@ -227,18 +235,11 @@ header nav a {
     border-radius: 5px;
     cursor: pointer;
     transition: 0.2s ease;
-    text-align: center;
     font-size: 15px;
-    color: black;
-    margin-bottom: 10px;
+    display: inline-block;
 }
 
-.image-area input[type="file"]:checked + .image-area label {
-    background: #777;
-    border: none;
-    color: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+.image-area label:hover {
+    background: #ddd;
 }
-
-
 
