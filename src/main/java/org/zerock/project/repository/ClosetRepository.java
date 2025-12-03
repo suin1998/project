@@ -18,5 +18,6 @@ public interface ClosetRepository extends JpaRepository<Closet, String> {
     // 태그 검색
    List<Closet> findByUserAndTagsIn(User user, List<String> tags);
 
+   Long countByUser(User user);
 }
 
