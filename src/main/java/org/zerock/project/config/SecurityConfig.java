@@ -76,7 +76,7 @@ public class SecurityConfig {
                         "/css/**", "/js/**", "/img/**", "/image/**", "/images/**", "/static/**", "/sub_file/**",
                         "/favicon.ico",
                         // 공개 API 및 페이지
-                        "/", "/main", "/home", "/login", "/join", "/community", "/board",
+                        "/", "/main", "/home", "/login", "/join", "/community/**", "/board",
                         "/AICoordinator", "/AI", "/search/tags", "/AI/weather", "/MyCloset","/post/**",
                         "/board/**",
                         "/auth/signup", "/auth/login", "/auth/health", "/auth/**", "/MyPage" // auth 하위 모든 경로는 허용
