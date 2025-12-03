@@ -36,9 +36,9 @@ public class MyPageService {
         // 2) UserInfo DTO 변환
         AuthResponseDTO.UserInfo userInfo = userToUserInfoDTO(user);
 
-        // 3) 게시글 조회
-        List<BoardDTO> myBoardDTOs = boardRepository.findByWriter_IdAndDeletedFalse(userId)
-                .stream()
+        // 3) 사용자가 작성한 게시글 조회
+        List<Board> myBoards = boardRepository.findByWriter_IdAndDeletedFalse(userId);
+        List<BoardDTO> myBoardDTOs = myBoards.stream()
                 .map(this::boardEntityToDto)
                 .collect(Collectors.toList());
 

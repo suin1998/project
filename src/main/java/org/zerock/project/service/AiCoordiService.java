@@ -40,10 +40,10 @@ public class AiCoordiService {
 
         Gender userGender = outfitRequestDto.getGender();
         Double age = outfitRequestDto.getUserAge();
-        String fashion = outfitRequestDto.getFashion();
-        String tempstyle = outfitRequestDto.getTempStyle();
+//        String fashion = outfitRequestDto.getFashion();
+//        String tempstyle = outfitRequestDto.getTempStyle();
         String tpo = outfitRequestDto.getTpo();
-        String cloth = outfitRequestDto.getCloths();
+//        String cloth = outfitRequestDto.getCloths();
 
         StringBuilder promptBuilder = new StringBuilder();
         promptBuilder.append("당신은 전문 패션 스타일리스트 입니다. 다음 조건을 충족하는 코디를 추천해주세요.\n");
@@ -56,7 +56,7 @@ public class AiCoordiService {
 
         promptBuilder.append("---[사용자 조건]---\n");
         promptBuilder.append("사용자 성별: ").append(userGender).append(", 연령: ").append(age+"\n");
-        promptBuilder.append("요청 스타일: ").append(fashion).append("느낌: ").append(tempstyle+"\n");
+//        promptBuilder.append("요청 스타일: ").append(fashion).append("느낌: ").append(tempstyle+"\n");
         promptBuilder.append("상황(TPO): ").append(tpo).append("\n");
 
         
