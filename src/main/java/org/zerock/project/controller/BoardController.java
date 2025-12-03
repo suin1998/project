@@ -13,7 +13,7 @@ import org.zerock.project.service.BoardService;
 
 import java.util.List;
 @RestController
-@RequestMapping("/board")
+@RequestMapping("/community")
 @RequiredArgsConstructor
 public class BoardController {
 
