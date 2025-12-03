@@ -32,9 +32,17 @@
 </main>
 <script>
     // ========== 전역 변수 ==========
-    const LOGIN_API_URL = '/auth/login'; // Spring Boot 컨트롤러의 로그인 엔드포인트
+    const LOGIN_API_URL = '/auth/login';
+    const REDIRECT_PARAM_NAME = 'redirectTo';// Spring Boot 컨트롤러의 로그인 엔드포인트
 
     document.addEventListener('DOMContentLoaded', function () {
+        // 💡 1. URL에서 'redirectTo' 파라미터를 읽어 localStorage에 저장
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectTo = urlParams.get(REDIRECT_PARAM_NAME) || '/'; // 없으면 '/'로 기본값 설정
+
+        // localStorage에 저장
+        localStorage.setItem(REDIRECT_PARAM_NAME, redirectTo);
+
         attachEventListeners();
     });
 
@@ -49,6 +57,8 @@
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         const loginButton = document.getElementById('loginSubmitBtn');
+
+        const storedRedirectPath = localStorage.getItem(REDIRECT_PARAM_NAME) || '/';
 
         if (!email || !password) {
             alert('이메일과 비밀번호를 모두 입력해주세요.');
@@ -84,7 +94,8 @@
                 }
 
                 // 3. 메인 페이지로 이동
-                window.location.href = '/'; // 메인 페이지 경로 (루트)
+                localStorage.removeItem(REDIRECT_PARAM_NAME);
+                window.location.href = storedRedirectPath; // 메인 페이지 경로 (루트)
 
             } else {
                 // 4. 로그인 실패 (서버에서 받은 메시지 표시)

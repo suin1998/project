@@ -10,7 +10,7 @@
     <div class="logo">Fit Maker</div>
     <div class="movementPage">
         <a href="/MyCloset"></a>
-        <a href="AICoordinator"></a>
+        <a href="/AICoordinator"></a>
         <a href="/community"></a>
     </div>
     <nav>
@@ -93,53 +93,18 @@
 </body>
 
 <script>
+    // 💡 추가: 리디렉션 URL 파라미터 이름 정의 (로그인 페이지의 JS와 일치해야 함)
+    const REDIRECT_PARAM_NAME = 'redirectTo';
+    const VALIDATE_TOKEN_API_URL = '/auth/validate';
     const accessToken = localStorage.getItem('accessToken');
     const authButtons = document.getElementById('authButtons');
     const logoutButtons = document.getElementById('logoutButtons');
-
-    // function redirectToMyCloset() {
-    //     const accessToken = localStorage.getItem('accessToken');
-    //
-    //     if (!accessToken) {
-    //         // 토큰이 없으면 로그인 페이지로 안내
-    //         alert('My Closet은 로그인 후 이용 가능합니다.');
-    //         window.location.href = '/login';
-    //     } else {
-    //         // 토큰이 있으면 MyPage로 이동 시도
-    //         window.location.href = '/MyPage';
-    //     }
-    // }
-
-    // AI Coordinator 버튼 클릭 시 /AICoordinator 경로로 이동합니다.
-
-    // Community 버튼 클릭 시 /community 경로로 이동합니다.
-    function redirectToCommunity() {
-        // 커뮤니티 페이지를 렌더링하는 서버 경로로 수정해주세요.
-        // 예를 들어, /community로 매핑된 컨트롤러가 community.html 템플릿을 보여줍니다.
-        window.location.href = '/community';
-    }
-
-    function redirectToAICoordinator() {
-        if (!accessToken) {
-            window.location.href = '/login';
-        } else {
-            window.location.href = '/AICoordinator';
-        }
-    }
-
-    function redirectToMyCloset() {
-        if (!accessToken) {
-            window.location.href = '/login';
-        } else {
-            window.location.href = '/myCloset';
-        }
-    }
 
     document.addEventListener('DOMContentLoaded', function () {
         // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
         updateAuthButtons();
 
-        // 2. 로그아웃 버튼 클릭 이벤트 연결
+        // 2. 이벤트 리스너 연결
         const logoutLink = document.getElementById('logoutLink');
         if (logoutLink) {
             logoutLink.addEventListener('click', handleLogout);
@@ -151,59 +116,89 @@
         }
 
         const AICoordinatorButton = document.getElementById('AICoordinatorButton');
+        // 💡 수정된 함수 연결
         if (AICoordinatorButton) {
             AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
         }
 
         const MyClosetButton = document.getElementById('MyClosetButton');
-        // const MyClosetButton2 = document.getElementById('MyClosetButton2');
+        // 💡 수정된 함수 연결
         if (MyClosetButton) {
             MyClosetButton.addEventListener('click', redirectToMyCloset);
-            // MyClosetButton2.addEventListener('click', redirectToMyCloset);
         }
     });
 
-    // ========== 인증 상태에 따라 버튼을 업데이트하는 핵심 함수 ==========
-    function updateAuthButtons() {
-        // 토큰 밖에 빼뒀습니다. 사유 - AI코디네이터 페이지와 마이 클로젯 페이지 이동 시 로그인 여부 확인
+    // ========== 로그인 확인 및 리디렉션 로직 (추가/수정) ==========
 
-        if (accessToken) {
-            // 토큰이 존재하면 (로그인 상태)
-            if (authButtons) authButtons.style.display = 'none';
-            if (logoutButtons) logoutButtons.style.display = 'flex'; // 혹은 block
+    // 💡 추가: 지정된 경로로 이동을 시도하다가 비로그인 시 로그인 페이지로 리디렉션
+    function redirectToLogin(targetPath) {
+        // 목표 경로(예: /AICoordinator)를 인코딩하여 redirectTo 파라미터로 추가
+        window.location.href = `/login?${REDIRECT_PARAM_NAME}=${encodeURIComponent(targetPath)}`;
+        return false;
+    }
+
+    // AI Coordinator 버튼 클릭 시 (수정)
+    function redirectToAICoordinator() {
+        const targetPath = '/AICoordinator';
+        if (!accessToken) {
+            // 토큰이 없으면 AI Coordinator 경로를 가지고 로그인 페이지로 이동
+            return redirectToLogin(targetPath);
         } else {
-            // 토큰이 없으면 (비로그인 상태)
-            if (authButtons) authButtons.style.display = 'flex'; // 혹은 block
-            if (logoutButtons) logoutButtons.style.display = 'none';
+            // 토큰이 있으면 바로 AI Coordinator 페이지로 이동
+            window.location.href = targetPath;
         }
     }
 
-    // ========== 로그아웃 처리 함수 ==========
-    function handleLogout(event) {
-        event.preventDefault(); // <a> 태그의 기본 동작(페이지 이동) 방지
-
-        // 1. JWT 토큰 제거
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-
-        // 2. 버튼 상태를 비로그인으로 업데이트
-        updateAuthButtons();
-
-        // 3. (선택) 메인 페이지 새로고침
-        window.location.reload();
+    // My Closet 버튼 클릭 시 (수정: MyCloset 경로를 전달)
+    function redirectToMyCloset() {
+        const targetPath = '/myCloset';
+        if (!accessToken) {
+            return redirectToLogin(targetPath);
+        } else {
+            window.location.href = targetPath;
+        }
     }
 
-    // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
+    // 헤더의 마이클로젯 클릭 시 로그인 확인 여부 (수정: MyPage 경로를 전달)
     function checkLogin() {
-        if(!accessToken) {
-            window.location.href = '/login';
-            return false;
+        const targetPath = '/MyPage';
+        if (!accessToken) {
+            return redirectToLogin(targetPath);
         } else {
+            // 토큰이 있으면 <a> 태그의 href="/MyPage" 동작을 따름 (혹은 명시적으로 이동)
             return true;
         }
     }
 
+    // Community 버튼 클릭 시 (로그인이 필요 없다고 가정하고 기존 로직 유지)
+    function redirectToCommunity() {
+        window.location.href = '/community';
+    }
 
+
+    // ========== 인증 상태에 따라 버튼을 업데이트하는 핵심 함수 (기존과 동일) ==========
+    function updateAuthButtons() {
+        if (accessToken) {
+            // 토큰이 존재하면 (로그인 상태)
+            if (authButtons) authButtons.style.display = 'none';
+            if (logoutButtons) logoutButtons.style.display = 'flex';
+        } else {
+            // 토큰이 없으면 (비로그인 상태)
+            if (authButtons) authButtons.style.display = 'flex';
+            if (logoutButtons) logoutButtons.style.display = 'none';
+        }
+    }
+
+    // ========== 로그아웃 처리 함수 (기존과 동일) ==========
+    function handleLogout(event) {
+        event.preventDefault();
+
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+
+        updateAuthButtons();
+        window.location.reload();
+    }
 </script>
 
 </html>
