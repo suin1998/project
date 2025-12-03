@@ -1,12 +1,15 @@
 package org.zerock.project.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 
 public class OutfitResponseDto {
-    private String outfitImg;
+    private String outfitImgUrl;
     private String outContent;
 }
