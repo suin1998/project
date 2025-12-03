@@ -4,10 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.zerock.project.dto.AuthResponseDTO;
-import org.zerock.project.dto.BoardDTO;
-import org.zerock.project.dto.MyPageResponseDTO;
-import org.zerock.project.dto.MyPageUpdateRequestDTO;
+import org.zerock.project.dto.*;
 import org.zerock.project.entity.Board;
 import org.zerock.project.entity.User;
 import org.zerock.project.repository.BoardRepository;
@@ -39,22 +36,25 @@ public class MyPageService {
         // 2) UserInfo DTO 변환
         AuthResponseDTO.UserInfo userInfo = userToUserInfoDTO(user);
 
-        // 3) 사용자가 작성한 게시글 조회
-        List<Board> myBoards = boardRepository.findByUserIdAndDeletedFalse(userId);
-        List<BoardDTO> myBoardDTOs = myBoards.stream()
+        // 3) 게시글 조회
+        List<BoardDTO> myBoardDTOs = boardRepository.findByWriter_IdAndDeletedFalse(userId)
+                .stream()
                 .map(this::boardEntityToDto)
                 .collect(Collectors.toList());
 
-        // 4) 옷장 아이템 개수 조회
-        Long totalClosetItems = closetRepository.countByUser(user);
+        // 4) 옷장 아이템 조회 & DTO 변환
+        List<ClosetResponseDTO> closetDTOs = closetRepository.findByUser(user).stream()
+                .map(ClosetResponseDTO::fromEntity) // fromEntity 메서드 재사용
+                .collect(Collectors.toList());
 
-        // 5) 반환
+        // 5) 최종 DTO 반환
         return MyPageResponseDTO.builder()
                 .userInfo(userInfo)
                 .myBoardPosts(myBoardDTOs)
-                .totalClosetItems(totalClosetItems)
+                .closetItems(closetDTOs)
                 .build();
     }
+
 
 
     // ------------------------------------------------------------------------------------------------
