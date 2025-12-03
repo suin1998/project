@@ -7,7 +7,7 @@
 </head>
 <body>
 <header>
-    <div class="logo">Fit Maker</div>
+    <div class="logo">Fit Maker<button id="logoMain"></button></div>
     <nav>
         <div class="headerBtn">
             <div id="authButtons" style="display: none;"><a href="/login">Login</a>
@@ -15,7 +15,7 @@
 
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
-                <button id="MyPageButton2">My Closet</button>
+                <button id="MyClosetButton">My Closet</button>
             </div>
             <!--            <a href="/MyPage" onclick="return checkLogin()">My Closet</a>-->
         </div>
@@ -56,10 +56,10 @@
                 <div class="overlay" onclick=""></div>
             </div>
             <div class="gallery-like">
-                <button type="button" class="like-btn" data-action="like">
+                <button type="button" class="like-btn btn" data-action="like">
                     👍 <span class="like-count"></span>
                 </button>
-                <button type="button" class="dislike-btn" data-action="dislike">
+                <button type="button" class="dislike-btn btn" data-action="dislike">
                     👎 <span class="dislike-count"></span>
                 </button>
             </div>
@@ -72,13 +72,32 @@
         <button class="page-btn" id="next"> ></button>
     </div>
 </div>
-</div>
 
 <script>
     // 로그인 / 로그아웃 토큰
     const accessToken = localStorage.getItem('accessToken');
     const authButtons = document.getElementById('authButtons');
     const logoutButtons = document.getElementById('logoutButtons');
+
+    function redirectToMyCloset() {
+        if (!accessToken) {
+            window.location.href = '/login';
+        } else {
+            window.location.href = '/myCloset';
+        }
+    }
+
+    function redirectToAICoordinator() {
+        if (!accessToken) {
+            window.location.href = '/login';
+        } else {
+            window.location.href = '/AICoordinator';
+        }
+    }
+
+    function redirectToMain() {
+        window.location.href = '/';
+    }
 
     document.addEventListener('DOMContentLoaded', function () {
         // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
@@ -88,6 +107,21 @@
         const logoutLink = document.getElementById('logoutLink');
         if (logoutLink) {
             logoutLink.addEventListener('click', handleLogout);
+        }
+
+        const MyClosetButton = document.getElementById('MyClosetButton');
+        if (MyClosetButton) {
+            MyClosetButton.addEventListener('click', redirectToMyCloset);
+        }
+
+        const logoMainButton = document.getElementById('logoMain');
+        if(logoMainButton) {
+            logoMainButton.addEventListener('click', redirectToMain);
+        }
+
+        const AICoordinatorButton = document.getElementById('AICoordinatorButton');
+        if (AICoordinatorButton) {
+            AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
         }
 
         // const loginButton = document.getElementById('loginBtn');
@@ -141,9 +175,7 @@
         // 2. 버튼 상태를 비로그인으로 업데이트
         updateAuthButtons();
 
-        alert('로그아웃되었습니다.');
-
-        // 3. (선택) 메인 페이지 새로고침
+        // 현재 페이지 리로드
         window.location.reload();
     }
 
@@ -176,6 +208,20 @@
         coordi: "여기에 코디 정보가 들어갑니다."
     }));
 
+    // async function BoardList() {
+    //     try {
+    //         const response = await fetch('/');
+    //
+    //         if (!response.ok) {
+    //             throw new Error(`조회실패`)
+    //         }
+    //
+    //         const postList = await response.json();
+    //     } catch (error) {
+    //         console.error('목록 조회 중 에러 발생', error);
+    //         gallery.innerHTML = `게시물 로드 실패`;
+    //     }
+    // }
 
     // 게시글 보이는 페이지 관련
     const gallery = document.getElementById("gallery");
@@ -193,7 +239,7 @@
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
 
-        sampleData.slice(start, end).forEach(post => {
+        sampleData.slice(start, end).forEach(BoardDTO => {
             // 템플릿 복사
             const clone = template.content.cloneNode(true);
 
@@ -203,11 +249,11 @@
             const like = clone.querySelector('.like-count');
             const dislike = clone.querySelector('.dislike-count');
 
-            img.src = post.img;
-            overlay.textContent = post.coordi;
-            overlay.setAttribute('onclick', `goDetail(${post.id})`);
-            like.textContent = post.like;
-            dislike.textContent = post.dislike;
+            img.src = BoardDTO.img;
+            overlay.textContent = BoardDTO.coordi;
+            overlay.setAttribute('onclick', `goDetail(${BoardDTO.id})`);
+            like.textContent = BoardDTO.like;
+            dislike.textContent = BoardDTO.dislike;
 
             gallery.appendChild(clone);
         });

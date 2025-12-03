@@ -8,6 +8,11 @@
 <body>
 <header>
     <div class="logo">Fit Maker</div>
+    <div class="movementPage">
+        <a href="/MyCloset"></a>
+        <a href="AICoordinator"></a>
+        <a href="/community"></a>
+    </div>
     <nav>
         <div class="headerBtn">
             <div id="authButtons" style="display: none;"><a href="/login">Login</a>
@@ -15,8 +20,8 @@
 
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
-<!--                <a href="/MyPage" onclick="return checkLogin()">My Closet</a>-->
-                <button id="MyPageButton2">My Closet</button>
+                <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
+<!--                <button id="MyClosetButton2">My Closet</button>-->
             </div>
         </div>
     </nav>
@@ -37,7 +42,7 @@
             <!--            <h2>My Closet</h2>-->
             <!--            <p>사진을 찍어 올려서 내가 가진 옷을 정리할 수 있어요.</p>-->
             <div class="btn">
-                <button id="MyPageButton">My Closet</button>
+                <button id="MyClosetButton">My Closet</button>
             </div>
         </div>
         <div class="card">
@@ -92,18 +97,18 @@
     const authButtons = document.getElementById('authButtons');
     const logoutButtons = document.getElementById('logoutButtons');
 
-    function redirectToMyCloset() {
-        const accessToken = localStorage.getItem('accessToken');
-
-        if (!accessToken) {
-            // 토큰이 없으면 로그인 페이지로 안내
-            alert('My Closet은 로그인 후 이용 가능합니다.');
-            window.location.href = '/login';
-        } else {
-            // 토큰이 있으면 MyPage로 이동 시도
-            window.location.href = '/MyPage';
-        }
-    }
+    // function redirectToMyCloset() {
+    //     const accessToken = localStorage.getItem('accessToken');
+    //
+    //     if (!accessToken) {
+    //         // 토큰이 없으면 로그인 페이지로 안내
+    //         alert('My Closet은 로그인 후 이용 가능합니다.');
+    //         window.location.href = '/login';
+    //     } else {
+    //         // 토큰이 있으면 MyPage로 이동 시도
+    //         window.location.href = '/MyPage';
+    //     }
+    // }
 
     // AI Coordinator 버튼 클릭 시 /AICoordinator 경로로 이동합니다.
 
@@ -122,7 +127,7 @@
         }
     }
 
-    function redirectToMyPage() {
+    function redirectToMyCloset() {
         if (!accessToken) {
             window.location.href = '/login';
         } else {
@@ -150,11 +155,11 @@
             AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
         }
 
-        const MyPageButton = document.getElementById('MyPageButton');
-        const MyPageButton2 = document.getElementById('MyPageButton2');
-        if (MyPageButton || MyPageButton2) {
-            MyPageButton.addEventListener('click', redirectToMyPage);
-            MyPageButton2.addEventListener('click', redirectToMyPage);
+        const MyClosetButton = document.getElementById('MyClosetButton');
+        // const MyClosetButton2 = document.getElementById('MyClosetButton2');
+        if (MyClosetButton) {
+            MyClosetButton.addEventListener('click', redirectToMyCloset);
+            // MyClosetButton2.addEventListener('click', redirectToMyCloset);
         }
     });
 
@@ -184,21 +189,19 @@
         // 2. 버튼 상태를 비로그인으로 업데이트
         updateAuthButtons();
 
-        alert('로그아웃되었습니다.');
-
         // 3. (선택) 메인 페이지 새로고침
         window.location.reload();
     }
 
-    // // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
-    // function checkLogin() {
-    //     if(!accessToken) {
-    //         window.location.href = '/login';
-    //         return false;
-    //     } else {
-    //         return true;
-    //     }
-    // }
+    // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
+    function checkLogin() {
+        if(!accessToken) {
+            window.location.href = '/login';
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 
 </script>
