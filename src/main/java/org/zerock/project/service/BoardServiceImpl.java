@@ -26,7 +26,7 @@ import java.util.function.Function;
 public class BoardServiceImpl implements BoardService{
 
     private final BoardRepository boardRepository;
-    private final UserRepository userRepository; // User 엔티티를 찾기 위해 필요
+    private final UserRepository userRepository;
 
     /**
      * BoardRegisterDTO -> Board Entity 변환
@@ -53,7 +53,7 @@ public class BoardServiceImpl implements BoardService{
 
         return BoardDTO.builder()
                 .id(entity.getId())
-                .userId(writer.getUsername()) // User 엔티티의 String 식별자(username)를 DTO의 userId에 설정
+                .userId(writer.getId()) // User 엔티티의 String 식별자(username)를 DTO의 userId에 설정
                 .userNickname(writer.getNickname()) // User 닉네임을 DTO에 설정
                 .title(entity.getTitle())
                 .content(entity.getContent())
@@ -121,71 +121,95 @@ public class BoardServiceImpl implements BoardService{
         return entity.getId();
     }
 
-
     /**
      * 게시글 목록을 페이징 처리하여 조회합니다. (BoardListDTO 사용)
      */
     @Override
     @Transactional(readOnly = true)
     public PageResponseDTO<BoardListDTO, Board> getList(PageRequestDTO pageRequestDTO) {
+        log.info("전체 게시글 목록 조회 요청: {}", pageRequestDTO);
         // 최신순 정렬 (regDate 기준 내림차순)
         Pageable pageable = pageRequestDTO.getPageable(Sort.by("regDate").descending());
         // deleted = false 인 게시글만 조회
         Page<Board> result = boardRepository.findAllByDeletedFalse(pageable);
 
-        // Entity -> BoardListDTO 변환을 위한 Function 정의
-        Function<Board, BoardListDTO> fn = this::entityToListDto;
+        return new PageResponseDTO<>(result, this::entityToListDto);
+    }
 
-        return new PageResponseDTO<>(result, fn);
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponseDTO<BoardListDTO, Board> getMyList(PageRequestDTO pageRequestDTO, String writerId) {
+        log.info("내 게시글 목록 조회 요청: Writer ID={}, {}", writerId, pageRequestDTO);
+
+        User writer = userRepository.findById(writerId)
+                .orElseThrow(() -> new EntityNotFoundException("작성자(ID: " + writerId + ")를 찾을 수 없습니다."));
+        // 정렬 기준 설정 (예: 최신순 regDate 기준 내림차순)
+        Pageable pageable = pageRequestDTO.getPageable(Sort.by("regDate").descending());
+
+        // 🚨 Repository 메서드 호출: writerId와 deleted=false인 게시글만 조회
+        Page<Board> result = boardRepository.findAllByWriter_IdAndDeletedFalse(writerId, pageable);
+
+        return new PageResponseDTO<>(result, this::entityToListDto);
     }
 
     /**
      * 특정 ID의 게시글 상세 정보를 조회합니다. (BoardDTO 사용)
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public BoardDTO get(String id) {
-        // 조회수 증가 로직은 여기에 추가할 수 있습니다. (e.g., entity.setViewCount(entity.getViewCount() + 1);)
         Optional<Board> result = boardRepository.findByIdAndDeletedFalse(id);
 
-        return result.map(this::entityToDto)
-                .orElseThrow(() -> new EntityNotFoundException("해당 게시물(ID: " + id + ")을 찾을 수 없습니다."));
+        Board board = result.orElseThrow(() -> new EntityNotFoundException("해당 게시물(ID: " + id + ")을 찾을 수 없습니다."));
+
+        // 조회수 증가 로직 (오류 발생 부분 수정)
+        // Board 엔티티에 increaseViewCount() 메서드가 정의되어 있어야 합니다.
+        board.increaseViewCount();
+        log.info("게시글 조회수 증가: ID={}, New Count={}", id, board.getViewCount());
+
+        return entityToDto(board);
     }
 
     /**
      * 게시글의 제목, 내용, 스타일, 이미지 URL을 수정합니다. (BoardModifyDTO 사용)
      */
-    @Override
-    @Transactional
-    public void modify(String id, BoardModifyDTO modifyDTO) {
-        Board entity = boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException
-                ("수정할 게시물(ID :" + id + ")을 찾을 수 없습니다."));
-
-        // [추가] modifyDTO.getModifierId()를 사용하여 권한 체크 로직을 여기에 추가해야 합니다.
-        // 예: if (!entity.getWriter().getId().equals(modifyDTO.getModifierId())) throw new SecurityException("수정 권한이 없습니다.");
-
-        // 수정할 필드만 업데이트
-        entity.setTitle(modifyDTO.getTitle());
-        entity.setContent(modifyDTO.getContent());
-        entity.setMainImageUrl(modifyDTO.getMainImageUrl());
-        log.info("게시글 수정 완료: ID={}", id);
-
-        // @Transactional에 의해 변경 감지(Dirty Checking)로 자동 저장됩니다.
-    }
+//    @Override
+//    @Transactional
+//    public void modify(String id, BoardModifyDTO modifyDTO) {
+//        Board entity = boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException
+//                ("수정할 게시물(ID :" + id + ")을 찾을 수 없습니다."));
+//
+//        // [추가] modifyDTO.getModifierId()를 사용하여 권한 체크 로직을 여기에 추가해야 합니다.
+//        // 예: if (!entity.getWriter().getId().equals(modifyDTO.getModifierId())) throw new SecurityException("수정 권한이 없습니다.");
+//
+//        // 수정할 필드만 업데이트
+//        entity.setTitle(modifyDTO.getTitle());
+//        entity.setContent(modifyDTO.getContent());
+//        entity.setMainImageUrl(modifyDTO.getMainImageUrl());
+//        log.info("게시글 수정 완료: ID={}", id);
+//
+//        // @Transactional에 의해 변경 감지(Dirty Checking)로 자동 저장됩니다.
+//    }
 
     /**
      * 게시글을 소프트 삭제합니다.
      */
     @Override
     @Transactional
-    public void remove(String id) {
-        Board entity = boardRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("삭제할 게시물(ID: " + id + ")을 찾을 수 없습니다."));
+    public void remove(String id, String removerId) {
+        Board entity = boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException
+                ("삭제할 게시물(ID :" + id + ")을 찾을 수 없습니다."));
 
-        // 소프트 삭제 처리
-        entity.setDeleted(true);
-        log.warn("게시글 소프트 삭제 처리: ID={}", id);
+        if (!entity.getWriter().getId().equals(removerId)) {
+            throw new SecurityException("삭제 권한이 없습니다. (작성자 ID 불일치)");
+        }
 
-        // @Transactional에 의해 변경 감지로 자동 저장됩니다.
+        if (entity.isDeleted()) {
+            throw new EntityNotFoundException("이미 삭제된 게시물(ID: " + id + ")입니다.");
+        }
+
+        entity.setDeleted(true); // 소프트 삭제 처리
+        log.info("게시글 소프트 삭제 완료: ID={}", id);
     }
+
 }

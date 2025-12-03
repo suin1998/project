@@ -11,7 +11,6 @@ import org.zerock.project.dto.*;
 import org.zerock.project.entity.Board;
 import org.zerock.project.service.BoardService;
 
-import java.util.List;
 @RestController
 @RequestMapping("/community")
 @RequiredArgsConstructor
@@ -19,7 +18,7 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping
+    @PostMapping("/post")
     public ResponseEntity<String> registerBoard(@RequestBody BoardRegisterDTO boardRegisterDTO) {
 
         String id = boardService.register(boardRegisterDTO);
@@ -27,7 +26,7 @@ public class BoardController {
         return new ResponseEntity<>(id, HttpStatus.CREATED); // 게시물 등록
     }
 
-    @GetMapping
+    @GetMapping("/post")
     public ResponseEntity<PageResponseDTO<BoardListDTO, Board>> getBoardList(@ModelAttribute PageRequestDTO pageRequestDTO) {
 
         PageResponseDTO<BoardListDTO, Board> boardList = boardService.getList(pageRequestDTO);
@@ -36,7 +35,17 @@ public class BoardController {
 
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/my")
+    public ResponseEntity<PageResponseDTO<BoardListDTO, Board>> getMyBoardList(
+            @ModelAttribute PageRequestDTO pageRequestDTO,
+            @RequestParam String writerId) {
+
+        PageResponseDTO<BoardListDTO, Board> BoardList = boardService.getMyList(pageRequestDTO, writerId);
+
+        return new ResponseEntity<>(BoardList, HttpStatus.OK);
+    }
+
+    @GetMapping("/post/{id}")
     public ResponseEntity<BoardDTO> getBoard(@PathVariable String id) {
         try {
             BoardDTO boardDTO = boardService.get(id);
@@ -46,28 +55,16 @@ public class BoardController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> modifyBoard(@PathVariable String id, @RequestBody BoardModifyDTO modifyDTO) {
+    @DeleteMapping("/post/{id}")
+    public ResponseEntity<Void> removeBoard(@PathVariable String id,
+                                            @RequestParam("userId") String removerId) {
         try {
-            // Service에 ID와 DTO를 함께 전달
-            boardService.modify(id, modifyDTO);
-            return new ResponseEntity<>(HttpStatus.OK);
+            boardService.remove(id, removerId); // 🚨 게시물 ID와 요청자 ID를 Service로 전달
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content
         } catch (EntityNotFoundException e) {
-            // 게시물이 없거나 권한이 없는 경우(Service에서 EntityNotFoundException으로 통일해서 던진다고 가정)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found (게시물 없음)
         } catch (SecurityException e) {
-            // 권한 없음 등의 이유로 거부될 경우 403 Forbidden
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeBoard(@PathVariable String id) {
-        try {
-            boardService.remove(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 게시물 삭제
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 🚨 403 Forbidden (권한 없음)
         }
     }
 }

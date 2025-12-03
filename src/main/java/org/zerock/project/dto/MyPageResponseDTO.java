@@ -13,5 +13,7 @@ public class MyPageResponseDTO {
 
     private List<BoardDTO> myBoardPosts;
 
+    private List<ClosetResponseDTO> closetItems;
+
     private Long totalClosetItems; // 옷장 아이템 개수 (추가됨)
 }
