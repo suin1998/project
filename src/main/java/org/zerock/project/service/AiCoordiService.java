@@ -2,6 +2,7 @@ package org.zerock.project.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zerock.project.dto.OutfitRequestDto;
 import org.zerock.project.dto.OutfitResponseDto;
@@ -16,6 +17,13 @@ import java.time.LocalDate;
 @Log4j2
 
 public class AiCoordiService {
+
+    @Value("${gemini.api.key}")
+    private String aiKey;
+    @Value("${gemini.api.url")
+    private String ai_api_url;
+
+
     public OutfitResponseDto getAiCoordi(OutfitRequestDto outfitRequestDto){
 
         WeatherRequestDto weatherReq = outfitRequestDto.getWeatherRequestDto();
@@ -38,7 +46,7 @@ public class AiCoordiService {
         String cloth = outfitRequestDto.getCloths();
 
         StringBuilder promptBuilder = new StringBuilder();
-        promptBuilder.append("당신은 전문 패션 스타일리스트 AI입니다. 다음 조건을 충족하는 코디를 추천해주세요.\n");
+        promptBuilder.append("당신은 전문 패션 스타일리스트 입니다. 다음 조건을 충족하는 코디를 추천해주세요.\n");
 
         promptBuilder.append("---[날씨 조건]---\n");
         promptBuilder.append("날짜: ").append(targetDate + "\n");
@@ -51,20 +59,13 @@ public class AiCoordiService {
         promptBuilder.append("요청 스타일: ").append(fashion).append("느낌: ").append(tempstyle+"\n");
         promptBuilder.append("상황(TPO): ").append(tpo).append("\n");
 
-
-
-
-
-
-
-
+        
         return null;
     }
 
-//    public String callGeminiApi(String prompt){
-//        String geminiUrl = "https://api.gemini.com/v1/generate";
-////        https://gemini.google.com/app
-////        String apikey = "AIzaSyBTTUoxtzwRqTlP3X88YGqRwrtRmE0iVWw";
-//    }
+
+
+
+
 
 }
