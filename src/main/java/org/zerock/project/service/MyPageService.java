@@ -100,8 +100,6 @@ public class MyPageService {
     private BoardDTO boardEntityToDto(Board entity) {
         return BoardDTO.builder()
                 .id(entity.getId())  // String ID 그대로 넣음
-                .userId(entity.getUserId())
-                .userNickname(entity.getUserNickname())
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .userStyle(entity.getUserStyle())

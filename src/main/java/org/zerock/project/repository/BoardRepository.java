@@ -13,7 +13,7 @@ public interface BoardRepository extends JpaRepository<Board, String> {
 
     Page<Board> findAllByDeletedFalse(Pageable pageable);
 
-    List<Board> findByWriterAndDeletedFalse(String id);
+    List<Board> findByUserIdAndDeletedFalse(String userId);
 
     Optional<Board> findByIdAndDeletedFalse(String id);
 
