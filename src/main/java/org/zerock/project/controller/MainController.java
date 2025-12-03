@@ -27,9 +27,9 @@ public class MainController {
         return "user/join";
     }
 
-    @GetMapping("/community")
+    @GetMapping("/community/board")
     public String communityList() {
-        return "community/userCommunity";
+        return "community/post";
     }
 
     @GetMapping("/AICoordinator")

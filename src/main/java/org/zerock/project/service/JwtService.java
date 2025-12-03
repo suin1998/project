@@ -138,16 +138,16 @@ public class JwtService {
     /**
      * 토큰 유효성 검증
      */
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        try {
-            final String email = extractEmail(token);
-            // userDetails.getUsername()은 일반적으로 principal (여기서는 이메일)을 반환합니다.
-            return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
-        } catch (Exception e) {
-            log.error("JWT validation error: {}", e.getMessage());
-            return false;
-        }
-    }
+//    public Boolean validateToken(String token, UserDetails userDetails) {
+//        try {
+//            final String email = extractEmail(token);
+//            // userDetails.getUsername()은 일반적으로 principal (여기서는 이메일)을 반환합니다.
+//            return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
+//        } catch (Exception e) {
+//            log.error("JWT validation error: {}", e.getMessage());
+//            return false;
+//        }
+//    }
 
     /**
      * 토큰 유효성 검증 (이메일로)

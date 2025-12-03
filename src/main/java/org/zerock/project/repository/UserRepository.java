@@ -41,7 +41,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     void verifyUserEmail(@Param("userId") String userId);
 
     @Query("SELECT COUNT(u) FROM User u WHERE u.createdAt >= :startDate")
-    Long countUsersCreatedAfter(@Param("startDate") LocalDateTime startDate);
+    String countUsersCreatedAfter(@Param("startDate") LocalDateTime startDate);
 
     @Query("SELECT u FROM User u WHERE u.emailVerified = false " +
             "AND u.createdAt < :beforeDate")

@@ -7,32 +7,34 @@
 </head>
 <body>
 <main class="login">
-    <div class="login-Box">
-        <header class="logo">
-            <h1>Fit Maker</h1>
-        </header>
+    <form>
+        <div class="login-Box">
+            <header class="logo">
+                <h1>Fit Maker</h1>
+            </header>
 
-        <div class="form-control">
-            <label for="email">이메일</label>
-            <input id="email" class="user_email" type="email" placeholder="email">
+            <div class="form-control">
+                <label for="email">이메일</label>
+                <input id="email" class="user_email" type="email" placeholder="email">
 
-            <label for="password">비밀번호</label>
-            <input id="password" class="password" type="password" placeholder="password">
+                <label for="password">비밀번호</label>
+                <input id="password" class="password" type="password" placeholder="password">
 
-            <div class="loginBtn">
-                <button class="btn btn-primary" id="loginSubmitBtn" type="submit">로그인</button>
+                <div class="loginBtn">
+                    <button class="btn btn-primary" id="loginSubmitBtn" type="submit">로그인</button>
 
-                <button class="btn btn-outline" id="signupBtn" type="button">회원가입</button>
+                    <button class="btn btn-outline" id="signupBtn" type="button">회원가입</button>
 
+                </div>
             </div>
         </div>
-    </div>
+    </form>
 </main>
 <script>
     // ========== 전역 변수 ==========
     const LOGIN_API_URL = '/auth/login'; // Spring Boot 컨트롤러의 로그인 엔드포인트
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         attachEventListeners();
     });
 
@@ -73,7 +75,7 @@
 
             if (response.ok) {
                 // 1. 로그인 성공
-                alert('로그인 성공!');
+                // alert('로그인 성공!');
 
                 // 2. 토큰 저장 (AuthResponseDTO에 포함된 토큰을 localStorage에 저장)
                 if (data.accessToken) {

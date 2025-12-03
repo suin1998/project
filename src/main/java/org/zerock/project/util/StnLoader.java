@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Component;
-import org.zerock.project.model.GridLocation;
 import org.zerock.project.model.StnLocation;
 
 import java.io.InputStream;
@@ -21,7 +20,7 @@ public class StnLoader {
         Map<String, StnLocation> stnMap = new HashMap<>();
         ZipSecureFile.setMinInflateRatio(0.0d);
         try{
-            InputStream is = getClass().getClassLoader().getResourceAsStream("sub_file/mid_stn_info.xlsx");
+            InputStream is = getClass().getClassLoader().getResourceAsStream("static/sub_file/mid_stn_info.xlsx");
             Workbook workbook = WorkbookFactory.create(is);
             Sheet sheet = workbook.getSheetAt(0);
 

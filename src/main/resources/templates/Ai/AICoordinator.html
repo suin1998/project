@@ -207,6 +207,13 @@
         // (선택한 지역과 날짜의 값, 현재는 값이 없으나 선택 후 값이 생김)
         let selectedRegion = { siDo: null, siGunGu: null, dong: null };
         let selectedDate = null;
+        let formattedDate = null;
+        let today = new Date();
+
+        let tMax = null;
+        let tMin = null;
+        let pop = null;
+
 
         // 지역 드롭다운 토글
         regionBtn.addEventListener("click", () => {
@@ -362,22 +369,16 @@
         function displayWeatherResult(data) {
             let html = ``;
 
-            if (data.shortTerm) {
-                const s = data.shortTerm;
+            if (data){
+                tMax = data.tempMax;
+                tMin = data.tempMin;
+                pop = data.rainProbability;
                 html += `
             <div class="weather-forecast short-term">
-                <p>최저 기온: ${s.tempMin}°C</p>
-                <p>최고 기온: ${s.tempMax}°C</p>
-                <p>강수 확률: ${s.rainProbability}%</p>
+                <p>최저 기온: ${tMin}°C</p>
+                <p>최고 기온: ${tMax}°C</p>
+                <p>강수 확률: ${pop}%</p>
             </div>`;
-            } else if (data.midTerm) {
-                const m = data.midTerm;
-                html += `
-            <div class="weather-forecast mid-term">
-                <p>최저 기온: ${m.tempMin}°C</p>
-                <p>최고 기온: ${m.tempMax}°C</p>
-                <p>강수 확률: ${m.rainProbability}%</p>
-                </div>`;
             } else {
                 html += '<p>해당 날짜에 유효한 날씨 데이터가 없습니다.</p>';
             }
@@ -386,7 +387,6 @@
         }
 
         async function fetchWeather() {
-            let formattedDate = '';
 
             const dateRegex = /(\d{4})년 (\d{1,2})월 (\d{1,2})일/;
             const match = selectedDate.match(dateRegex);
@@ -457,6 +457,7 @@
                     }
                 });
             });
+
         }
 
         setupTagLimit("fashionStyleTags", 3);
@@ -478,6 +479,7 @@
                 tag.classList.add("active");
             });
         });
+
 
 
         /* ===============================
@@ -577,9 +579,9 @@
 
         loadSavedBtn.addEventListener("click", () => {
             const sampleImages = [
-                {src: "/static/sample/tshirt1.jpg", category: "티셔츠"},
-                {src: "/static/sample/pants1.jpg", category: "팬츠"},
-                {src: "/static/sample/jacket1.jpg", category: "아우터"}
+                // {src: "/static/sample/tshirt1.jpg", category: "티셔츠"},
+                // {src: "/static/sample/pants1.jpg", category: "팬츠"},
+                // {src: "/static/sample/jacket1.jpg", category: "아우터"}
             ];
 
             clothesData = clothesData.concat(sampleImages);
@@ -603,6 +605,38 @@
                 clothesList.appendChild(img);
             });
         }
+
+        function collectUserData(){
+            const fashionTags = Array.from(document.querySelectorAll("#fashionStyleTags .tag.active"))
+                .map(tag => tag.textContent.trim());
+            const tempTags = Array.from(document.querySelectorAll("#tempStyleTags .tag.active"))
+                .map(tag => tag.textContent.trim())
+            const tpoTag = document.querySelector("#situationTags .tag.active")
+            const year = today.getFullYear();
+            const month = (today.getMonth()+1).toString().padStart(2,'0');
+            const day = today.getDate.toString().padStart(2,"0");
+            const localDate = `${year}-${month}-${day}`;
+
+
+            return{
+                selectedDate: formattedDate,
+                nowDate: localDate,
+                siDo: selectedRegion.siDo,
+                siGunGu: selectedRegion.siGunGu,
+                dong: selectedRegion.dong,
+
+                fashionStyles: fashionTags,
+                tempStyles: tempTags,
+                tpo: tpoTag,
+                tempMax: tMax,
+                tempMin: tMin,
+                pop: pop,
+                // uploadedClothes: uploadedClothes
+
+            }
+
+        }
+
 
     });
 

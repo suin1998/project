@@ -96,6 +96,36 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+
+    //메일 재발송 기능
+    @PostMapping("/resend-verification")
+    public ResponseEntity<Map<String, String>> resendVerificationEmail(
+            @RequestBody Map<String, String> request) {
+
+        String username = request.get("username");
+
+        if (username == null || username.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", "false",
+                    "message", "사용자 이름을 입력해주세요."
+            ));
+        }
+
+        try {
+            String message = userService.resendVerificationEmail(username);
+
+            return ResponseEntity.ok(Map.of(
+                    "success", "true",
+                    "message", message
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", "false",
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
     /**
      * 회원 탈퇴
      */
