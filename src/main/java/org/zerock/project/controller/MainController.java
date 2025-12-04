@@ -33,10 +33,10 @@ public class MainController {
         return "user/userEdit";
     }
 
-//    @GetMapping("/community")
-//    public String community() {
-//        return "community/userCommunity";
-//    }
+    @GetMapping("/community")
+    public String community() {
+        return "community/userCommunity";
+    }
 
     @GetMapping("/post/{id}")
     public String postDetail(@PathVariable String id) {

@@ -7,13 +7,27 @@
 </head>
 <body>
 <header>
-    <div class="logo"></div>
+    <div class="logo">Fit Maker
+        <button id="logoMain"></button>
+    </div>
+    <div class="movementPage">
+        <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
+        <a href="/AICoordinator" onclick="return checkLogin()">AI Coordinator</a>
+        <a href="/community">Community</a>
+    </div>
     <nav>
-        <a href="#" id="logout"></a>
-        <a href="#" id="myPage"></a>
-        <a href="#" id="Main"></a>
+        <div class="headerBtn">
+            <div id="authButtons" style="display: none;"><a href="/login">Login</a>
+                <a href="/join">Join</a></div>
+
+            <div id="logoutButtons" style="display: none;">
+                <a href="/logout" id="logoutLink">Logout</a>
+                <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
+            </div>
+        </div>
     </nav>
 </header>
+
 <div class="container">
     <h2 class="post-title">추천 코디</h2>
 
@@ -25,10 +39,10 @@
         <div class="date-like">
             <input id="postDate" class="date-input" readonly>
             <div class="like-dislike-box">
-                <button type="button" id="likeBtn" class="like-btn"><span class="like">👍</span></button>
+                <button type="button" id="likeBtn"><span class="like">👍</span></button>
                 <span id="likeCount">0</span>
 
-                <button type="button" id="dislikeBtn" class="dislike-btn"><span class="dislike">👎</span></button>
+                <button type="button" id="dislikeBtn"><span class="dislike">👎</span></button>
                 <span id="dislikeCount">0</span>
             </div>
         </div>
@@ -49,6 +63,86 @@
 </div>
 
 <script>
+    const accessToken = localStorage.getItem('accessToken');
+    const authButtons = document.getElementById('authButtons');
+    const logoutButtons = document.getElementById('logoutButtons');
+
+    function redirectToMyCloset() {
+        if (!accessToken) {
+            window.location.href = '/login';
+        } else {
+            window.location.href = '/MyPage';
+        }
+    }
+
+    function redirectToAICoordinator() {
+        if (!accessToken) {
+            window.location.href = '/login';
+        } else {
+            window.location.href = '/AICoordinator';
+        }
+    }
+
+    function redirectToMain() {
+        window.location.href = '/';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
+        updateAuthButtons();
+
+        // 2. 로그아웃 버튼 클릭 이벤트 연결
+        const logoutLink = document.getElementById('logoutLink');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', handleLogout);
+        }
+
+        const MyClosetButton = document.getElementById('MyClosetButton');
+        if (MyClosetButton) {
+            MyClosetButton.addEventListener('click', redirectToMyCloset);
+        }
+
+        const logoMainButton = document.getElementById('logoMain');
+        if (logoMainButton) {
+            logoMainButton.addEventListener('click', redirectToMain);
+        }
+
+        const AICoordinatorButton = document.getElementById('AICoordinatorButton');
+        if (AICoordinatorButton) {
+            AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
+        }
+
+    });
+
+    // ========== 인증 상태에 따라 버튼을 업데이트하는 핵심 함수 ==========
+    function updateAuthButtons() {
+
+        if (accessToken) {
+            // 토큰이 존재하면 (로그인 상태)
+            if (authButtons) authButtons.style.display = 'none';
+            if (logoutButtons) logoutButtons.style.display = 'flex'; // 혹은 block
+        } else {
+            // 토큰이 없으면 (비로그인 상태)
+            if (authButtons) authButtons.style.display = 'flex'; // 혹은 block
+            if (logoutButtons) logoutButtons.style.display = 'none';
+        }
+    }
+
+    // ========== 로그아웃 처리 함수 ==========
+    function handleLogout(event) {
+        event.preventDefault(); // <a> 태그의 기본 동작(페이지 이동) 방지
+
+        // 1. JWT 토큰 제거
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+
+        // 2. 버튼 상태를 비로그인으로 업데이트
+        updateAuthButtons();
+
+        // 현재 페이지 리로드
+        window.location.reload();
+    }
+
     /* 저장된 게시글 데이터 (예시) */
     const savedPost = {
         userNickName: "홍길동",
@@ -128,7 +222,6 @@
 
     const likeBtn = document.getElementById("likeBtn");
     const dislikeBtn = document.getElementById("dislikeBtn");
-
     const likeCount = document.getElementById("likeCount");
     const dislikeCount = document.getElementById("dislikeCount");
 
@@ -151,6 +244,16 @@
         likeBtn.disabled = true;
         dislikeBtn.disabled = true;  // 둘 중 하나만 선택하게 하고 싶으면 유지
     };
+
+    // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
+    function checkLogin() {
+        if(!accessToken) {
+            window.location.href = '/login';
+            return false;
+        } else {
+            return true;
+        }
+    }
 </script>
 </body>
 </html>

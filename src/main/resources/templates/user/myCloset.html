@@ -7,13 +7,15 @@
     <link rel="stylesheet" href="/css/myCloset.css">
 </head>
 <body>
-
+<!--헤더 관련 수정했습니다.-->
 <header>
-    <div class="logo">My Closet</div>
+    <div class="logo">Fit Maker<button id="logoMain"></button>
+    </div>
     <nav>
-        <a href="#" id="logout">로그아웃</a>
-        <a href="#" id="main">메인</a>
-        <a href="#" id="AICoordinator">AI 코디 추천</a>
+        <div class="headerBtn">
+            <a href="/logout" id="logoutLink">Logout</a>
+            <button id="AICoordinatorButton">AI Coordinator</button>
+        </div>
     </nav>
 </header>
 
@@ -86,6 +88,94 @@
 
 <script>
     const apiBase = "/api/closet";
+
+    // 헤더 관련으로 추가하였습니다.
+    // 페이지 이동 관련 (로고 클릭 시 메인으로 이동합니다.)
+    // const accessToken = localStorage.getItem('accessToken');
+
+    function getAuthHeaders() {
+
+        const currentAccessToken = localStorage.getItem('accessToken');
+
+        if (!currentAccessToken) {
+            // 토큰이 없으면 로그인 페이지로 강제 이동
+            alert('로그인이 필요합니다.');
+            window.location.href = '/login?redirectTo=/myCloset';
+            throw new Error('No Access Token found.');
+        }
+        return {
+            'Authorization': `Bearer ${currentAccessToken}`,
+            'Content-Type': 'application/json' // POST/PUT 요청 시 필요
+        };
+    }
+
+    async function loadClosetData(category) {
+        // try-catch 블록 추가하여 401 에러 처리
+        try {
+            const headers = getAuthHeaders(); // 💡 헤더 가져오기
+
+            const res = await fetch(`${apiBase}/grouped?category=${category}`, {
+                method: 'GET',
+                headers: headers // 💡 헤더 적용
+            });
+
+            if (res.status === 401) {
+                // 401 에러 발생 시 재로그인 유도
+                alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                window.location.href = '/login?redirectTo=/myCloset';
+                return;
+            }
+
+            if (!res.ok) {
+                throw new Error(`Failed to fetch closet data: ${res.status}`);
+            }
+
+            const data = await res.json();
+            // data는 {TOP: [...], BOTTOM: [...], ...} 형태일 것으로 예상
+            renderCloset(data[category.toUpperCase()] || [], category);
+
+        } catch (error) {
+            console.error("Error loading closet data:", error);
+            // 네트워크 오류나 다른 문제 발생 시
+        }
+    }
+
+    function redirectToAICoordinator() {
+        window.location.href = '/AICoordinator';
+    }
+
+    function redirectToMain() {
+        window.location.href = '/';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const logoutLink = document.getElementById('logoutLink');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', handleLogout);
+        }
+
+        const AICoordinatorButton = document.getElementById('AICoordinatorButton');
+        if (AICoordinatorButton) {
+            AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
+        }
+
+        const logoMainButton = document.getElementById('logoMain');
+        if(logoMainButton) {
+            logoMainButton.addEventListener('click', redirectToMain);
+        }
+
+    });
+
+    function handleLogout(event) {
+        event.preventDefault(); // <a> 태그의 기본 동작(페이지 이동) 방지
+
+        localStorage.removeItem('accessToken');
+
+        // 로그아웃 시, 메인으로 가기
+        window.location.href = '/';
+    }
 
     document.addEventListener("DOMContentLoaded", () => {
         const logout = document.getElementById("logout");
@@ -372,11 +462,13 @@
         const container = document.getElementById("searchResults");
         container.innerHTML = "";
 
-        list.forEach(item => {
-            const img = document.createElement("img");
-            img.src = item.imageUrl;
-            container.appendChild(img);
-        });
+            const list = await res.json();
+
+            // ... (나머지 렌더링 로직)
+
+        } catch (error) {
+            console.error("Error searching by tags:", error);
+        }
     }
 
 

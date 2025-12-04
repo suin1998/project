@@ -7,11 +7,12 @@
 </head>
 <body>
 <header>
-    <div class="logo"></div>
+    <div class="logo">Fit Maker<button id="logoMain"></button>
+    </div>
     <nav>
-        <a href="#" id="logout"></a>
-        <a href="#" id="main"></a>
-        <a href="#" id="AICoordinator"></a>
+        <div class="headerBtn">
+            <a href="/logout" id="logoutLink">Logout</a>
+        </div>
     </nav>
 </header>
 <div class="container">
@@ -109,6 +110,33 @@
 </div>
 
 <script>
+    //페이지 이동관련 상단 추가입니다.
+    function redirectToMain() {
+        window.location.href = '/';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const logoutLink = document.getElementById('logoutLink');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', handleLogout);
+        }
+
+        const logoMainButton = document.getElementById('logoMain');
+        if(logoMainButton) {
+            logoMainButton.addEventListener('click', redirectToMain);
+        }
+
+    });
+
+    function handleLogout(event) {
+        event.preventDefault(); // <a> 태그의 기본 동작(페이지 이동) 방지
+
+        localStorage.removeItem('accessToken');
+
+        // 로그아웃 시, 메인으로 가기
+        window.location.href = '/';
+    }
+
     // 임의 작업입니다.
     document.addEventListener("DOMContentLoaded", () => {
         // ---------- 기본값 ----------
