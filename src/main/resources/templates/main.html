@@ -100,6 +100,21 @@
     const authButtons = document.getElementById('authButtons');
     const logoutButtons = document.getElementById('logoutButtons');
 
+    function redirectToMyCloset() {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            // 토큰이 없으면 로그인 페이지로 안내
+            alert('My Closet은 로그인 후 이용 가능합니다.');
+            window.location.href = '/login';
+        } else {
+            // 토큰이 있으면 MyPage로 이동 시도
+            window.location.href = '/myPage';
+        }
+    }
+
+    // AI Coordinator 버튼 클릭 시 /AICoordinator 경로로 이동합니다.
+
     // Community 버튼 클릭 시 /community 경로로 이동합니다.
     function redirectToCommunity() {
         // 커뮤니티 페이지를 렌더링하는 서버 경로로 수정해주세요.
@@ -144,10 +159,14 @@
             AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
         }
 
-        const MyClosetButton = document.getElementById('MyClosetButton');
-        // 💡 수정된 함수 연결
-        if (MyClosetButton) {
-            MyClosetButton.addEventListener('click', redirectToMyCloset);
+        const MyPageButton = document.getElementById('MyPageButton');
+        const MyPageButton2 = document.getElementById('MyPageButton2');
+
+        if (MyPageButton) {
+            MyPageButton.addEventListener('click', redirectToMyPage);
+        }
+        if (MyPageButton2) {
+            MyPageButton2.addEventListener('click', redirectToMyPage);
         }
     });
 

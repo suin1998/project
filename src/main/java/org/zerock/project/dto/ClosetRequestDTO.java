@@ -25,9 +25,7 @@ public class ClosetRequestDTO {
     @NotNull
     private Category category;
 
-    @NotBlank
     private String imageUrl;
-
     private String brand;
 
     private List<String> tags;

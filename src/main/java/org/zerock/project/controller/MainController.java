@@ -28,11 +28,6 @@ public class MainController {
         return "user/join";
     }
 
-//    @GetMapping("/myCloset")
-//    public String myCloset() {
-//        return "user/myCloset";
-//    }
-
     @GetMapping("/myPage")
     public String myPage() {
         return "user/userEdit";
@@ -53,9 +48,9 @@ public class MainController {
         return "Ai/AICoordinator";
     }
 
-//    @GetMapping("/myCloset")
-//    public String myCloset() {
-//        return "user/myCloset";
-//    }
+    @GetMapping("/myCloset")
+    public String myCloset() {
+        return "user/myCloset";
+    }
 
 }
