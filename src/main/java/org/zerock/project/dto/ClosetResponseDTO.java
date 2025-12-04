@@ -26,7 +26,7 @@ public class ClosetResponseDTO {
 
     public static ClosetResponseDTO fromEntity( Closet closet) {
         return ClosetResponseDTO.builder()
-                .id(String.valueOf(closet.getId()))
+                .id(closet.getId())
                 .userId(closet.getUser().getId())
                 .category(closet.getCategory())
                 .imageUrl(closet.getImageUrl())

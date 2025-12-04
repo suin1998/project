@@ -2,6 +2,7 @@ package org.zerock.project.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.zerock.project.dto.ClosetRequestDTO;
 import org.zerock.project.dto.ClosetResponseDTO;
@@ -12,13 +13,13 @@ import org.zerock.project.repository.ClosetRepository;
 import org.zerock.project.repository.UserRepository;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ClosetService {
 
     private final ClosetRepository closetRepository;
@@ -35,7 +36,7 @@ public class ClosetService {
             try {
                 imageUrl = fileStorageService.storeFile(image); // 이미지 저장 후 URL 반환
             } catch (IOException e) {
-                throw new RuntimeException("Failed to store image", e);
+                throw new RuntimeException("이미지 저장 중 오류가 발생했습니다.", e);
             }
         }
 
@@ -48,28 +49,30 @@ public class ClosetService {
                 .build();
 
         Closet saved = closetRepository.save(closet);
-        return toDTO(saved);
+        return  ClosetResponseDTO.fromEntity(saved);
     }
 
     // 카테고리별 조회 (로그인 사용자(userId) + Category 기준 조회, DTO 변환 후 리스트 반환)
+    @Transactional(readOnly = true)
     public List<ClosetResponseDTO> getCloset(String userId, Category category) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return closetRepository.findByUserAndCategory(user, category)
                 .stream()
-                .map(this::toDTO)
+                .map(ClosetResponseDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
     // 전체 그룹 조회 (로그인 사용자 기준 전체 Closet 조회, 카테고리별 그룹화 후 Map반환)
+    @Transactional(readOnly = true)
     public Map<Category, List<ClosetResponseDTO>> getGroupedCloset(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return closetRepository.findByUser(user)
                 .stream()
-                .map(this::toDTO)
+                .map(ClosetResponseDTO::fromEntity)
                 .collect(Collectors.groupingBy(ClosetResponseDTO::getCategory));
     }
 
@@ -83,7 +86,8 @@ public class ClosetService {
                 String imageUrl = fileStorageService.storeFile(image);
                 closet.setImageUrl(imageUrl);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to store image", e);
+                // log.error("이미지 수정 저장 실패", e);
+                throw new RuntimeException("이미지 저장 중 오류가 발생했습니다.", e);
             }
         } else if (dto.getImageUrl() != null) {
             closet.setImageUrl(dto.getImageUrl());
@@ -92,34 +96,20 @@ public class ClosetService {
         closet.setCategory(dto.getCategory());
         closet.setBrand(dto.getBrand());
         closet.setTags(dto.getTags());
-        closet.setUpdatedAt(LocalDateTime.now());
 
         Closet updated = closetRepository.save(closet);
-        return toDTO(updated);
+        return ClosetResponseDTO.fromEntity(updated);
     }
 
     // 태그 검색 (로그인 사용자 + 태그 리스트 기준 검색)
+    @Transactional(readOnly = true)
     public List<ClosetResponseDTO> searchByTags(String userId, List<String> tags) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return closetRepository.findByUserAndTagsIn(user, tags)
                 .stream()
-                .map(this::toDTO)
+                .map(ClosetResponseDTO::fromEntity)
                 .collect(Collectors.toList());
-    }
-
-    // DTO 변환
-    private ClosetResponseDTO toDTO(Closet closet) {
-        return ClosetResponseDTO.builder()
-                .id(closet.getId())
-                .userId(closet.getUser().getId())
-                .category(closet.getCategory())
-                .imageUrl(closet.getImageUrl())
-                .brand(closet.getBrand())
-                .tags(closet.getTags())
-                .createdAt(closet.getCreatedAt())
-                .updatedAt(closet.getUpdatedAt())
-                .build();
     }
 }

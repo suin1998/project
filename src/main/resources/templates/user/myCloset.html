@@ -85,8 +85,44 @@
 </div>
 
 <script>
-    const userId = "user123"; // 나중에 로그인 정보로 교체
     const apiBase = "/api/closet";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const logout = document.getElementById("logout");
+        const main = document.getElementById("main");
+        const AICoordinator = document.getElementById("AICoordinator");
+
+        if (logout) {
+            logout.addEventListener("click", (e) => {
+                e.preventDefault();
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("refreshToken");
+                alert("로그아웃되었습니다.");
+                window.location.href = "/";
+            });
+        }
+
+        if (main) {
+            main.addEventListener("click", (e) => {
+                e.preventDefault();
+                window.location.href = "/";
+            });
+        }
+
+        if (AICoordinator) {
+            AICoordinator.addEventListener("click", (e) => {
+                e.preventDefault();
+                const token = localStorage.getItem('accessToken');
+                if (!token) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = '/login';
+                } else {
+                    window.location.href = '/AICoordinator';
+                }
+            });
+        }
+    });
+
 
     /* ---------------------------- 달력 렌더링 ---------------------------- */
     document.addEventListener("DOMContentLoaded", () => {
@@ -156,6 +192,69 @@
         renderCalendar();
     });
 
+    /* ---------------------------- 옷 등록 기능 ---------------------------- */
+    const imgInput = document.getElementById("img-upload");
+
+    imgInput.addEventListener("change", handleImageUpload);
+
+    async function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const selectedRadio = document.querySelector("input[name='category']:checked");
+        if (!selectedRadio) {
+            alert("먼저 카테고리를 선택해주세요.");
+            imgInput.value = "";
+            return;
+        }
+
+        const category = selectedRadio.value; // ex) "TOP", "BOTTOM" 등
+        const accessToken = localStorage.getItem('accessToken');
+
+        const dto = {
+            userId: "",              // 서버에서 principal로 세팅하니 여기서는 비워도 되긴 함
+            category: category,
+            imageUrl: null,          // 파일 업로드 방식이므로 URL은 서버가 채움
+            brand: null,             // 나중에 브랜드 입력 폼 만들면 값 채우기
+            tags: []                 // 나중에 태그 입력 폼 만들면 값 채우기
+        };
+
+        const formData = new FormData();
+        formData.append(
+            "data",
+            new Blob([JSON.stringify(dto)], { type: "application/json" })
+        );
+        formData.append("image", file);
+
+        const res = await fetch(`${apiBase}`, {
+            method: "POST",
+            headers: {
+                'Authorization': accessToken ? `Bearer ${accessToken}` : ''
+            },
+            body: formData
+        });
+
+        if (!res.ok) {
+            if (res.status === 401) {
+                alert('로그인이 필요합니다.');
+                window.location.href = '/login';
+                return;
+            }
+            alert("이미지 업로드에 실패했습니다.");
+            return;
+        }
+
+        const saved = await res.json();
+        alert("옷이 등록되었습니다!");
+
+        // 현재 카테고리 새로고침
+        await loadCloset(category);
+
+        // 파일 input 초기화
+        imgInput.value = "";
+    }
+
+
     /* ---------------------------- 카테고리 자동 로딩 ---------------------------- */
     async function loadCategories() {
         const res = await fetch(`${apiBase}/categories`);
@@ -182,14 +281,42 @@
             categoryList.appendChild(radio);
             categoryList.appendChild(label);
         });
+
+        // 카테고리 로딩이 끝난 후 첫 번째 카테고리 로딩
+        if (categories.length > 0) {
+            await loadCloset(categories[0].code);
+        }
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // ...
+        loadCategories();
+    });
+
 
     /* ---------------------------- 옷 목록 로딩 ---------------------------- */
     const closetContainer = document.getElementById("closetContainer");
     const imageCount = document.getElementById("imageCount");
 
     async function loadCloset(category) {
-        const res = await fetch(`${apiBase}/${userId}/${category}`);
+        const accessToken = localStorage.getItem('accessToken');
+
+        const res = await fetch(`${apiBase}/category/${category}`, {
+            headers: {
+                'Authorization': accessToken ? `Bearer ${accessToken}` : ''
+            }
+        });
+
+        if (!res.ok) {
+            if (res.status === 401) {
+                alert('로그인이 필요합니다.');
+                window.location.href = '/login';
+                return;
+            }
+            alert('옷장 데이터를 불러오지 못했습니다.');
+            return;
+        }
+
         const items = await res.json();
         renderCloset(items, category);
     }
@@ -210,14 +337,38 @@
 
     /* ---------------------------- 태그 검색 ---------------------------- */
     async function searchByTags() {
-        const tags = document.getElementById("searchTags").value.split(",").map(v => v.trim());
+        const tags = document.getElementById("searchTags").value
+            .split(",")
+            .map(v => v.trim())
+            .filter(v => v.length > 0);
+
+        if (tags.length === 0) {
+            alert('태그를 1개 이상 입력해주세요.');
+            return;
+        }
 
         const params = new URLSearchParams();
         tags.forEach(t => params.append("tags", t));
 
-        const res = await fetch(`${apiBase}/search/tags?${params.toString()}`);
-        const list = await res.json();
+        const accessToken = localStorage.getItem('accessToken');
 
+        const res = await fetch(`${apiBase}/search/tags?${params.toString()}`, {
+            headers: {
+                'Authorization': accessToken ? `Bearer ${accessToken}` : ''
+            }
+        });
+
+        if (!res.ok) {
+            if (res.status === 401) {
+                alert('로그인이 필요합니다.');
+                window.location.href = '/login';
+                return;
+            }
+            alert('검색 중 오류가 발생했습니다.');
+            return;
+        }
+
+        const list = await res.json();
         const container = document.getElementById("searchResults");
         container.innerHTML = "";
 
@@ -228,13 +379,6 @@
         });
     }
 
-    /* ---------------------------- 초기 실행 ---------------------------- */
-    loadCategories();
-    setTimeout(() => {
-        // 기본 카테고리가 로딩될 때 첫 번째 카테고리 로딩
-        const firstRadio = document.querySelector("input[name='category']");
-        if (firstRadio) loadCloset(firstRadio.value);
-    }, 200);
 
 </script>
 

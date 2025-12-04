@@ -47,11 +47,14 @@ public class MyPageService {
                 .map(ClosetResponseDTO::fromEntity) // fromEntity 메서드 재사용
                 .collect(Collectors.toList());
 
+        Long closetCount = closetRepository.countByUser(user);
+
         // 5) 최종 DTO 반환
         return MyPageResponseDTO.builder()
                 .userInfo(userInfo)
                 .myBoardPosts(myBoardDTOs)
                 .closetItems(closetDTOs)
+                .totalClosetItems(closetCount)
                 .build();
     }
 

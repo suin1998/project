@@ -101,7 +101,7 @@
             window.location.href = '/login';
         } else {
             // 토큰이 있으면 MyPage로 이동 시도
-            window.location.href = '/MyPage';
+            window.location.href = '/myPage';
         }
     }
 
@@ -152,8 +152,11 @@
 
         const MyPageButton = document.getElementById('MyPageButton');
         const MyPageButton2 = document.getElementById('MyPageButton2');
-        if (MyPageButton || MyPageButton2) {
+
+        if (MyPageButton) {
             MyPageButton.addEventListener('click', redirectToMyPage);
+        }
+        if (MyPageButton2) {
             MyPageButton2.addEventListener('click', redirectToMyPage);
         }
     });
