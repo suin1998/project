@@ -15,6 +15,7 @@ header {
 }
 
 header .logo {
+    position: relative;
     font-size: 22px;
     font-weight: bold;
     color: white;
@@ -50,13 +51,28 @@ header nav a {
     transform: translateY(3px);
 }
 
+.movementPage a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.container {
+    width: 1200px;
+    margin: auto;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+}
+
 #AICoordinatorButton {
     border: none;
     color: #333;
     font-size: 16px;
     margin-left: 20px;
     background: none;
-    transform: translateY(3px);
 }
 
 .user-box {
@@ -163,40 +179,22 @@ header nav a {
     margin-right: 10px;
 }
 
-.like-btn, .dislike-btn {
+.like-dislike-box button {
     padding: 5px 10px;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     font-size: 15px;
-}
-
-.like-btn {
     color: white;
     overflow: hidden;
     transition: 0.2s;
 }
 
-.like {
+.like, .dislike {
     transition: transform 0.3s ease;
     display: inline-block;
 }
 
-.like-btn:hover .like {
-    transform: scale(1.2);
-}
-
-.dislike-btn {
-    color: white;
-    overflow: hidden;
-    transition: 0.2s;
-}
-
-.dislike {
-    transition: transform 0.3s ease;
-    display: inline-block;
-}
-
-.dislike-btn:hover .dislike {
+.like:hover, .dislike:hover {
     transform: scale(1.2);
 }
