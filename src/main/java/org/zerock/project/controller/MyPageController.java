@@ -30,7 +30,7 @@ public class MyPageController {
      * [GET] /myCloset
      * SSR(서버 렌더링) 방식으로 myCloset.html을 보여주는 엔드포인트
      */
-    @GetMapping("/myCloset")
+    @GetMapping
     public String getMyPageView(Authentication authentication, Model model, HttpServletRequest request) {
         log.info("GET /myCloset");
 
@@ -65,7 +65,7 @@ public class MyPageController {
      * [PUT] /myCloset/update
      * 마이페이지 정보 수정 (REST API)
      */
-    @PutMapping("/myCloset/update")
+    @PutMapping
     @ResponseBody
     public ResponseEntity<?> updateUserInfo(
             Authentication authentication,
