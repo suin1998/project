@@ -4,10 +4,18 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="/css/userCommunity.css">
+    <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
 </head>
 <body>
 <header>
-    <div class="logo">Fit Maker<button id="logoMain"></button></div>
+    <div class="logo">Fit Maker
+        <button id="logoMain"></button>
+    </div>
+    <div class="movementPage">
+        <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
+        <a href="/AICoordinator" onclick="return checkLogin()">AI Coordinator</a>
+        <a href="/community">Community</a>
+    </div>
     <nav>
         <div class="headerBtn">
             <div id="authButtons" style="display: none;"><a href="/login">Login</a>
@@ -15,9 +23,9 @@
 
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
-                <button id="MyClosetButton">My Closet</button>
+                <!--                <button id="MyClosetButton">My Closet</button>-->
+                <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
             </div>
-            <!--            <a href="/MyPage" onclick="return checkLogin()">My Closet</a>-->
         </div>
     </nav>
 </header>
@@ -44,9 +52,11 @@
                 <option value="view">조회순</option>
             </select>
         </div>
-
-        <!--            <button class="newPost-btn" id="newPost">글쓰기</button>-->
+        <div class="myBoardList">
+            <button type="button" class="myBoard">내 글 조회하기</button>
+        </div>
     </div>
+    <!--            <button class="newPost-btn" id="newPost">글쓰기</button>-->
     <div id="gallery" class="gallery">
     </div>
     <template id="gallery-item-template">
@@ -55,13 +65,18 @@
                 <img src="" alt="">
                 <div class="overlay" onclick=""></div>
             </div>
-            <div class="gallery-like">
-                <button type="button" class="like-btn btn" data-action="like">
-                    👍 <span class="like-count"></span>
-                </button>
-                <button type="button" class="dislike-btn btn" data-action="dislike">
-                    👎 <span class="dislike-count"></span>
-                </button>
+            <div class="gallery-check">
+                <div class="gallery-like">
+                    <button type="button" class="likeBtn btn" data-action="like">
+                        <i class="fas fa-heart" id="likeHeart"></i> <span class="likeCount"></span>
+                    </button>
+                    <button type="button" class="dislikeBtn btn" data-action="dislike">
+                        <i class="fas fa-heart" id="dislikeHeart"></i> <span class="dislikeCount"></span>
+                    </button>
+                </div>
+                <div class="ViewsCount">
+                    <p class="viewCount"></p>
+                </div>
             </div>
         </div>
     </template>
@@ -83,7 +98,7 @@
         if (!accessToken) {
             window.location.href = '/login';
         } else {
-            window.location.href = '/myCloset';
+            window.location.href = '/myPage';
         }
     }
 
@@ -115,7 +130,7 @@
         }
 
         const logoMainButton = document.getElementById('logoMain');
-        if(logoMainButton) {
+        if (logoMainButton) {
             logoMainButton.addEventListener('click', redirectToMain);
         }
 
@@ -208,24 +223,38 @@
         coordi: "여기에 코디 정보가 들어갑니다."
     }));
 
-    // async function BoardList() {
-    //     try {
-    //         const response = await fetch('/');
-    //
-    //         if (!response.ok) {
-    //             throw new Error(`조회실패`)
-    //         }
-    //
-    //         const postList = await response.json();
-    //     } catch (error) {
-    //         console.error('목록 조회 중 에러 발생', error);
-    //         gallery.innerHTML = `게시물 로드 실패`;
-    //     }
-    // }
+    async function BoardList() {
+        try {
+            const response = await fetch('/community/post/');
+            if (!response.ok) {
+                throw new Error(`조회실패`)
+            }
+            // 조회 성공시 데이터 받음
+            const postList = await response.json();
+            // 위 데이터 저장
+            allPosts = postList;
+
+            currentPage = 1; // 새 데이터 로드시 1페이지 초기화 시킴
+            renderGallery(); // 갤러리 출력 연결
+            renderPagination(); //페이지 넘김 출력 연결
+
+        } catch (error) {
+            console.error('목록 조회 중 에러 발생', error);
+            gallery.innerHTML = `게시물 로드 실패`;
+
+            if(gallery) {
+                gallery.innerHTML = '게시물 로드 실패';
+            }
+        }
+    }
 
     // 게시글 보이는 페이지 관련
     const gallery = document.getElementById("gallery");
     const pageNumbers = document.getElementById("page-numbers");
+
+    // 게시물 목록 데이터
+    let allPosts = [];
+
     // 시작 ~ 끝 (총 14개 출력)
     let currentPage = 1;
     const itemsPerPage = 12;
@@ -233,27 +262,29 @@
     // 갤러리 출력
     function renderGallery() {
         gallery.innerHTML = "";
-
         const template = document.getElementById('gallery-item-template');
 
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
 
-        sampleData.slice(start, end).forEach(BoardDTO => {
+        const postsToRender = allPosts.slice(start, end); // 현재 페이지 게시물 목록 슬라이드
+
+        postsToRender.forEach(BoardListDTO => {
             // 템플릿 복사
             const clone = template.content.cloneNode(true);
 
             const item = clone.querySelector('.gallery-item');
             const img = clone.querySelector('img');
             const overlay = clone.querySelector('.overlay');
-            const like = clone.querySelector('.like-count');
-            const dislike = clone.querySelector('.dislike-count');
+            const like = clone.querySelector('.likeCount');
+            const dislike = clone.querySelector('.dislikeCount');
+            const viewCount = clone.querySelector('.viewCount');
 
-            img.src = BoardDTO.img;
-            overlay.textContent = BoardDTO.coordi;
-            overlay.setAttribute('onclick', `goDetail(${BoardDTO.id})`);
-            like.textContent = BoardDTO.like;
-            dislike.textContent = BoardDTO.dislike;
+            img.src = BoardListDTO.mainImageUrl;
+            overlay.textContent = BoardListDTO.userStyle;
+            overlay.setAttribute('onclick', `goDetail(${BoardListDTO.id})`);
+            like.textContent = BoardListDTO.likeCount;
+            dislike.textContent = BoardListDTO.dislike;
 
             gallery.appendChild(clone);
         });
@@ -316,6 +347,16 @@
     }
 
     renderEverything();
+
+    // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
+    function checkLogin() {
+        if(!accessToken) {
+            window.location.href = '/login';
+            return false;
+        } else {
+            return true;
+        }
+    }
 </script>
 </body>
 </html>

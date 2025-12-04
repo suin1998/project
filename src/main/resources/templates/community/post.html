@@ -10,6 +10,11 @@
     <div class="logo">Fit Maker
         <button id="logoMain"></button>
     </div>
+    <div class="movementPage">
+        <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
+        <a href="/AICoordinator" onclick="return checkLogin()">AI Coordinator</a>
+        <a href="/community">Community</a>
+    </div>
     <nav>
         <div class="headerBtn">
             <div id="authButtons" style="display: none;"><a href="/login">Login</a>
@@ -17,8 +22,8 @@
 
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
+                <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
             </div>
-            <!--            <a href="/MyPage" onclick="return checkLogin()">My Closet</a>-->
         </div>
     </nav>
 </header>
@@ -34,10 +39,10 @@
         <div class="date-like">
             <input id="postDate" class="date-input" readonly>
             <div class="like-dislike-box">
-                <button type="button" id="likeBtn" class="like-btn"><span class="like">👍</span></button>
+                <button type="button" id="likeBtn"><span class="like">👍</span></button>
                 <span id="likeCount">0</span>
 
-                <button type="button" id="dislikeBtn" class="dislike-btn"><span class="dislike">👎</span></button>
+                <button type="button" id="dislikeBtn"><span class="dislike">👎</span></button>
                 <span id="dislikeCount">0</span>
             </div>
         </div>
@@ -66,7 +71,7 @@
         if (!accessToken) {
             window.location.href = '/login';
         } else {
-            window.location.href = '/myCloset';
+            window.location.href = '/MyPage';
         }
     }
 
@@ -217,7 +222,6 @@
 
     const likeBtn = document.getElementById("likeBtn");
     const dislikeBtn = document.getElementById("dislikeBtn");
-
     const likeCount = document.getElementById("likeCount");
     const dislikeCount = document.getElementById("dislikeCount");
 
@@ -240,6 +244,16 @@
         likeBtn.disabled = true;
         dislikeBtn.disabled = true;  // 둘 중 하나만 선택하게 하고 싶으면 유지
     };
+
+    // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
+    function checkLogin() {
+        if(!accessToken) {
+            window.location.href = '/login';
+            return false;
+        } else {
+            return true;
+        }
+    }
 </script>
 </body>
 </html>

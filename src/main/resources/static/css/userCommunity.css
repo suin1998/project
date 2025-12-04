@@ -4,11 +4,11 @@ body {
     background: #AAA;
 }
 
-.layout {
-    display: flex;
-    max-width: 1200px;
-    margin: auto;
-}
+/*.layout {*/
+/*    display: flex;*/
+/*    max-width: 1200px;*/
+/*    margin: auto;*/
+/*}*/
 
 /*.sidebar {*/
 /*    width: 150px;*/
@@ -43,9 +43,18 @@ header {
 }
 
 header .logo {
+    position: relative;
     font-size: 22px;
     font-weight: bold;
     color: white;
+}
+
+.movementPage a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 #logoMain {
@@ -93,12 +102,11 @@ header nav a {
     padding: 30px;
     background: white;
     border-radius: 10px;
-    transform: translateX(-5px);
 }
 
 .top-bar {
-    display: flex;
-    justify-content: space-between;
+    display: block;
+    justify-content: flex-end;
     align-items: center;
 }
 
@@ -167,9 +175,21 @@ header nav a {
     padding: 10px;
 }
 
-.gallery-like .btn {
+.gallery-check {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.gallery-like button {
     border: none;
     background: none;
+}
+
+.ViewsCount {
+    font-size: 14px;
+    color: black;
+    padding: 10px;
 }
 
 .overlay {
@@ -217,4 +237,8 @@ header nav a {
 #page-numbers .active {
     font-weight: 700;
     text-decoration: underline;
+}
+
+#likeHeart {
+    color: #e53935;
 }

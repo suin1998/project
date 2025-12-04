@@ -9,9 +9,9 @@
 <header>
     <div class="logo">Fit Maker</div>
     <div class="movementPage">
-        <a href="/MyCloset"></a>
-        <a href="/AICoordinator"></a>
-        <a href="/community"></a>
+        <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
+        <a href="/AICoordinator" onclick="return checkLogin()">AI Coordinator</a>
+        <a href="/community">Community</a>
     </div>
     <nav>
         <div class="headerBtn">
@@ -99,6 +99,29 @@
     const accessToken = localStorage.getItem('accessToken');
     const authButtons = document.getElementById('authButtons');
     const logoutButtons = document.getElementById('logoutButtons');
+
+    // Community 버튼 클릭 시 /community 경로로 이동합니다.
+    function redirectToCommunity() {
+        // 커뮤니티 페이지를 렌더링하는 서버 경로로 수정해주세요.
+        // 예를 들어, /community로 매핑된 컨트롤러가 community.html 템플릿을 보여줍니다.
+        window.location.href = '/community';
+    }
+
+    function redirectToAICoordinator() {
+        if (!accessToken) {
+            window.location.href = '/login';
+        } else {
+            window.location.href = '/AICoordinator';
+        }
+    }
+
+    function redirectToMyCloset() {
+        if (!accessToken) {
+            window.location.href = '/login';
+        } else {
+            window.location.href = '/MyPage';
+        }
+    }
 
     document.addEventListener('DOMContentLoaded', function () {
         // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
