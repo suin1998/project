@@ -90,7 +90,56 @@
 
     // 헤더 관련으로 추가하였습니다.
     // 페이지 이동 관련 (로고 클릭 시 메인으로 이동합니다.)
-    const accessToken = localStorage.getItem('accessToken');
+    // const accessToken = localStorage.getItem('accessToken');
+
+    function getAuthHeaders() {
+
+        const currentAccessToken = localStorage.getItem('accessToken');
+
+        if (!currentAccessToken) {
+            // 토큰이 없으면 로그인 페이지로 강제 이동
+            alert('로그인이 필요합니다.');
+            window.location.href = '/login?redirectTo=/myCloset';
+            throw new Error('No Access Token found.');
+        }
+        return {
+            'Authorization': `Bearer ${currentAccessToken}`,
+            'Content-Type': 'application/json' // POST/PUT 요청 시 필요
+        };
+    }
+
+    async function loadClosetData(category) {
+        // try-catch 블록 추가하여 401 에러 처리
+        try {
+            const headers = getAuthHeaders(); // 💡 헤더 가져오기
+
+            const res = await fetch(`${apiBase}/grouped?category=${category}`, {
+                method: 'GET',
+                headers: headers // 💡 헤더 적용
+            });
+
+            if (res.status === 401) {
+                // 401 에러 발생 시 재로그인 유도
+                alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                window.location.href = '/login?redirectTo=/myCloset';
+                return;
+            }
+
+            if (!res.ok) {
+                throw new Error(`Failed to fetch closet data: ${res.status}`);
+            }
+
+            const data = await res.json();
+            // data는 {TOP: [...], BOTTOM: [...], ...} 형태일 것으로 예상
+            renderCloset(data[category.toUpperCase()] || [], category);
+
+        } catch (error) {
+            console.error("Error loading closet data:", error);
+            // 네트워크 오류나 다른 문제 발생 시
+        }
+    }
 
     function redirectToAICoordinator() {
         window.location.href = '/AICoordinator';
@@ -126,10 +175,6 @@
         // 로그아웃 시, 메인으로 가기
         window.location.href = '/';
     }
-
-
-    const userId = "user123"; // 나중에 로그인 정보로 교체
-    const apiBase = "/api/closet";
 
     /* ---------------------------- 달력 렌더링 ---------------------------- */
     document.addEventListener("DOMContentLoaded", () => {
@@ -258,17 +303,35 @@
         const params = new URLSearchParams();
         tags.forEach(t => params.append("tags", t));
 
-        const res = await fetch(`${apiBase}/search/tags?${params.toString()}`);
-        const list = await res.json();
+        // try-catch 블록 추가하여 401 에러 처리
+        try {
+            const headers = getAuthHeaders(); // 💡 헤더 가져오기
 
-        const container = document.getElementById("searchResults");
-        container.innerHTML = "";
+            const res = await fetch(`${apiBase}/search/tags?${params.toString()}`, {
+                method: 'GET',
+                headers: headers // 💡 헤더 적용
+            });
 
-        list.forEach(item => {
-            const img = document.createElement("img");
-            img.src = item.imageUrl;
-            container.appendChild(img);
-        });
+            if (res.status === 401) {
+                // 401 에러 발생 시 재로그인 유도
+                alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                window.location.href = '/login?redirectTo=/myCloset';
+                return;
+            }
+
+            if (!res.ok) {
+                throw new Error(`Failed to search tags: ${res.status}`);
+            }
+
+            const list = await res.json();
+
+            // ... (나머지 렌더링 로직)
+
+        } catch (error) {
+            console.error("Error searching by tags:", error);
+        }
     }
 
     /* ---------------------------- 초기 실행 ---------------------------- */

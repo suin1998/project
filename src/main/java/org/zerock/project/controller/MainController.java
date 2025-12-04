@@ -28,6 +28,16 @@ public class MainController {
         return "user/join";
     }
 
+//    @GetMapping("/myCloset")
+//    public String myCloset() {
+//        return "user/myCloset";
+//    }
+
+    @GetMapping("/myPage")
+    public String myPage() {
+        return "user/userEdit";
+    }
+
     @GetMapping("/community")
     public String community() {
         return "community/userCommunity";
@@ -42,5 +52,10 @@ public class MainController {
     public String aiCoordinator() {
         return "Ai/AICoordinator";
     }
+
+//    @GetMapping("/myCloset")
+//    public String myCloset() {
+//        return "user/myCloset";
+//    }
 
 }

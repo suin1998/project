@@ -149,7 +149,20 @@ public class BoardServiceImpl implements BoardService{
         // 🚨 Repository 메서드 호출: writerId와 deleted=false인 게시글만 조회
         Page<Board> result = boardRepository.findAllByWriter_IdAndDeletedFalse(writerId, pageable);
 
-        return new PageResponseDTO<>(result, this::entityToListDto);
+        Function<Board, BoardListDTO> fn = (entity -> BoardListDTO.builder()
+                .id(entity.getId())
+                .title(entity.getTitle())
+                .userStyle(entity.getUserStyle())
+                .mainImageUrl(entity.getMainImageUrl())
+                // ⭐ 수정: writer 필드에서 닉네임을 가져옵니다.
+                .userNickname(entity.getWriter().getNickname())
+                .regDate(entity.getRegDate())
+                .viewCount(entity.getViewCount())
+                .likeCount(entity.getLikeCount())
+                .build());
+
+        // PageResponseDTO 생성 및 반환
+        return new PageResponseDTO<>(result, fn);
     }
 
     /**
