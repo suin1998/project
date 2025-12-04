@@ -1,6 +1,5 @@
 package org.zerock.project.service;
 
-import ch.qos.logback.core.net.server.Client;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,37 +15,67 @@ import org.zerock.project.dto.OutfitRequestDto;
 import org.zerock.project.dto.OutfitResponseDto;
 import org.zerock.project.dto.WeatherRequestDto;
 import org.zerock.project.dto.WeatherResponseDto;
-import com.nimbusds.openid.connect.sdk.claims.Gender;
+
+import org.zerock.project.entity.Closet;
+import org.zerock.project.entity.User;
+import org.zerock.project.entity.User.Gender;
+import org.zerock.project.repository.AiCoordiRepository;
+import org.zerock.project.repository.ClosetRepository;
+import org.zerock.project.repository.UserRepository;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-
-import static java.awt.SystemColor.text;
-import static org.springframework.security.crypto.util.EncodingUtils.concatenate;
+import java.util.*;
 
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
-
 public class AiCoordiService {
+
+    private final AiCoordiRepository aiCoordiRepository;
+    private final ClosetRepository closetRepository;
+    private final UserRepository userRepository;
 
     @Value("${gemini.api.key}")
     private String aiKey;
     @Value("${gemini.api.url}")
     private String ai_api_url;
+    @Value("{app.upload.dir}")
+    private String upload_dir;
+    @Value("${app.upload.url}")
+    private String serverFileUrl;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-
     public OutfitResponseDto getAiCoordi(OutfitRequestDto outfitRequestDto) throws IOException{
 
+//        User user = userRepository.findById(outfitRequestDto.getUserId())
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+//        Closet userClothes = closetRepository.findByUser(user);
+
+//        String imgUrl = userClothes.getImg_Url();
+//
+//        String prompt = buildPrompt(outfitRequestDto, user);
+//
+//        GeminiResponse geminiResponse = callGeminiApi(prompt, userClothes);
+//
+//        String recommendation = geminiResponse.getText();
+//        String reason = geminiResponse.getReason();
+//
+//        String savedImageUrl = saveImage(geminiResponse.getImageBase64());
+
+
+        return null;
+
+    }
+
+
+    private String buildPrompt(OutfitRequestDto outfitRequestDto, User user ) {
         WeatherRequestDto weatherReq = outfitRequestDto.getWeatherRequestDto();
         WeatherResponseDto weatherResp = outfitRequestDto.getWeatherResponseDto();
 
@@ -59,12 +88,12 @@ public class AiCoordiService {
         Double tMin = weatherResp.getTempMin();
         Double pop = weatherResp.getRainProbability();
 
-        Gender userGender = outfitRequestDto.getGender();
-        Double age = outfitRequestDto.getUserAge();
+        Gender userGender = user.getGender();
+        Integer age = user.getAge();
         List<String> fashionStyles = outfitRequestDto.getFashionStyle();
         List<String> tempStyles = outfitRequestDto.getTempStyle();
         String tpo = outfitRequestDto.getTpo();
-        List<MultipartFile> clothImages = outfitRequestDto.getClothesImages();
+
 
         StringBuilder promptBuilder = new StringBuilder();
         promptBuilder.append("당신은 전문 패션 스타일리스트 입니다. 다음 조건을 충족하는 코디를 추천해주세요.\n");
@@ -79,7 +108,7 @@ public class AiCoordiService {
         promptBuilder.append("사용자 성별: ").append(userGender).append(", 연령: ").append(age+"\n");
         promptBuilder.append("요청 스타일: ").append(String.join(", ", fashionStyles)).append(", 느낌: ").append(String.join(", ", tempStyles)).append(".\n");
         promptBuilder.append("상황(TPO): ").append(tpo).append("\n");
-        promptBuilder.append("제공된 이미지들은 사용자의 옷장입니다. 이를 활용하여 코디 이미지를 생성해주세요");
+        promptBuilder.append("제공된 이미지들은 사용자의 옷장입니다. 이를 활용하여 코디 이미지를 2~3개 생성해주세요");
 
         promptBuilder.append("\n응답은 반드시 JSON 형식으로, 다음 구조를 따르세요.\n");
         promptBuilder.append("{\n");
@@ -89,12 +118,10 @@ public class AiCoordiService {
 
         String textPrompt = promptBuilder.toString();
         log.info("Gemini text prompt: {}", textPrompt);
-
-        OutfitResponseDto outfitResponseDto = getAiRecommend(textPrompt, clothImages);
-
-        return outfitResponseDto;
-
+        return null;
     }
+
+
 
     private OutfitResponseDto getAiRecommend(String prompt, List<MultipartFile> images) throws IOException {
 
@@ -167,8 +194,8 @@ public class AiCoordiService {
             return OutfitResponseDto.builder()
                     .recommendation(json.get("recommendation").asText())
                     .reason(json.get("reason").asText())
-                    .imageDescription(json.get("image_prompt").asText())
-                    .generatedImageBase64(base64Images)
+//                    .imageDescription(json.get("image_prompt").asText())
+//                    .generatedImageBase64(base64Images)
                     .build();
 
 
