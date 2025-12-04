@@ -39,7 +39,7 @@ public class AiCoordiService {
 
     @Value("${gemini.api.key}")
     private String aiKey;
-    @Value("${gemini.api.url")
+    @Value("${gemini.api.url}")
     private String ai_api_url;
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -103,29 +103,33 @@ public class AiCoordiService {
             HttpPost post = new HttpPost(apiUrl);
             post.setHeader("Content-Type", "application/json");
 
+            // 이미지 Base64 변환
             List<Map<String, Object>> imgList = new ArrayList<>();
             for (MultipartFile mf : images) {
                 String base64 = Base64.getEncoder().encodeToString(mf.getBytes());
-                Map<String, Object> img = Map.of(
+                imgList.add(Map.of(
                         "inlineData", Map.of(
                                 "data", base64,
-                                "mimeType", mf.getContentType()
-                        )
+                                "mimeType", mf.getContentType()))
                 );
-                imgList.add(Map.of("image", img));
             }
 
             // 요청 JSON 구성
             Map<String, Object> jsonBody = Map.of(
-//                    "contents", List.of(
-//                            Map.of(
-//                                    "parts", concatenate(
-//                                            List.of(Map.of("text", prompt)),
-//                                            imgList
-//                                    )
-//                            )
-//                    )
-            );
+                    "contents", List.of(
+                            Map.of(
+                                    "parts", mergeParts(
+                                            List.of(Map.of("text", prompt)),
+                                            imgList
+                                    )
+                            )
+                    ),
+                    "generationConfig",
+                    Map.of(
+                            "response_mime_type", "image/*",
+                            "candidate_count", 3)
+
+                    );
 
             post.setEntity(new StringEntity(mapper.writeValueAsString(jsonBody)));
 
@@ -142,20 +146,29 @@ public class AiCoordiService {
 
             // 2) 이미지(Base64)
             // Gemini는 아래처럼 이미지가 parts[*].inlineData로 포함됨
-            String base64img = null;
+            List<String> base64Images = new ArrayList<>();
 
-            JsonNode partsNode = root.get("candidates").get(0).get("content").get("parts");
-            for (JsonNode node : partsNode) {
-                if (node.has("inlineData")) {
-                    base64img = node.get("inlineData").get("data").asText();
+            JsonNode candidates = root.get("candidates");
+
+            for (JsonNode cand : candidates) {
+                if (cand.has("content")) {
+                    JsonNode partsNode = cand.get("content").get("parts");
+                    for (JsonNode partNode : partsNode) {
+                        if (partNode.has("inlineData")) {
+                            String base64 = partNode.get("inlineData").get("data").asText();
+                            base64Images.add(base64);
+                        }
+                    }
                 }
             }
+            log.info("Extracted Images Count = {}", base64Images.size());
+
 
             return OutfitResponseDto.builder()
                     .recommendation(json.get("recommendation").asText())
                     .reason(json.get("reason").asText())
                     .imageDescription(json.get("image_prompt").asText())
-                    .generatedImageBase64(base64img) // 따로 저장할 필요 없으면 그대로 반환
+                    .generatedImageBase64(base64Images)
                     .build();
 
 
@@ -175,27 +188,35 @@ public class AiCoordiService {
         return merged;
     }
 
-    private String saveBase64Image(String imgPath) {
-        try{
-            byte[] decodedBytes = Base64.getDecoder().decode(imgPath);
+    public List<String> saveBase64Images(List<String> base64List) {
+        List<String> savedPaths = new ArrayList<>();
 
-            String dir = "src/main/resources/output/";
+        try {
+
+            String dir = "C:/project/uploads";
             File folder = new File(dir);
             if (!folder.exists()) folder.mkdirs();
 
-            String filePath = dir + "coordi_" +System.currentTimeMillis()+".png";
-            try(FileOutputStream fos = new FileOutputStream(filePath)){
-                fos.write(decodedBytes);
+            for (String base64 : base64List) {
+                byte[] decoded = Base64.getDecoder().decode(base64);
+
+                String path = dir + "AI_" + System.currentTimeMillis()
+                        + "_" + (int)(Math.random()*9999) + ".png";
+
+                try (FileOutputStream fos = new FileOutputStream(path)) {
+                    fos.write(decoded);
+                }
+
+                savedPaths.add(path);
+                log.info("Saved image = {}", path);
             }
-
-            log.info("Image saved to: {}", filePath);
-
-            return filePath;
-        }catch(Exception e){
-            log.error("Image save error: ", e);
-            return null;
+        } catch (Exception e) {
+            log.error("Image save error", e);
         }
+
+        return savedPaths;
     }
+
 
 
 }

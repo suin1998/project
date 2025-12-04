@@ -43,4 +43,9 @@ public class MainController {
         return "Ai/AICoordinator";
     }
 
+//    @GetMapping("/myCloset")
+//    public String myCloset() {
+//        return "user/myCloset";
+//    }
+
 }

@@ -2,6 +2,8 @@ package org.zerock.project.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -14,5 +16,5 @@ public class OutfitResponseDto {
     private String recommendation;
     private String reason;
     private String imageDescription;
-    private String generatedImageBase64;
+    private List<String> generatedImageBase64;
 }
