@@ -15,8 +15,7 @@ import java.util.List;
 public class OutfitRequestDto {
     public WeatherResponseDto weatherResponseDto;
     public WeatherRequestDto weatherRequestDto;
-    private Gender gender;
-    private Double userAge;
+    private String userId;
     private List<String> fashionStyle;
     private List<String> tempStyle;
     private String tpo;

@@ -12,9 +12,7 @@ import java.util.List;
 @ToString
 
 public class OutfitResponseDto {
-    private String outfitImgUrl;
+    private List<String> outfitImgUrl;
     private String recommendation;
     private String reason;
-    private String imageDescription;
-    private List<String> generatedImageBase64;
 }

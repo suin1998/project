@@ -13,10 +13,10 @@ import org.zerock.project.service.AiCoordiService;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-@RequestMapping("/AI/coordi")
+@RequestMapping("/AI")
 public class AiCoordiController {
     private final AiCoordiService aiCoordiService;
-    @PostMapping("/generate")
+    @PostMapping("/coordi")
     public ResponseEntity<OutfitResponseDto> generateAiCoordi(@ModelAttribute OutfitRequestDto outfitRequestDto) {
         try{
             OutfitResponseDto result = aiCoordiService.getAiCoordi(outfitRequestDto);
