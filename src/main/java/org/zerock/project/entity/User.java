@@ -73,9 +73,6 @@ public class User {
     @Builder.Default
     private Boolean accountNonLocked = true;
 
-//    @Version
-//    private Long version;
-
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
