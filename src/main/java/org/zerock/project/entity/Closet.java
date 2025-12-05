@@ -40,16 +40,6 @@ public class Closet {
     @Column(nullable = false)
     private String imageUrl;
 
-    private String brand;
-
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(
-            name = "closet_tags",
-            joinColumns = @JoinColumn(name = "closet_id")
-    )
-    @Column(name = "tag")
-    private List<String> tags = new ArrayList<>();
-
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
