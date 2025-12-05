@@ -129,9 +129,9 @@ public class BoardServiceImpl implements BoardService{
     public PageResponseDTO<BoardListDTO, Board> getList(PageRequestDTO pageRequestDTO) {
         log.info("전체 게시글 목록 조회 요청: {}", pageRequestDTO);
         // 최신순 정렬 (regDate 기준 내림차순)
-        Pageable pageable = pageRequestDTO.getPageable(Sort.by("regDate").descending());
+        Pageable pageable = pageRequestDTO.getPageable();
         // deleted = false 인 게시글만 조회
-        Page<Board> result = boardRepository.findAllByDeletedFalse(pageable);
+        Page<Board> result = boardRepository.findAll(pageable);
 
         return new PageResponseDTO<>(result, this::entityToListDto);
     }

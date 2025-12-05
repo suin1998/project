@@ -1,11 +1,13 @@
 package org.zerock.project.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zerock.project.dto.LoginRequestDTO;
+import org.zerock.project.dto.UserListDTO;
 import org.zerock.project.entity.User;
 import org.zerock.project.exception.InvalidCredentialsException;
 import org.zerock.project.exception.UserAlreadyExistsException;
@@ -14,7 +16,9 @@ import org.zerock.project.dto.SignupRequestDTO;
 import org.zerock.project.dto.AuthResponseDTO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -225,5 +229,15 @@ public class UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserListDTO> getAllUsers() {
+        // 실제 구현에서는 페이징 처리가 필요하지만, 여기서는 전체 목록을 가져옵니다.
+        List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .map(UserListDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 }
