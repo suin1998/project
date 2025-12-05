@@ -130,6 +130,14 @@
         }
     }
 
+    function redirectToMyCloset() {
+        if (!accessToken) {
+            window.location.href = '/login';
+        } else {
+            window.location.href = '/myCloset';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
         updateAuthButtons();
@@ -154,7 +162,7 @@
         const MyPageButton = document.getElementById('MyClosetButton');
         // const MyPageButton2 = document.getElementById('MyPageButton2');
         if (MyPageButton) {
-            MyPageButton.addEventListener('click', redirectToMyPage);
+            MyPageButton.addEventListener('click', redirectToMyCloset);
         }
         // if (MyPageButton2) {
         //     MyPageButton2.addEventListener('click', redirectToMyPage);

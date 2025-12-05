@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>게시글</title>
     <link rel="stylesheet" href="/css/userCommunity.css">
     <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
 </head>
@@ -12,7 +12,7 @@
         <button id="logoMain"></button>
     </div>
     <div class="movementPage">
-        <a href="/myPage" onclick="return checkLogin()">My Closet</a>
+        <a href="/myCloset" onclick="return checkLogin()">My Closet</a>
         <a href="/AICoordinator" onclick="return checkLogin()">AI Coordinator</a>
         <a href="/community">Community</a>
     </div>
@@ -117,6 +117,20 @@
         if (AICoordinatorButton) {
             AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
         }
+
+        //좋아요 싫어요 버튼 이벤트
+        const gallerylikeDislike = document.getElementById('gallery');
+        if(gallerylikeDislike) {
+            gallerylikeDislike.addEventListener('click', handleLikeDislike);
+        }
+
+        // 최신순, 조회순, 추천순 관련 필터
+        const filterList = document.getElementById('.filter-list');
+        filterList.addEventListener('change', function (){
+            sortType = this.value;
+            currentPage = 1;
+            BoardList();
+        })
     });
 
     // ========== 인증 상태에 따라 버튼을 업데이트하는 핵심 함수 ==========
@@ -161,7 +175,11 @@
     const gallery = document.getElementById("gallery");
     const pageNumbers = document.getElementById("page-numbers");
 
+    // 게시물 DB 가져오면 여기다가 연결됨
     let allPosts = [];
+
+    // 게시물 선택 정렬 기준(기본값: 최신순)
+    let sortType = 'lastest';
 
     // 시작 ~ 끝 (총 12개 출력)
     let currentPage = 1;
@@ -176,7 +194,7 @@
 
     async function BoardList() {
         try {
-            const response = await fetch(`/community/post?size=${itemsPerPage}&page=${currentPage}`);
+            const response = await fetch(`/community/post?size=${itemsPerPage}&page=${currentPage}&sort${sortType}`);
             if (!response.ok) {
                 throw new Error(`조회실패 : ${response.status}`);
             }
@@ -184,7 +202,7 @@
             const responseData = await response.json();
             allPosts = responseData.dtoList; // dtoList 연결해야 DB연결 가능
             totalPages = responseData.totalPages; // 총 페이지 수 저장
-            console.log('---조회 완료---' , allPosts); // 확인용 콘솔, 지워도됨
+            console.log('---조회 완료---'); // 확인용 콘솔, 지워도됨
 
             currentPage = 1; // 새 데이터 로드시 1페이지 초기화 시킴
             renderGallery(); // 갤러리 출력 연결
@@ -220,22 +238,28 @@
                 regDate,
                 viewCount,
                 likeCount,
+                isLiked = false, // 사용자가 좋아요를 눌렀는지에 대한 상태 (false는 임시 상태, 이후 DTO추가 해야한다함)
+                isDisliked = false, // 사용자가 싫어요를 눌렀는지에 대한 상태 (false는 임시 상태, 이후 DTO추가 해야한다함)
                 dislikeCount
             } = BoardListDTO;
+
+            const likeClass = isLiked ? 'active' : '';
+            const dislikeClass = isDisliked ? 'active' : '';
+
             return `
-        <div class="gallery-item">
+        <div class="gallery-item" data-post-id="${id}">
             <div class="img-box">
                 <img src="${mainImageUrl || ''}" alt="">
                     <div class="overlay" onclick="goDetail(${id})">${userStyle || ''}</div>
             </div>
             <div class="gallery-check">
-            <div class="username" style="display: none">${userNickname}</div>
-            <div class="regDate" style="display: none">${regDate}</div>
+                <div class="username" style="display: none">${userNickname}</div>
+                <div class="regDate" style="display: none">${regDate}</div>
                 <div class="gallery-like">
-                    <button type="button" class="likeBtn btn" data-action="like">
+                    <button type="button" class="likeBtn btn ${likeClass}" data-action="like">
                         <i class="fas fa-heart" id="likeHeart"></i> <span class="likeCount">${likeCount || 0}</span>
                     </button>
-                    <button type="button" class="dislikeBtn btn" data-action="dislike">
+                    <button type="button" class="dislikeBtn btn${dislikeClass}" data-action="dislike">
                         <i class="fas fa-heart" id="dislikeHeart"></i> <span class="dislikeCount">${dislikeCount || 0}</span>
                     </button>
                 </div>
@@ -266,7 +290,7 @@
         const groupSize = 10;
         const group = Math.floor((currentPage - 1) / groupSize);
         const start = group * groupSize + 1;
-        const end = Math.min(start + groupSize -1, totalPages);
+        const end = Math.min(start + groupSize - 1, totalPages);
 
         for (let i = start; i <= end; i++) {
             const span = document.createElement("span");
@@ -292,8 +316,8 @@
 
     document.getElementById("next").onclick = () => {
         if (currentPage < totalPages) {
-        currentPage++;
-        renderEverything();
+            currentPage++;
+            renderEverything();
         }
     };
 
@@ -311,6 +335,79 @@
             return true;
         }
     }
+    // 좋아요 싫어요 클릭 시, 업데이트 newLikeCount 와 new DislikeCount는 따로 DTO 추가해야한다 함.
+    function updateLikeDislike(clickedButton, newLikeCount, newDislikeCount) {
+        // 부모 컨테이너
+        const galleyCheck = clickedButton.closest('.gallery-check');
+        // 좋아요 싫어요 버튼
+        const likeBtn = galleyCheck.querySelector('.likeBtn');
+        const dislikeBtn = galleyCheck.querySelector('.dislikeBtn');
+
+        // 현재 상태 파악 (버튼이 현재 클릭된 상태인지)
+        const isClicked = clickedButton.classList.contains('active');
+        // 클릭된 버튼이 어떤 건지(like인지 dislike인지)
+        const action = clickedButton.dataset.action;
+
+        // 다른 쪽을 누르면 다른 쪽 버튼 해제
+        if (!isClicked){
+            const oppositeBtn = action === 'like' ? dislikeBtn : likeBtn;
+
+            //만약 다른 쪽 버튼이 클릭된 상태라면 기존 클릭된 것 제거하기.
+            if(oppositeBtn.classList.contains('active')) {
+                oppositeBtn.classList.remove('active');
+            }
+        }
+        clickedButton.classList.toggle('active'); // 클릭된 버튼 비활성화
+
+        // 좋아요를 누르면 좋아요 숫자 증가, 싫어요를 누르면 싫어요 숫자 증가
+        likeBtn.querySelector('.likeCount').textContent = newLikeCount;
+        dislikeBtn.querySelector('.dislikeCount').textContent = newDislikeCount;
+    }
+
+    // 좋아요 싫어요 요청
+    async function handleLikeDislike(event) {
+        const targetBtn = event.target.closest('.likeBtn, .dislikeBtn');
+        // 클릭 영역이 좋아요나 싫어요가 아닐 경우
+        if(!targetBtn) return;
+
+        // 로그인이 안 되어있다면 로그인하기
+        if (!accessToken) {
+            alert("로그인이 필요합니다.");
+            window.location.href = '/login';
+            return;
+        }
+        // 게시글 id 추출
+        const postId = targetBtn.closest('.gallery-item').dataset.postId;
+        // 버튼 종류 추출
+        const action = targetBtn.dataset.action;
+        // 버튼 활성화 상태 확인
+        const isActive = targetBtn.classList.contains('active');
+        const actionType = isActive ? 'remove' : 'add';
+        // 서버로 보낼 엔드url (백엔드와 연결을 위한 것)
+        const endpoint = `/community/post/${postId}/${action}/${actionType}`;
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST', // 데이터 변경을 위한 설정
+                headers: {'Authorization': `Bearer ${accessToken}`, // 사용자 인증을 위한 것(토큰 유형으로 accessToken을 봄)
+                    'Content-Type' : `application/json` // 본문의 내용이 json 형식으로 서버에 알림(전송 데이터 유형 정하는 것)
+                },
+            });
+            //응답 오류시
+            if(!response.ok) {
+                throw new Error('요청 실패, 또는 권한 없음');
+            }
+            // 응답 시 서버가 처리 후 반환하여 최신 카운트 데이터를 파싱함
+            const result = await response.json();
+            // 버튼 누른 값 화면에 갱신
+            updateLikeDislike(targetBtn, result.newLikeCount, result.newDislikeCount);
+        } catch (error) {
+            console.error('처리 중 오류 발생', error);
+            alert('처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        }
+    }
+
+
 </script>
 </body>
 </html>

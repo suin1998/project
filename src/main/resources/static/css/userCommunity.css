@@ -105,9 +105,16 @@ header nav a {
 }
 
 .top-bar {
-    display: block;
+    display: grid;
     justify-content: flex-end;
     align-items: center;
+}
+
+.myBoard {
+    background: none;
+    padding: 5px 10px;
+    border: 1px solid black;
+    border-radius: 5px;
 }
 
 .newPost-btn {
