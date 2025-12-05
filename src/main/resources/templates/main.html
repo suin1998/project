@@ -9,7 +9,7 @@
 <header>
     <div class="logo">Fit Maker</div>
     <div class="movementPage">
-        <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
+        <a href="/myCloset" onclick="return checkLogin()">My Closet</a>
         <a href="/AICoordinator" onclick="return checkLogin()">AI Coordinator</a>
         <a href="/community">Community</a>
     </div>
@@ -20,7 +20,7 @@
 
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
-                <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
+                <a href="/myCloset" onclick="return checkLogin()">My Closet</a>
 <!--                <button id="MyClosetButton2">My Closet</button>-->
             </div>
         </div>
@@ -127,14 +127,6 @@
             window.location.href = '/login';
         } else {
             window.location.href = '/AICoordinator';
-        }
-    }
-
-    function redirectToMyCloset() {
-        if (!accessToken) {
-            window.location.href = '/login';
-        } else {
-            window.location.href = '/MyPage';
         }
     }
 
