@@ -9,7 +9,7 @@
 <header>
     <div class="logo">Fit Maker</div>
     <div class="movementPage">
-        <a href="/myPage" onclick="return checkLogin()">My Closet</a>
+        <a href="/myCloset" onclick="return checkLogin()">My Closet</a>
         <a href="/AICoordinator" onclick="return checkLogin()">AI Coordinator</a>
         <a href="/community">Community</a>
     </div>
@@ -130,11 +130,11 @@
         }
     }
 
-    function redirectToMyPage() {
+    function redirectToMyCloset() {
         if (!accessToken) {
             window.location.href = '/login';
         } else {
-            window.location.href = '/myPage';
+            window.location.href = '/myCloset';
         }
     }
 
@@ -162,7 +162,7 @@
         const MyPageButton = document.getElementById('MyClosetButton');
         // const MyPageButton2 = document.getElementById('MyPageButton2');
         if (MyPageButton) {
-            MyPageButton.addEventListener('click', redirectToMyPage);
+            MyPageButton.addEventListener('click', redirectToMyCloset);
         }
         // if (MyPageButton2) {
         //     MyPageButton2.addEventListener('click', redirectToMyPage);
