@@ -54,7 +54,7 @@ public class AiCoordiService {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public OutfitResponseDto getAiCoordi(OutfitRequestDto outfitRequestDto) throws IOException{
+    public OutfitResponseDto getAiCoordi(OutfitRequestDto outfitRequestDto) throws Exception {
 
         User user = userRepository.findById(outfitRequestDto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -63,15 +63,10 @@ public class AiCoordiService {
 
         String prompt = buildPrompt(outfitRequestDto, user);
 
-//        AiResult result = getAiRecommend(prompt, userClothes);
-//
-//        String recommendation = result.getText();
-//        String reason = result.getReason();
-//
-//        String savedImageUrl = saveImage(geminiResponse.getImageBase64());
+        OutfitResponseDto result = getAiRecommend(prompt, userClothes);
 
 
-        return null;
+        return  result;
 
     }
 
@@ -96,6 +91,7 @@ public class AiCoordiService {
         String tpo = outfitRequestDto.getTpo();
 
 
+
         StringBuilder promptBuilder = new StringBuilder();
         promptBuilder.append("당신은 전문 패션 스타일리스트 입니다. 다음 조건을 충족하는 코디를 추천해주세요.\n");
 
@@ -114,7 +110,7 @@ public class AiCoordiService {
         promptBuilder.append("\n응답은 반드시 JSON 형식으로, 다음 구조를 따르세요.\n");
         promptBuilder.append("{\n");
         promptBuilder.append("  \"recommendation\": \"전체 코디에 대한 한 줄 설명\",\n");
-        promptBuilder.append("  \"reason\": \"추천 이유 및 날씨 대응 전략 (간략하게 2~3 문장으로)\"\n");
+        promptBuilder.append("  \"reason\": \"날짜 정보 및 추천 이유 및 날씨 대응 전략 (간략하게 2~3 문장으로)\"\n");
         promptBuilder.append("}\n");
 
         String textPrompt = promptBuilder.toString();
@@ -124,70 +120,76 @@ public class AiCoordiService {
 
 
 
-//    private AiResult getAiRecommend(String prompt, List<Closet> closets) throws Exception {
-//
-//        List<Map<String, Object>> imgParts = new ArrayList<>();
-//
-//        for (Closet cloth : closets) {
-//            File file = new File(upload_dir + cloth.getImageUrl()); // img name 추가
-//            byte[] bytes = Files.readAllBytes(file.toPath());
-//            String base64 = Base64.getEncoder().encodeToString(bytes);
-//
-//            imgParts.add(Map.of(
-//                    "inlineData",
-//                    Map.of("data", base64, "mimeType", "image/png")
-//            ));
-//        }
-//
-//            // 요청 JSON 구성
-//        Map<String, Object> jsonBody = Map.of(
-//                "contents", List.of(
-//                        Map.of(
-//                                "parts", mergeParts(
-//                                            List.of(Map.of("text", prompt)),
-//                                            imgParts
-//                                )
-//                        )
-//                )
-//
-//        );
-//
-//        URL url = new URL(ai_api_url + aiKey);
-//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//        conn.setRequestMethod("POST");
-//        conn.setRequestProperty("Content-Type", "application/json");
-//        conn.setDoOutput(true);
-//
-//        conn.getOutputStream().write(mapper.writeValueAsBytes(jsonBody));
-//
-//        JsonNode root = mapper.readTree(conn.getInputStream());
-//
-//        log.info("Gemini response = {}", root);
-//
-//        // 1) 텍스트(JSON)
-//        String jsonText = root.at("/candidates/0/content/parts/0/text").asText();
-//        JsonNode parsed = mapper.readTree(jsonText);
-//
-//
-//        // 2) 이미지(Base64)
-//        // Gemini는 아래처럼 이미지가 parts[*].inlineData로 포함됨
-//        List<String> imgBase64List = new ArrayList<>();
-//
-//        JsonNode parts = root.at("/candidates/0/content/parts");
-//        for (JsonNode p : parts) {
-//            if (p.has("inlineData")) {
-//                imgBase64List.add(p.get("inlineData").get("data").asText());
-//            }
-//        }
-//
-//        return new AiResult(
-//                parsed.get("recommendation").asText(),
-//                parsed.get("reason").asText(),
-//                imgBase64List
-//        );
-//
-//
-//    }
+    private OutfitResponseDto getAiRecommend(String prompt, List<Closet> closets) throws Exception {
+
+        List<Map<String, Object>> imgParts = new ArrayList<>();
+
+        for (Closet cloth : closets) {
+            File file = new File(upload_dir + cloth.getImageUrl());
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            String base64 = Base64.getEncoder().encodeToString(bytes);
+
+            imgParts.add(Map.of(
+                    "inlineData",
+                    Map.of("data", base64, "mimeType", "image/png")
+            ));
+        }
+
+            // 요청 JSON 구성
+        Map<String, Object> jsonBody = Map.of(
+                "contents", List.of(
+                        Map.of(
+                                "parts", mergeParts(
+                                            List.of(Map.of("text", prompt)),
+                                            imgParts
+                                )
+                        )
+                )
+
+        );
+
+        URL url = new URL(ai_api_url + aiKey);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoOutput(true);
+
+        conn.getOutputStream().write(mapper.writeValueAsBytes(jsonBody));
+
+        JsonNode root = mapper.readTree(conn.getInputStream());
+
+        log.info("Gemini response = {}", root);
+
+        // 1) 텍스트(JSON)
+        String jsonText = root.at("/candidates/0/content/parts/0/text").asText();
+        JsonNode parsed = mapper.readTree(jsonText);
+
+
+        // 2) 이미지(Base64)
+        // Gemini는 아래처럼 이미지가 parts[*].inlineData로 포함됨
+        List<String> imgBase64List = new ArrayList<>();
+
+        JsonNode parts = root.at("/candidates/0/content/parts");
+        for (JsonNode p : parts) {
+            if (p.has("inlineData")) {
+                imgBase64List.add(p.get("inlineData").get("data").asText());
+            }
+        }
+
+        List<String> savedUrls = new ArrayList<>();
+        for (String base64 : imgBase64List) {
+            savedUrls.add(saveBase64Images(base64));
+        }
+
+        String ai_id = UUID.randomUUID().toString();
+
+
+        return new OutfitResponseDto(ai_id,
+                parsed.get("recommendation").asText(),
+                parsed.get("reason").asText(),
+                savedUrls
+        );
+    }
 
 
     private List<Map<String, Object>> mergeParts(
@@ -198,23 +200,17 @@ public class AiCoordiService {
         return merged;
     }
 
-    private List<String> saveBase64Images(String base64) throws IOException{
+    private String saveBase64Images(String base64) throws IOException{
 
         byte[] bytes = Base64.getDecoder().decode(base64);
 
-        String recommendId = "ai_" + UUID.randomUUID();
         String FileName = "ai_" + (int)(Math.random()*9999) + ".png";
         File file = new File(upload_dir + FileName);
         Files.write(file.toPath(), bytes);
 
-        String url = serverFileUrl + FileName;
+        String aiUrl = serverFileUrl + FileName;
 
-        aiCoordiRepository.save(AiCoordi.builder()
-                        .ai_id(recommendId)
-                        .aiImage_url(url)
-                        .build());
-
-        return null;
+        return aiUrl;
     }
 
 }

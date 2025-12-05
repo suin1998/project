@@ -261,6 +261,10 @@
         let tMin = null;
         let pop = null;
 
+        let tempStyles = null;
+        let fashionStyles = null;
+        let tpo = null;
+
 
         // 지역 드롭다운 토글
         regionBtn.addEventListener("click", () => {
@@ -411,7 +415,7 @@
             }
         }
 
-        const API_URL = '/AI/weather';
+        const WEATHER_URL = '/AI/weather';
 
         function displayWeatherResult(data) {
             let html = ``;
@@ -460,7 +464,7 @@
                 inputDate: formattedDate
             });
 
-            const fullUrl = `${API_URL}?${params.toString()}`;
+            const fullUrl = `${WEATHER_URL}?${params.toString()}`;
             weatherDisplay.innerHTML = '<p>날씨 정보 조회 중...</p>';
 
             try {
@@ -650,6 +654,14 @@
             });
         }
 
+
+        /* =====================================
+            ai 코디 요청
+        ===================================== */
+
+        /* =====================================
+           사용자 데이터
+        ===================================== */
         function collectUserData() {
             const fashionTags = Array.from(document.querySelectorAll("#fashionStyleTags .tag.active"))
                 .map(tag => tag.textContent.trim());
@@ -660,7 +672,6 @@
             const month = (today.getMonth() + 1).toString().padStart(2, '0');
             const day = today.getDate.toString().padStart(2, "0");
             const localDate = `${year}-${month}-${day}`;
-
 
             return {
                 selectedDate: formattedDate,
@@ -676,10 +687,22 @@
                 tempMin: tMin,
                 pop: pop,
                 // uploadedClothes: uploadedClothes
-
             }
-
         }
+
+        /* =====================================
+            ai 코디 요청
+        ===================================== */
+
+        const request = {
+            weatherRequestDto: {selectedDate, siDo, siGunGu, dong},
+            weatherResponseDto: {selectedDate, pop, tempMin,  tempMax},
+            userId: '${userId}',
+            fashionStyle: collectUserData().fashionStyles,
+            tempStyle: tempStyles ,
+            tpo: tpo,
+        };
+
 
 
     });
