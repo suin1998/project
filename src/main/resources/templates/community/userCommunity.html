@@ -8,24 +8,30 @@
 </head>
 <body>
 <header>
-    <div class="logo">Fit Maker
-        <button id="logoMain"></button>
+    <div class="logo"><a href="/">Fit Maker</a>
     </div>
     <div class="movementPage">
-        <a href="/myCloset" onclick="return checkLogin()">My Closet</a>
-        <a href="/AICoordinator" onclick="return checkLogin()">AI Coordinator</a>
+        <a href="/myCloset" onclick="return redirectToMyCloset()">My Closet</a>
+        <a href="/AICoordinator" onclick="return redirectToAICoordinator()">AI Coordinator</a>
         <a href="/community">Community</a>
     </div>
-    <nav>
-        <div class="headerBtn">
-            <div id="authButtons" style="display: none;"><a href="/login">Login</a>
-                <a href="/join">Join</a></div>
+<!--    <nav>-->
+<!--        <div class="headerBtn">-->
+<!--            <div id="authButtons" style="display: none;"><a href="/login">Login</a>-->
+<!--                <a href="/join">Join</a></div>-->
 
-            <div id="logoutButtons" style="display: none;">
-                <a href="/logout" id="logoutLink">Logout</a>
-                <!--                <button id="MyClosetButton">My Closet</button>-->
-                <a href="/myPage" onclick="return checkLogin()">My Closet</a>
-            </div>
+<!--            <div id="logoutButtons" style="display: none;">-->
+<!--                <a href="/logout" id="logoutLink">Logout</a>-->
+<!--                &lt;!&ndash;                <button id="MyClosetButton">My Closet</button>&ndash;&gt;-->
+<!--                <a href="/myPage" onclick="return redirectToMyPage()">My Page</a>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </nav>-->
+    <nav>
+        <div class="logoutButtons">
+            <a href="/logout" id="logoutLink">Logout</a>
+            <a href="/myPage" onclick="return redirectToMyPage()">My Page</a>
+            <!--            <button id="MyClosetButton">My Closet</button>-->
         </div>
     </nav>
 </header>
@@ -68,34 +74,60 @@
 </div>
 
 <script>
+    // 사용자가 로그인 후에 원래 가려던 곳으로 갈 수 있게 지정하는 변수
+    const REDIRECT_PARAM_NAME = 'redirectTo';
     // 로그인 / 로그아웃 토큰
-    const accessToken = localStorage.getItem('accessToken');
-    const authButtons = document.getElementById('authButtons');
-    const logoutButtons = document.getElementById('logoutButtons');
+    // const accessToken = localStorage.getItem('accessToken');
+    // const authButtons = document.getElementById('authButtons');
+    // const logoutButtons = document.getElementById('logoutButtons');
 
-    function redirectToMyCloset() {
-        if (!accessToken) {
-            window.location.href = '/login';
+    // 💡 추가: 지정된 경로로 이동을 시도하다가 비로그인 시 로그인 페이지로 리디렉션
+    function redirectToLogin(targetPath) {
+        // 목표 경로(예: /AICoordinator)를 인코딩하여 redirectTo 파라미터로 추가
+        window.location.href = `/login?${REDIRECT_PARAM_NAME}=${encodeURIComponent(targetPath)}`;
+        return false;
+    }
+
+    async function redirectToMyCloset() {
+        const targetPath = '/myCloset';
+        const isValid = await checkToken();
+        if (!isValid) {
+            return redirectToLogin(targetPath);
         } else {
-            window.location.href = '/myPage';
+            window.location.href = targetPath;
+        }
+        return false;
+    }
+
+    async function redirectToAICoordinator() {
+        const targetPath = '/AICoordinator';
+        const isValid = await checkToken();
+        if (!isValid) {
+            return redirectToLogin(targetPath);
+        } else {
+            window.location.href = targetPath;
         }
     }
 
-    function redirectToAICoordinator() {
-        if (!accessToken) {
-            window.location.href = '/login';
+    // 헤더 마이클로젯 로그아웃 옆 부분 마이페이지로 변경(다른 페이지도 동일)
+    async function redirectToMyPage() {
+        const targetPath = '/myPage';
+        const isValid = await checkToken();
+        if (!isValid) {
+            return redirectToLogin(targetPath);
         } else {
-            window.location.href = '/AICoordinator';
+            window.location.href = targetPath;
         }
     }
 
-    function redirectToMain() {
-        window.location.href = '/';
-    }
+    // function redirectToMain() {
+    //     window.location.href = '/';
+    // }
+
 
     document.addEventListener('DOMContentLoaded', function () {
         // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
-        updateAuthButtons();
+        // updateAuthButtons();
 
         // 2. 로그아웃 버튼 클릭 이벤트 연결
         const logoutLink = document.getElementById('logoutLink');
@@ -108,10 +140,10 @@
             MyClosetButton.addEventListener('click', redirectToMyCloset);
         }
 
-        const logoMainButton = document.getElementById('logoMain');
-        if (logoMainButton) {
-            logoMainButton.addEventListener('click', redirectToMain);
-        }
+        // const logoMainButton = document.getElementById('logoMain');
+        // if (logoMainButton) {
+        //     logoMainButton.addEventListener('click', redirectToMain);
+        // }
 
         const AICoordinatorButton = document.getElementById('AICoordinatorButton');
         if (AICoordinatorButton) {
@@ -125,27 +157,59 @@
         }
 
         // 최신순, 조회순, 추천순 관련 필터
-        const filterList = document.getElementById('.filter-list');
-        filterList.addEventListener('change', function (){
-            sortType = this.value;
-            currentPage = 1;
-            BoardList();
-        })
+        // const filterList = document.getElementById('.filter-list');
+        // filterList.addEventListener('change', function (){
+        //     sortType = this.value;
+        //     currentPage = 1;
+        //     BoardList();
+        // });
+
+        checkToken();
     });
 
-    // ========== 인증 상태에 따라 버튼을 업데이트하는 핵심 함수 ==========
-    function updateAuthButtons() {
+    async function checkToken() {
+        // 토큰 가져오기, 토큰이 없으면 반환
+        const token = localStorage.getItem('accessToken');
+        if(!token) return false;
 
-        if (accessToken) {
-            // 토큰이 존재하면 (로그인 상태)
-            if (authButtons) authButtons.style.display = 'none';
-            if (logoutButtons) logoutButtons.style.display = 'flex'; // 혹은 block
-        } else {
-            // 토큰이 없으면 (비로그인 상태)
-            if (authButtons) authButtons.style.display = 'flex'; // 혹은 block
-            if (logoutButtons) logoutButtons.style.display = 'none';
+        try {
+            const checkApi = await fetch('/check/token' , {
+                method: 'GET',
+                headers: {
+                    'Authorization' : `Bearer ${token}`
+                }
+            });
+            // 서버 토큰이 유효하다면
+            if (checkApi.ok) {
+                return true;
+                //서버 토큰이 유효하지 않다면
+            } else if (checkApi.status === 401) {
+                console.warn('토큰 무효');
+                localStorage.removeItem('accessToken');
+                // localStorage.removeItem('refreshToken');
+                // updateAuthButtons(); // 비로그인 상태로 갱신
+                return false;
+            }
+            return false;
+        } catch (error) {
+            console.error('토큰 유효성 검사 중 네트워크 오류: ', error);
         }
+
     }
+
+    // ========== 인증 상태에 따라 버튼을 업데이트하는 핵심 함수 ==========
+    // function updateAuthButtons() {
+    //
+    //     if (accessToken) {
+    //         // 토큰이 존재하면 (로그인 상태)
+    //         if (authButtons) authButtons.style.display = 'none';
+    //         if (logoutButtons) logoutButtons.style.display = 'flex'; // 혹은 block
+    //     } else {
+    //         // 토큰이 없으면 (비로그인 상태)
+    //         if (authButtons) authButtons.style.display = 'flex'; // 혹은 block
+    //         if (logoutButtons) logoutButtons.style.display = 'none';
+    //     }
+    // }
 
     // ========== 로그아웃 처리 함수 ==========
     function handleLogout(event) {
@@ -153,23 +217,15 @@
 
         // 1. JWT 토큰 제거
         localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        // localStorage.removeItem('refreshToken');
 
         // 2. 버튼 상태를 비로그인으로 업데이트
-        updateAuthButtons();
+        // updateAuthButtons();
 
         // 현재 페이지 리로드
-        window.location.reload();
+        // window.location.reload();
+        window.location.href = '/';
     }
-
-    // 예시 게시글 데이터
-    // const sampleData = Array.from({length: 30}).map((_, i) => ({
-    //     id: i + 1,
-    //     like: Math.floor(Math.random() * 100),
-    //     dislike: Math.floor(Math.random() * 10),
-    //     img: "https://picsum.photos/400?random=" + (i + 1),
-    //     coordi: "여기에 코디 정보가 들어갑니다."
-    // }));
 
     // 게시글 보이는 페이지 관련
     const gallery = document.getElementById("gallery");
@@ -181,7 +237,7 @@
     // 게시물 선택 정렬 기준(기본값: 최신순)
     let sortType = 'lastest';
 
-    // 시작 ~ 끝 (총 12개 출력)
+    // 게시물 시작 ~ 끝 (총 12개 출력)
     let currentPage = 1;
     const itemsPerPage = 12;
 
@@ -193,8 +249,18 @@
     }
 
     async function BoardList() {
+        const token = localStorage.getItem('accessToken');
+
         try {
-            const response = await fetch(`/community/post?size=${itemsPerPage}&page=${currentPage}&sort${sortType}`);
+            const response = await fetch(`/community/post?size=${itemsPerPage}&page=${currentPage}&sort${sortType}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        // 토큰이 있을 경우에만 헤더 수정
+                    ...(token && {'Authorization' : `Bearer ${token}`}),
+                    'Content-Type' : `application/json`
+                    }
+                });
             if (!response.ok) {
                 throw new Error(`조회실패 : ${response.status}`);
             }
@@ -327,14 +393,14 @@
     }
 
     // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
-    function checkLogin() {
-        if (!accessToken) {
-            window.location.href = '/login';
-            return false;
-        } else {
-            return true;
-        }
-    }
+    // function checkLogin() {
+    //     if (!accessToken) {
+    //         window.location.href = '/login';
+    //         return false;
+    //     } else {
+    //         return true;
+    //     }
+    // }
     // 좋아요 싫어요 클릭 시, 업데이트 newLikeCount 와 new DislikeCount는 따로 DTO 추가해야한다 함.
     function updateLikeDislike(clickedButton, newLikeCount, newDislikeCount) {
         // 부모 컨테이너
@@ -369,6 +435,8 @@
         const targetBtn = event.target.closest('.likeBtn, .dislikeBtn');
         // 클릭 영역이 좋아요나 싫어요가 아닐 경우
         if(!targetBtn) return;
+
+        const accessToken = localStorage.getItem('accessToken');
 
         // 로그인이 안 되어있다면 로그인하기
         if (!accessToken) {

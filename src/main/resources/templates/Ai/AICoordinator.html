@@ -9,17 +9,17 @@
 </head>
 <body>
 <header>
-    <div class="logo">Fit Maker <button id="logoMain"></button>
+    <div class="logo"><a href="/">Fit Maker</a>
     </div>
     <div class="movementPage">
-        <a href="/myPage" onclick="return checkLogin()">My Closet</a>
-        <a href="/AICoordinator" onclick="return checkLogin()">AI Coordinator</a>
+        <a href="/myCloset">My Closet</a>
+        <a href="/AICoordinator">AI Coordinator</a>
         <a href="/community">Community</a>
     </div>
     <nav>
         <div class="headerBtn">
             <a href="/logout" id="logoutLink">Logout</a>
-            <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
+            <a href="/myPage">My Page</a>
 <!--            <button id="MyClosetButton">My Closet</button>-->
         </div>
     </nav>
@@ -141,10 +141,10 @@
         <section class="section">
             <h3>내 옷장</h3>
 
-            <div class="upload-box">
-                <label for="clothesInput">+ 옷 사진 업로드</label>
-                <input type="file" id="clothesInput" accept="image/*" multiple/>
-            </div>
+<!--            <div class="upload-box">-->
+<!--                <label for="clothesInput">+ 옷 사진 업로드</label>-->
+<!--                <input type="file" id="clothesInput" accept="image/*" multiple/>-->
+<!--            </div>-->
 
             <button id="loadSavedBtn" class="load-btn">저장된 옷 불러오기</button>
 
@@ -177,13 +177,9 @@
     // 페이지 이동 관련 (로고 클릭 시 메인으로 이동합니다.)
     const accessToken = localStorage.getItem('accessToken');
 
-    function redirectToMyCloset() {
-        window.location.href = '/MyCloset';
-    }
-
-    function redirectToMain() {
-        window.location.href = '/';
-    }
+    // function redirectToMain() {
+    //     window.location.href = '/';
+    // }
 
     document.addEventListener('DOMContentLoaded', function () {
         const logoutLink = document.getElementById('logoutLink');
@@ -191,15 +187,15 @@
             logoutLink.addEventListener('click', handleLogout);
         }
 
-        const MyClosetButton = document.getElementById('MyClosetButton');
-        if (MyClosetButton) {
-            MyClosetButton.addEventListener('click', redirectToMyCloset);
-        }
-
-        const logoMainButton = document.getElementById('logoMain');
-        if(logoMainButton) {
-            logoMainButton.addEventListener('click', redirectToMain);
-        }
+        // const MyClosetButton = document.getElementById('MyClosetButton');
+        // if (MyClosetButton) {
+        //     MyClosetButton.addEventListener('click', redirectToMyCloset);
+        // }
+        //
+        // const logoMainButton = document.getElementById('logoMain');
+        // if(logoMainButton) {
+        //     logoMainButton.addEventListener('click', redirectToMain);
+        // }
 
     });
 
@@ -534,21 +530,21 @@
         /* ===============================
            사진 업로드 → 썸네일 표시
         =============================== */
-        const input = document.getElementById("clothesInput");
-        const clothesList = document.getElementById("clothesList");
+        // const input = document.getElementById("clothesInput");
+        // const clothesList = document.getElementById("clothesList");
 
-        input.addEventListener("change", () => {
-            const files = Array.from(input.files);
+        // input.addEventListener("change", () => {
+        //     const files = Array.from(input.files);
 
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const img = document.createElement("img");
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            });
-        });
+        //     files.forEach(file => {
+        //         const reader = new FileReader();
+        //         reader.onload = e => {
+        //             const img = document.createElement("img");
+        //             img.src = e.target.result;
+        //         };
+        //         reader.readAsDataURL(file);
+        //     });
+        // });
 
         /* =====================================
             옷 카테고리 기능 (기존 코드 유지)
@@ -706,16 +702,6 @@
 
 
     });
-
-    // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
-    function checkLogin() {
-        if(!accessToken) {
-            window.location.href = '/login';
-            return false;
-        } else {
-            return true;
-        }
-    }
 
 </script>
 </body>

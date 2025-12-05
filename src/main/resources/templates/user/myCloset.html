@@ -9,12 +9,18 @@
 <body>
 <!--헤더 관련 수정했습니다.-->
 <header>
-    <div class="logo">Fit Maker<button id="logoMain"></button>
+    <div class="logo"><a href="/">Fit Maker</a>
+    </div>
+    <div class="movementPage">
+        <a href="/myCloset">My Closet</a>
+        <a href="/AICoordinator">AI Coordinator</a>
+        <a href="/community">Community</a>
     </div>
     <nav>
         <div class="headerBtn">
             <a href="/logout" id="logoutLink">Logout</a>
-            <button id="AICoordinatorButton">AI Coordinator</button>
+            <a href="/myPage">My Page</a>
+            <!--            <button id="MyClosetButton">My Closet</button>-->
         </div>
     </nav>
 </header>
@@ -49,7 +55,7 @@
                 </div>
                 <div class="profile-text">
                     <h3 id="user-name">000님 안녕하세요</h3>
-                    <a href="#" id="profile-edit">정보수정</a>
+                    <a href="/myPage" id="profile-edit">정보수정</a>
                 </div>
             </div>
         </section>
@@ -91,7 +97,7 @@
 
     // 헤더 관련으로 추가하였습니다.
     // 페이지 이동 관련 (로고 클릭 시 메인으로 이동합니다.)
-    // const accessToken = localStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem('accessToken');
 
     function getAuthHeaders() {
 
@@ -142,29 +148,16 @@
         }
     }
 
-    function redirectToAICoordinator() {
-        window.location.href = '/AICoordinator';
-    }
-
-    function redirectToMain() {
-        window.location.href = '/';
-    }
-
     document.addEventListener('DOMContentLoaded', function () {
         const logoutLink = document.getElementById('logoutLink');
         if (logoutLink) {
             logoutLink.addEventListener('click', handleLogout);
         }
 
-        const AICoordinatorButton = document.getElementById('AICoordinatorButton');
-        if (AICoordinatorButton) {
-            AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
-        }
-
-        const logoMainButton = document.getElementById('logoMain');
-        if(logoMainButton) {
-            logoMainButton.addEventListener('click', redirectToMain);
-        }
+        // const logoMainButton = document.getElementById('logoMain');
+        // if(logoMainButton) {
+        //     logoMainButton.addEventListener('click', redirectToMain);
+        // }
 
     });
 

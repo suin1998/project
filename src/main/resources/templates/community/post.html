@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="/css/post.css">
+    <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
 </head>
 <body>
 <header>
-    <div class="logo">Fit Maker
-        <button id="logoMain"></button>
+    <div class="logo"><a href="/">Fit Maker</a>
     </div>
     <div class="movementPage">
-        <a href="/myCloset" onclick="return checkLogin()">My Closet</a>
-        <a href="/AICoordinator" onclick="return checkLogin()">AI Coordinator</a>
+        <a href="/myCloset" onclick="return redirectToMyCloset()">My Closet</a>
+        <a href="/AICoordinator" onclick="return redirectToAICoordinator()">AI Coordinator</a>
         <a href="/community">Community</a>
     </div>
     <nav>
@@ -22,7 +22,7 @@
 
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
-                <a href="/myPage" onclick="return checkLogin()">My Closet</a>
+                <a href="/myPage" onclick="return redirectToMyPage()">My Page</a>
             </div>
         </div>
     </nav>
@@ -39,10 +39,10 @@
         <div class="date-like">
             <input id="postDate" class="date-input" readonly>
             <div class="like-dislike-box">
-                <button type="button" id="likeBtn"><span class="like">👍</span></button>
+                <button type="button" id="likeBtn"><span class="like"><i class="fas fa-heart" id="likeHeart"></i></span></button>
                 <span id="likeCount">0</span>
 
-                <button type="button" id="dislikeBtn"><span class="dislike">👎</span></button>
+                <button type="button" id="dislikeBtn"><span class="dislike"><i class="fas fa-heart" id="dislikeHeart"></i></span></button>
                 <span id="dislikeCount">0</span>
             </div>
         </div>
@@ -63,33 +63,55 @@
 </div>
 
 <script>
+    const REDIRECT_PARAM_NAME = 'redirectTo';
+
     const accessToken = localStorage.getItem('accessToken');
     const authButtons = document.getElementById('authButtons');
     const logoutButtons = document.getElementById('logoutButtons');
 
+    function redirectToLogin(targetPath) {
+        // 목표 경로(예: /AICoordinator)를 인코딩하여 redirectTo 파라미터로 추가
+        window.location.href = `/login?${REDIRECT_PARAM_NAME}=${encodeURIComponent(targetPath)}`;
+        return false;
+    }
+
     function redirectToMyCloset() {
+        const targetPath = '/myCloset';
         if (!accessToken) {
-            window.location.href = '/login';
+            return redirectToLogin(targetPath);
         } else {
-            window.location.href = '/myPage';
+            window.location.href = targetPath;
         }
     }
 
     function redirectToAICoordinator() {
+        const targetPath = '/AICoordinator';
         if (!accessToken) {
-            window.location.href = '/login';
+            return redirectToLogin(targetPath);
         } else {
-            window.location.href = '/AICoordinator';
+            window.location.href = targetPath;
         }
     }
 
-    function redirectToMain() {
-        window.location.href = '/';
+    // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
+    function redirectToMyPage() {
+        const targetPath = '/myPage'
+        if(!accessToken) {
+            return redirectToLogin(targetPath);
+        } else {
+            window.location.href = targetPath;
+        }
     }
+
+    // function redirectToMain() {
+    //     window.location.href = '/';
+    // }
 
     document.addEventListener('DOMContentLoaded', function () {
         // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
         updateAuthButtons();
+
+        loadPost();
 
         // 2. 로그아웃 버튼 클릭 이벤트 연결
         const logoutLink = document.getElementById('logoutLink');
@@ -102,10 +124,10 @@
             MyClosetButton.addEventListener('click', redirectToMyCloset);
         }
 
-        const logoMainButton = document.getElementById('logoMain');
-        if (logoMainButton) {
-            logoMainButton.addEventListener('click', redirectToMain);
-        }
+        // const logoMainButton = document.getElementById('logoMain');
+        // if (logoMainButton) {
+        //     logoMainButton.addEventListener('click', redirectToMain);
+        // }
 
         const AICoordinatorButton = document.getElementById('AICoordinatorButton');
         if (AICoordinatorButton) {
@@ -143,45 +165,49 @@
         window.location.reload();
     }
 
-    /* 저장된 게시글 데이터 (예시) */
-    const savedPost = {
-        userNickName: "홍길동",
-        content:
-            "여기에 코디와 관련된 내용이 쓰여집니다. 예시임으로 코드를 편히 고치세요.",
-        images: [
-            "https://picsum.photos/200?random=1",
-            "https://picsum.photos/200?random=2",
-            "https://picsum.photos/200?random=3",
-            "https://picsum.photos/200?random=4",
-            "https://picsum.photos/200?random=5"
-        ]
-    };
-
-    /* 현재 날짜 + 시간 */
-    function getFormattedDate() {
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, "0");
-        const dd = String(now.getDate()).padStart(2, "0");
-        const hh = String(now.getHours()).padStart(2, "0");
-        const min = String(now.getMinutes()).padStart(2, "0");
-        return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
-    }
-
-    /* 화면에 데이터 삽입 */
-    document.getElementById("user-nickname").textContent = savedPost.userNickName;
-
-    document.getElementById("postDate").value = getFormattedDate();
-    document.getElementById("postContent").textContent = savedPost.content;
-
     /*  이미지 슬라이더 */
     let currentIndex = 0;
+    // DB 에서 가져온 이미지 url을 저장할 변서
+    let postImages = []
 
     const mainImage = document.getElementById("mainImage");
     const thumbnailList = document.getElementById("thumbnailList");
+    // 이미지 슬라이더 버튼
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
 
+    // 경로부분에서 id 추출하기(http://localhost:8080/post/ --1-- << 이부분
+    function getPostId() {
+        // 경로 가져와서 / 기준으로 분리
+        const path = window.location.pathname;
+        const segments = path.split('/');
+        // 마지막 부분(id)를 반환
+        const postId = segments[segments.length -1];
+
+        return postId;
+    }
+    // DB에서 받은 날짜를 년도-월-일 시:분으로 맞추기
+    function getDate(dateString) {
+        if(!dateString) return '';
+        // 날짜 객체 생성
+        const date = new Date(dateString);
+        // 연 월 일 추출 및 포매팅
+        const year = date.getFullYear();
+        // 월일 두자리 맞추기(월은 0부터 시작함으로 +1함)
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        // 시 분 추출 포매팅, 시 분도 두자리 맞춤
+        const hour = date.getHours().toString().padStart(2,'0');
+        const minute = date.getMinutes().toString().padStart(2,'0');
+        //최종 형식 년-월-일 시:분
+        return `${year}-${month}-${day} ${hour}:${minute}`
+    }
+    // 이미지 들여오기
     function renderImage() {
-        mainImage.src = savedPost.images[currentIndex];
+        // 이미지가 없으면 실행 x
+        if(postImages.length === 0) return;
+        // 받은 이미지를 메인 이미지로 교체하기
+        mainImage.src = postImages[currentIndex];
 
         // 썸네일 강조
         document.querySelectorAll(".thumb").forEach((el, idx) => {
@@ -189,36 +215,74 @@
         });
     }
 
-    // 썸네일 생성
-    savedPost.images.forEach((img, i) => {
-        const thumb = document.createElement("img");
-        thumb.src = img;
-        thumb.classList.add("thumb");
-        thumb.addEventListener("click", () => {
-            currentIndex = i;
-            renderImage();
-        });
-        thumbnailList.appendChild(thumb);
-    });
+    async function loadPost() {
+        // 게시물 id 가져오기
+        const postId = getPostId();
+        // id가 없으면 에러처리
+        if(!postId) {
+            console.error("URL에서 게시물 ID를 찾을 수 없습니다.");
+            return;
+        }
+        try {
+            // 해당 경로의 상세정보만 가져오게 뒤에 id 추가
+            const response = await fetch(`/community/post/${postId}`)
+            // 불러오기 실패했을 시
+            if(!response.ok) {
+                throw new Error(`조회 실패 : ${response.status}`);
+            }
+            // 성공했을 시
+            const responseDate = await response.json();
+            console.log('---조회 완료---');
 
-    renderImage();
+            //성공하면 위치 연결 (날짜의 경우 위에 날짜 표시를 적용)
+            document.getElementById("user-nickname").textContent = responseDate.userNickname;
+            document.getElementById("postDate").value = getDate(responseDate.regDate);
+            document.getElementById("postContent").textContent = responseDate.userStyle;
 
-    // 좌우 버튼
-    document.getElementById("prevBtn").onclick = () => {
-        currentIndex = (currentIndex - 1 + savedPost.images.length) % savedPost.images.length;
-        renderImage();
-    };
+            postImages = responseDate.mainImageUrl || [];
 
-    document.getElementById("nextBtn").onclick = () => {
-        currentIndex = (currentIndex + 1) % savedPost.images.length;
-        renderImage();
-    };
+            // 이미지가 있으면 슬라이더 로직 실행
+            if(postImages.length > 0) {
+                // 이미지 갯수에 따른 슬라이드 설정(이미지가 1개면 슬라이드가 안 나오게 끔 변경)
+                const displayStyle = postImages.length > 1 ? 'block' : 'none';
+                prevBtn.style.display = displayStyle;
+                nextBtn.style.display = displayStyle;
+                // 썸네일 생성
+                postImages.forEach((img, i) => {
+                    const thumb = document.createElement("img");
+                    thumb.src = img;
+                    thumb.classList.add("thumb");
+                    thumb.addEventListener("click", () => {
+                        currentIndex = i;
+                        renderImage();
+                    });
+                    thumbnailList.appendChild(thumb);
+                });
+                //초기 이미지 렌더링
+                renderImage();
+
+                // 슬라이드 버튼 작동
+                prevBtn.addEventListener('click', () =>{
+                    currentIndex = (currentIndex - 1 + postImages.length) % postImages.length;
+                    renderImage();
+                });
+                nextBtn.addEventListener('click', () => {
+                    currentIndex = (currentIndex + 1) % postImages.length;
+                    renderImage();
+                });
+            } else {
+                // 이미지가 없을 경우 버튼 전부 숨김
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                mainImage.src = "여기의 이미지가 들어갑니다.(이미지가 없을 경우 보임)"
+            }
+
+        } catch (error) {
+            console.error('게시물 조회 중 에러 발생', error);
+        }
+    }
 
     /* 좋아요 / 싫어요 기능 */
-
-    // 중복 클릭 방지를 위한 상태값
-    let likeClicked = false;
-    let dislikeClicked = false;
 
     const likeBtn = document.getElementById("likeBtn");
     const dislikeBtn = document.getElementById("dislikeBtn");
@@ -245,15 +309,6 @@
         dislikeBtn.disabled = true;  // 둘 중 하나만 선택하게 하고 싶으면 유지
     };
 
-    // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
-    function checkLogin() {
-        if(!accessToken) {
-            window.location.href = '/login';
-            return false;
-        } else {
-            return true;
-        }
-    }
 </script>
 </body>
 </html>

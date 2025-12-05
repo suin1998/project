@@ -9,9 +9,9 @@
 <header>
     <div class="logo">Fit Maker</div>
     <div class="movementPage">
-        <a href="/myCloset" onclick="return checkLogin()">My Closet</a>
-        <a href="/AICoordinator" onclick="return checkLogin()">AI Coordinator</a>
-        <a href="/community">Community</a>
+        <a href="/myCloset" onclick="return redirectToMyCloset()">My Closet</a>
+        <a href="/AICoordinator" onclick="return redirectToAICoordinator()">AI Coordinator</a>
+        <a href="/community" onclick="return redirectToCommunity()">Community</a>
     </div>
     <nav>
         <div class="headerBtn">
@@ -20,7 +20,7 @@
 
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
-                <a href="/myCloset" onclick="return checkLogin()">My Closet</a>
+                <a href="/myPage" onclick="return redirectToMyPage()">My Page</a>
 <!--                <button id="MyClosetButton2">My Closet</button>-->
             </div>
         </div>
@@ -40,7 +40,7 @@
         <div class="card">
             <img src="/image/main/clothes_pic.jpg" alt="">
             <!--            <h2>My Closet</h2>-->
-            <!--            <p>사진을 찍어 올려서 내가 가진 옷을 정리할 수 있어요.</p>-->
+                        <p>사진을 찍어 올려서 내가 가진 옷을 정리할 수 있어요.</p>
             <div class="btn">
                 <button id="MyClosetButton">My Closet</button>
             </div>
@@ -48,7 +48,7 @@
         <div class="card">
             <img src="/image/main/clothes.jpg" alt="">
             <!--            <h2>AI Coordinator</h2>-->
-            <!--            <p>AI에게 코디를 물어볼 수 있어요.</p>-->
+                        <p>AI에게 코디를 물어볼 수 있어요.</p>
             <div class="btn">
                 <button id="AICoordinatorButton">AI Coordinator</button>
             </div>
@@ -56,7 +56,7 @@
         <div class="card">
             <img src="/image/main/clothes_coord.jpg" alt="">
             <!--            <h2>Community</h2>-->
-            <!--            <p>내가 가진 코디를 공유하거나 다른 사람의 코디 정보를 볼 수 있어요.</p>-->
+                        <p>내가 가진 코디를 공유하거나 다른 사람의 코디 정보를 볼 수 있어요.</p>
             <div class="btn">
                 <button id="communityButton">Community</button>
             </div>
@@ -100,43 +100,6 @@
     const authButtons = document.getElementById('authButtons');
     const logoutButtons = document.getElementById('logoutButtons');
 
-    // function redirectToMyCloset() {
-    //     const accessToken = localStorage.getItem('accessToken');
-    //
-    //     if (!accessToken) {
-    //         // 토큰이 없으면 로그인 페이지로 안내
-    //         alert('My Closet은 로그인 후 이용 가능합니다.');
-    //         window.location.href = '/login';
-    //     } else {
-    //         // 토큰이 있으면 MyPage로 이동 시도
-    //         window.location.href = '/myPage';
-    //     }
-    // }
-
-    // AI Coordinator 버튼 클릭 시 /AICoordinator 경로로 이동합니다.
-
-    // Community 버튼 클릭 시 /community 경로로 이동합니다.
-    function redirectToCommunity() {
-        // 커뮤니티 페이지를 렌더링하는 서버 경로로 수정해주세요.
-        // 예를 들어, /community로 매핑된 컨트롤러가 community.html 템플릿을 보여줍니다.
-        window.location.href = '/community';
-    }
-
-    function redirectToAICoordinator() {
-        if (!accessToken) {
-            window.location.href = '/login';
-        } else {
-            window.location.href = '/AICoordinator';
-        }
-    }
-
-    function redirectToMyCloset() {
-        if (!accessToken) {
-            window.location.href = '/login';
-        } else {
-            window.location.href = '/myCloset';
-        }
-    }
 
     document.addEventListener('DOMContentLoaded', function () {
         // 1. 페이지 로드 시 인증 상태 확인 및 버튼 업데이트
@@ -200,8 +163,8 @@
         }
     }
 
-    // 헤더의 마이클로젯 클릭 시 로그인 확인 여부 (수정: MyPage 경로를 전달)
-    function checkLogin() {
+    // 헤더 마이클로젯 로그아웃 옆 부분 마이페이지로 변경(다른 페이지도 동일)
+    function redirectToMyPage() {
         const targetPath = '/myPage';
         if (!accessToken) {
             return redirectToLogin(targetPath);
@@ -211,9 +174,14 @@
         }
     }
 
-    // Community 버튼 클릭 시 (로그인이 필요 없다고 가정하고 기존 로직 유지)
+    // Community 버튼 클릭 시 (로그인이 있어야하는 페이지로 변경)
     function redirectToCommunity() {
-        window.location.href = '/community';
+        const targetPath = '/community';
+        if (!accessToken) {
+            return redirectToLogin(targetPath);
+        } else {
+            window.location.href = targetPath;
+        }
     }
 
 
