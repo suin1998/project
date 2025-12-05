@@ -79,7 +79,7 @@ public class SecurityConfig {
                         "/", "/main", "/home", "/login", "/join", "/community/**", "/board",
                         "/AICoordinator", "/AI", "/search/tags", "/AI/weather", "/myCloset","/post/**",
                         "/board/**",
-                        "/auth/signup", "/auth/login", "/auth/health", "/auth/**", "/MyPage" // auth 하위 모든 경로는 허용
+                        "/auth/signup", "/auth/login", "/auth/health", "/auth/**", "/myPage" // auth 하위 모든 경로는 허용
                 ).permitAll()
 
                 // 🚨 B. 관리자 페이지 및 API는 ADMIN 권한 필요 (새로 추가)
@@ -87,7 +87,7 @@ public class SecurityConfig {
 
                 // B. 마이페이지는 인증된 사용자만 접근 허용 (수정된 부분)
                 // MyCloset 버튼 경로가 마이페이지라면 이 설정이 필요합니다.
-                .requestMatchers("/MyPage/**", "/api/**").authenticated()
+                .requestMatchers("/myPage/**", "/api/**").authenticated()
 
                 // C. 나머지 모든 요청은 인증 필요 (AnyRequest)
                 .anyRequest().authenticated()

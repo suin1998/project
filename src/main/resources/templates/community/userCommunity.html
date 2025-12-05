@@ -12,7 +12,7 @@
         <button id="logoMain"></button>
     </div>
     <div class="movementPage">
-        <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
+        <a href="/myPage" onclick="return checkLogin()">My Closet</a>
         <a href="/AICoordinator" onclick="return checkLogin()">AI Coordinator</a>
         <a href="/community">Community</a>
     </div>
@@ -24,7 +24,7 @@
             <div id="logoutButtons" style="display: none;">
                 <a href="/logout" id="logoutLink">Logout</a>
                 <!--                <button id="MyClosetButton">My Closet</button>-->
-                <a href="/MyPage" onclick="return checkLogin()">My Closet</a>
+                <a href="/myPage" onclick="return checkLogin()">My Closet</a>
             </div>
         </div>
     </nav>
@@ -59,27 +59,6 @@
     <!--            <button class="newPost-btn" id="newPost">글쓰기</button>-->
     <div id="gallery" class="gallery">
     </div>
-    <template id="gallery-item-template">
-        <div class="gallery-item">
-            <div class="img-box">
-                <img src="" alt="">
-                <div class="overlay" onclick=""></div>
-            </div>
-            <div class="gallery-check">
-                <div class="gallery-like">
-                    <button type="button" class="likeBtn btn" data-action="like">
-                        <i class="fas fa-heart" id="likeHeart"></i> <span class="likeCount"></span>
-                    </button>
-                    <button type="button" class="dislikeBtn btn" data-action="dislike">
-                        <i class="fas fa-heart" id="dislikeHeart"></i> <span class="dislikeCount"></span>
-                    </button>
-                </div>
-                <div class="ViewsCount">
-                    <p class="viewCount"></p>
-                </div>
-            </div>
-        </div>
-    </template>
 
     <div class="pagination">
         <button class="page-btn" id="prev"> <</button>
@@ -138,31 +117,6 @@
         if (AICoordinatorButton) {
             AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
         }
-
-        // const loginButton = document.getElementById('loginBtn');
-        // if (loginButton) {
-        //     loginButton.addEventListener('click');
-        // }
-        //
-        // const logoutButton = document.getElementById('logoutBtn');
-        // if (logoutButton) {
-        //     logoutButton.addEventListener('click');
-        // }
-        //
-        // const MainButton = document.getElementById('MainBtn');
-        // if (MainButton) {
-        //     MainButton.addEventListener('click', redirectToMain);
-        // }
-        //
-        // const AICoordinatorButton = document.getElementById('AICoordinatorBtn');
-        // if (AICoordinatorButton) {
-        //     AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
-        // }
-        //
-        // const MyPageButton = document.getElementById('MyPageBtn');
-        // if (MyPageButton) {
-        //     MyPageButton.addEventListener('click', redirectToMyPage);
-        // }
     });
 
     // ========== 인증 상태에 따라 버튼을 업데이트하는 핵심 함수 ==========
@@ -194,45 +148,43 @@
         window.location.reload();
     }
 
-    // function redirectToMain() {
-    //     window.location.href = '/';
-    // }
-    //
-    // function redirectToAICoordinator() {
-    //     if (!accessToken) {
-    //         window.location.href = '/login';
-    //     } else {
-    //         window.location.href = '/AICoordinator';
-    //     }
-    // }
-    //
-    // function redirectToMyPage() {
-    //     if (!accessToken) {
-    //         window.location.href = '/login';
-    //     } else {
-    //         window.location.href = '/MyPage';
-    //     }
-    // }
-
     // 예시 게시글 데이터
-    const sampleData = Array.from({length: 30}).map((_, i) => ({
-        id: i + 1,
-        like: Math.floor(Math.random() * 100),
-        dislike: Math.floor(Math.random() * 10),
-        img: "https://picsum.photos/400?random=" + (i + 1),
-        coordi: "여기에 코디 정보가 들어갑니다."
-    }));
+    // const sampleData = Array.from({length: 30}).map((_, i) => ({
+    //     id: i + 1,
+    //     like: Math.floor(Math.random() * 100),
+    //     dislike: Math.floor(Math.random() * 10),
+    //     img: "https://picsum.photos/400?random=" + (i + 1),
+    //     coordi: "여기에 코디 정보가 들어갑니다."
+    // }));
+
+    // 게시글 보이는 페이지 관련
+    const gallery = document.getElementById("gallery");
+    const pageNumbers = document.getElementById("page-numbers");
+
+    let allPosts = [];
+
+    // 시작 ~ 끝 (총 12개 출력)
+    let currentPage = 1;
+    const itemsPerPage = 12;
+
+    let totalPages = 1; // 페이지 수(전역변수 선언)
+
+    //게시글 상세 페이지 이동
+    function goDetail(id) {
+        window.location.href = `/post/${id}`;
+    }
 
     async function BoardList() {
         try {
-            const response = await fetch('/community/post/');
+            const response = await fetch(`/community/post?size=${itemsPerPage}&page=${currentPage}`);
             if (!response.ok) {
-                throw new Error(`조회실패`)
+                throw new Error(`조회실패 : ${response.status}`);
             }
-            // 조회 성공시 데이터 받음
-            const postList = await response.json();
-            // 위 데이터 저장
-            allPosts = postList;
+            // 조회 성공시 데이터(DTO) 받고 저장
+            const responseData = await response.json();
+            allPosts = responseData.dtoList; // dtoList 연결해야 DB연결 가능
+            totalPages = responseData.totalPages; // 총 페이지 수 저장
+            console.log('---조회 완료---' , allPosts); // 확인용 콘솔, 지워도됨
 
             currentPage = 1; // 새 데이터 로드시 1페이지 초기화 시킴
             renderGallery(); // 갤러리 출력 연결
@@ -240,79 +192,81 @@
 
         } catch (error) {
             console.error('목록 조회 중 에러 발생', error);
-            gallery.innerHTML = `게시물 로드 실패`;
-
-            if(gallery) {
-                gallery.innerHTML = '게시물 로드 실패';
+            if (gallery) {
+                gallery.innerHTML = `게시물 로드 실패`;
             }
         }
     }
 
-    // 게시글 보이는 페이지 관련
-    const gallery = document.getElementById("gallery");
-    const pageNumbers = document.getElementById("page-numbers");
-
-    // 게시물 목록 데이터
-    let allPosts = [];
-
-    // 시작 ~ 끝 (총 14개 출력)
-    let currentPage = 1;
-    const itemsPerPage = 12;
-
     // 갤러리 출력
     function renderGallery() {
-        gallery.innerHTML = "";
-        const template = document.getElementById('gallery-item-template');
 
+        // 게시물이 없을 경우
+        if (!allPosts.length) {
+            gallery.innerHTML = "<p>표시할 게시물이 없습니다!</p>";
+            return;
+        }
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
 
-        const postsToRender = allPosts.slice(start, end); // 현재 페이지 게시물 목록 슬라이드
+        const postsToRender = allPosts.slice(start, end);// 현재 페이지 게시물 목록 슬라이드
 
-        postsToRender.forEach(BoardListDTO => {
-            // 템플릿 복사
-            const clone = template.content.cloneNode(true);
-
-            const item = clone.querySelector('.gallery-item');
-            const img = clone.querySelector('img');
-            const overlay = clone.querySelector('.overlay');
-            const like = clone.querySelector('.likeCount');
-            const dislike = clone.querySelector('.dislikeCount');
-            const viewCount = clone.querySelector('.viewCount');
-
-            img.src = BoardListDTO.mainImageUrl;
-            overlay.textContent = BoardListDTO.userStyle;
-            overlay.setAttribute('onclick', `goDetail(${BoardListDTO.id})`);
-            like.textContent = BoardListDTO.likeCount;
-            dislike.textContent = BoardListDTO.dislike;
-
-            gallery.appendChild(clone);
-        });
-        // sampleData.slice(start, end).forEach(post => {
-        //     gallery.innerHTML += `
-        //     <div class="gallery-item">
-        //         <div class="img-box">
-        //             <img src="${post.img}" alt="">
-        //             <div class="overlay" onclick="goDetail(${post.id})">${post.coordi}</div>
-        //         </div>
-        //         <div class="gallery-info">
-        //             <div class="gallery-like">👍 ${post.like} &nbsp; 👎 ${post.dislike}</div>
-        //         </div>
-        // </div>`;
-        // });
+        const galleryHTML = postsToRender.map(BoardListDTO => {
+            const {
+                id,
+                userStyle,
+                mainImageUrl,
+                userNickname,
+                regDate,
+                viewCount,
+                likeCount,
+                dislikeCount
+            } = BoardListDTO;
+            return `
+        <div class="gallery-item">
+            <div class="img-box">
+                <img src="${mainImageUrl || ''}" alt="">
+                    <div class="overlay" onclick="goDetail(${id})">${userStyle || ''}</div>
+            </div>
+            <div class="gallery-check">
+            <div class="username" style="display: none">${userNickname}</div>
+            <div class="regDate" style="display: none">${regDate}</div>
+                <div class="gallery-like">
+                    <button type="button" class="likeBtn btn" data-action="like">
+                        <i class="fas fa-heart" id="likeHeart"></i> <span class="likeCount">${likeCount || 0}</span>
+                    </button>
+                    <button type="button" class="dislikeBtn btn" data-action="dislike">
+                        <i class="fas fa-heart" id="dislikeHeart"></i> <span class="dislikeCount">${dislikeCount || 0}</span>
+                    </button>
+                </div>
+                <div class="ViewsCount">
+                    <p class="viewCount">${viewCount || 0}</p>
+                </div>
+            </div>
+        </div>`;
+        }).join('');
+        gallery.innerHTML = galleryHTML;
     }
 
-    //게시글 상세 페이지 이동
-    function goDetail(id) {
-        window.location.href = `/post/${id}`;
+    function initializeBoard() {
+        // 게시물 목록 로드
+        BoardList();
     }
+
+    document.addEventListener('DOMContentLoaded', initializeBoard);
 
     // 페이지 버튼 출력
     function renderPagination() {
         pageNumbers.innerHTML = "";
-        const group = Math.floor((currentPage - 1) / 10);
-        const start = group * 10 + 1;
-        const end = start + 9;
+
+        // 페이지수 검사(전역 변수)
+        if (totalPages < 1) return;
+
+        // 한 페이지에 보일 최대 페이지 숫자
+        const groupSize = 10;
+        const group = Math.floor((currentPage - 1) / groupSize);
+        const start = group * groupSize + 1;
+        const end = Math.min(start + groupSize -1, totalPages);
 
         for (let i = start; i <= end; i++) {
             const span = document.createElement("span");
@@ -332,13 +286,15 @@
     document.getElementById("prev").onclick = () => {
         if (currentPage > 1) {
             currentPage--;
-            renderEverything();
+            renderEverything()
         }
     };
 
     document.getElementById("next").onclick = () => {
+        if (currentPage < totalPages) {
         currentPage++;
         renderEverything();
+        }
     };
 
     function renderEverything() {
@@ -346,11 +302,9 @@
         renderPagination();
     }
 
-    renderEverything();
-
     // 헤더의 마이클로젯 클릭 시 로그인 확인 여부(로그인 확인이 되어있지 않을 시, 로그인 페이지로 이동)
     function checkLogin() {
-        if(!accessToken) {
+        if (!accessToken) {
             window.location.href = '/login';
             return false;
         } else {

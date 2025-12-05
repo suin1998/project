@@ -100,18 +100,18 @@
     const authButtons = document.getElementById('authButtons');
     const logoutButtons = document.getElementById('logoutButtons');
 
-    function redirectToMyCloset() {
-        const accessToken = localStorage.getItem('accessToken');
-
-        if (!accessToken) {
-            // 토큰이 없으면 로그인 페이지로 안내
-            alert('My Closet은 로그인 후 이용 가능합니다.');
-            window.location.href = '/login';
-        } else {
-            // 토큰이 있으면 MyPage로 이동 시도
-            window.location.href = '/myPage';
-        }
-    }
+    // function redirectToMyCloset() {
+    //     const accessToken = localStorage.getItem('accessToken');
+    //
+    //     if (!accessToken) {
+    //         // 토큰이 없으면 로그인 페이지로 안내
+    //         alert('My Closet은 로그인 후 이용 가능합니다.');
+    //         window.location.href = '/login';
+    //     } else {
+    //         // 토큰이 있으면 MyPage로 이동 시도
+    //         window.location.href = '/myPage';
+    //     }
+    // }
 
     // AI Coordinator 버튼 클릭 시 /AICoordinator 경로로 이동합니다.
 
@@ -151,15 +151,14 @@
             AICoordinatorButton.addEventListener('click', redirectToAICoordinator);
         }
 
-        const MyPageButton = document.getElementById('MyPageButton');
-        const MyPageButton2 = document.getElementById('MyPageButton2');
-
+        const MyPageButton = document.getElementById('MyClosetButton');
+        // const MyPageButton2 = document.getElementById('MyPageButton2');
         if (MyPageButton) {
             MyPageButton.addEventListener('click', redirectToMyPage);
         }
-        if (MyPageButton2) {
-            MyPageButton2.addEventListener('click', redirectToMyPage);
-        }
+        // if (MyPageButton2) {
+        //     MyPageButton2.addEventListener('click', redirectToMyPage);
+        // }
     });
 
     // ========== 로그인 확인 및 리디렉션 로직 (추가/수정) ==========
@@ -195,7 +194,7 @@
 
     // 헤더의 마이클로젯 클릭 시 로그인 확인 여부 (수정: MyPage 경로를 전달)
     function checkLogin() {
-        const targetPath = '/MyPage';
+        const targetPath = '/myPage';
         if (!accessToken) {
             return redirectToLogin(targetPath);
         } else {
