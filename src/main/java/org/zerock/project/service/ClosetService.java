@@ -13,6 +13,7 @@ import org.zerock.project.repository.ClosetRepository;
 import org.zerock.project.repository.UserRepository;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,30 +27,34 @@ public class ClosetService {
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService; // 이미지 저장용 서비스
 
-    // 등록 (DTO + MultipartFile 받아서 Closet 엔티티 생성, 이미지 저장 서비스 호출 후 URL 세팅, User 존재 여부 확인 후 저장)
-    public ClosetResponseDTO save(ClosetRequestDTO dto, MultipartFile image) {
-        User user = userRepository.findById(dto.getUserId())
+    // 등록: 로그인된 userId + 카테고리 + 이미지 파일만으로 저장
+    public ClosetResponseDTO save(String userId, ClosetRequestDTO dto, MultipartFile image) {
+        // 1) 유저 조회
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String imageUrl = null;
-        if (image != null && !image.isEmpty()) {
-            try {
-                imageUrl = fileStorageService.storeFile(image); // 이미지 저장 후 URL 반환
-            } catch (IOException e) {
-                throw new RuntimeException("이미지 저장 중 오류가 발생했습니다.", e);
-            }
+        // 2) 이미지 필수 체크
+        if (image == null || image.isEmpty()) {
+            throw new RuntimeException("이미지 파일이 필요합니다.");
         }
 
+        // 3) 이미지 저장 후 URL 얻기
+        String imageUrl;
+        try {
+            imageUrl = fileStorageService.storeFile(image); // 이미지 저장 후 URL 반환
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store image", e);
+        }
+
+        // 4) Closet 엔티티 생성 (카테고리 + 이미지 URL만)
         Closet closet = Closet.builder()
                 .user(user)
                 .category(dto.getCategory())
-                .imageUrl(dto.getImageUrl() != null ? dto.getImageUrl() : imageUrl)
-                .brand(dto.getBrand())
-                .tags(dto.getTags() != null ? dto.getTags() : List.of())
+                .imageUrl(imageUrl)
                 .build();
 
         Closet saved = closetRepository.save(closet);
-        return  ClosetResponseDTO.fromEntity(saved);
+        return toDTO(saved);
     }
 
     // 카테고리별 조회 (로그인 사용자(userId) + Category 기준 조회, DTO 변환 후 리스트 반환)
@@ -76,40 +81,42 @@ public class ClosetService {
                 .collect(Collectors.groupingBy(ClosetResponseDTO::getCategory));
     }
 
-    // 수정 (closetId 기준 Closet 조회, 이미지가 존재하면 저장, 아니면 DTO에 있는 URL 적용, 색상.브랜드.카테고리.태그 갱신, 수정 시간 업데이트 후 저장)
+    // 수정: 이미지 새로 올리면 변경, 카테고리도 변경 가능
     public ClosetResponseDTO update(String closetId, ClosetRequestDTO dto, MultipartFile image) {
         Closet closet = closetRepository.findById(closetId)
                 .orElseThrow(() -> new RuntimeException("Closet not found"));
 
+        // 1) 새 이미지가 있으면 저장 후 URL 변경
         if (image != null && !image.isEmpty()) {
             try {
                 String imageUrl = fileStorageService.storeFile(image);
                 closet.setImageUrl(imageUrl);
             } catch (IOException e) {
-                // log.error("이미지 수정 저장 실패", e);
-                throw new RuntimeException("이미지 저장 중 오류가 발생했습니다.", e);
+                throw new RuntimeException("Failed to store image", e);
             }
-        } else if (dto.getImageUrl() != null) {
-            closet.setImageUrl(dto.getImageUrl());
         }
 
-        closet.setCategory(dto.getCategory());
-        closet.setBrand(dto.getBrand());
-        closet.setTags(dto.getTags());
+        // 2) 카테고리 변경 (null이면 그대로 유지)
+        if (dto.getCategory() != null) {
+            closet.setCategory(dto.getCategory());
+        }
+
+        // @LastModifiedDate를 쓰지 않는다면 직접 수정 시간 관리
+        closet.setUpdatedAt(LocalDateTime.now());
 
         Closet updated = closetRepository.save(closet);
-        return ClosetResponseDTO.fromEntity(updated);
+        return toDTO(updated);
     }
 
-    // 태그 검색 (로그인 사용자 + 태그 리스트 기준 검색)
-    @Transactional(readOnly = true)
-    public List<ClosetResponseDTO> searchByTags(String userId, List<String> tags) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        return closetRepository.findByUserAndTagsIn(user, tags)
-                .stream()
-                .map(ClosetResponseDTO::fromEntity)
-                .collect(Collectors.toList());
+    private ClosetResponseDTO toDTO(Closet closet) {
+        return ClosetResponseDTO.builder()
+                .id(closet.getId())
+                .userId(closet.getUser().getId())
+                .category(closet.getCategory())
+                .imageUrl(closet.getImageUrl())
+                .createdAt(closet.getCreatedAt())
+                .updatedAt(closet.getUpdatedAt())
+                .build();
     }
+
 }

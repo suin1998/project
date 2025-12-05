@@ -1,40 +1,46 @@
 package org.zerock.project.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.zerock.project.entity.Category;
 import org.zerock.project.dto.ClosetRequestDTO;
 import org.zerock.project.dto.ClosetResponseDTO;
+import org.zerock.project.entity.Category;
 import org.zerock.project.service.ClosetService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-import org.zerock.project.service.UserService;
 
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/myCloset")
+@RequestMapping("/api/closet")
 @RequiredArgsConstructor
 public class ClosetController {
 
     private final ClosetService closetService;
 
-    // 옷 등록 (Multipart/Form-data 방식)
+    /**
+     * 옷 등록 (카테고리 + 이미지 파일만)
+     * 프론트: FormData에
+     *  - "data": { "category": "TOP" }
+     *  - "image": (파일)
+     */
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<ClosetResponseDTO> uploadClothes(
             @RequestPart("data") ClosetRequestDTO dto,
             @RequestPart(value = "image", required = false) MultipartFile image,
-            Principal principal // 로그인 사용자 정보
+            Principal principal
     ) {
-        String userId = principal.getName(); // 로그인된 userId
-        dto.setUserId(userId); // DTO에 userId 세팅
-        return ResponseEntity.ok(closetService.save(dto, image));
+        String userId = principal.getName();
+        ClosetResponseDTO response = closetService.save(userId, dto, image);
+        return ResponseEntity.ok(response);
     }
 
-    // 로그인된 사용자 옷장 조회 (userId를 URL로 전달 X)
+    /**
+     * 카테고리별 옷 목록 조회
+     * GET /api/closet/category/TOP
+     */
     @GetMapping("/category/{category}")
     public ResponseEntity<List<ClosetResponseDTO>> getByCategory(
             @PathVariable Category category,
@@ -44,7 +50,10 @@ public class ClosetController {
         return ResponseEntity.ok(closetService.getCloset(userId, category));
     }
 
-    // 그룹 조회
+    /**
+     * 유저의 옷장을 카테고리별로 묶어서 조회
+     * GET /api/closet/group
+     */
     @GetMapping("/group")
     public ResponseEntity<Map<Category, List<ClosetResponseDTO>>> getGrouped(
             Principal principal
@@ -53,7 +62,34 @@ public class ClosetController {
         return ResponseEntity.ok(closetService.getGroupedCloset(userId));
     }
 
-    // 옷 수정
+    /**
+     * 카테고리 목록 (코드 + 한글 라벨) 조회
+     * GET /api/closet/categories
+     * 응답 예:
+     * [
+     *   { "code": "TOP", "label": "상의" },
+     *   { "code": "BOTTOM", "label": "하의" },
+     *   ...
+     * ]
+     */
+    @GetMapping("/categories")
+    public ResponseEntity<List<Map<String, String>>> getCategories() {
+        List<Map<String, String>> list = Arrays.stream(Category.values())
+                .map(cat -> {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("code", cat.name());
+                    map.put("label", cat.getLabel());
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(list);
+    }
+
+    /**
+     * 옷 정보 수정 (카테고리/이미지 재설정)
+     * PUT /api/closet/{closetId}
+     */
     @PutMapping(value = "/{closetId}", consumes = "multipart/form-data")
     public ResponseEntity<ClosetResponseDTO> updateClothes(
             @PathVariable String closetId,
@@ -62,30 +98,8 @@ public class ClosetController {
             Principal principal
     ) {
         String userId = principal.getName();
-        dto.setUserId(userId); // DTO에 userId 세팅
-        return ResponseEntity.ok(closetService.update(closetId, dto, image));
-    }
-
-    // 라벨 목록 추출
-    @GetMapping("/categories")
-    public ResponseEntity<List<Map<String, String>>> getCategories() {
-        List<Map<String, String>> categories = Arrays.stream(Category.values())
-                .map(c -> Map.of(
-                        "code", c.name(),       // enum 이름 (TOP, BOTTOM...)
-                        "label", c.getLabel()   // 화면에 보여줄 라벨
-                ))
-                .toList();
-
-        return ResponseEntity.ok(categories);
-    }
-
-    // 태그 검색
-    @GetMapping("/search/tags")
-    public ResponseEntity<List<ClosetResponseDTO>> searchByTags(
-            @RequestParam List<String> tags,
-            Principal principal
-    ) {
-        String userId = principal.getName();
-        return ResponseEntity.ok(closetService.searchByTags(userId, tags));
+        // 필요하면 이 userId로 소유자 검증까지 추가 가능
+        ClosetResponseDTO response = closetService.update(closetId, dto, image);
+        return ResponseEntity.ok(response);
     }
 }
