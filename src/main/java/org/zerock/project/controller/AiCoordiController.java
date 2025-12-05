@@ -7,7 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zerock.project.dto.OutfitRequestDto;
 import org.zerock.project.dto.OutfitResponseDto;
+import org.zerock.project.entity.Closet;
 import org.zerock.project.service.AiCoordiService;
+import org.zerock.project.service.ClosetService;
+
+import java.util.List;
 
 
 @RestController
@@ -16,6 +20,8 @@ import org.zerock.project.service.AiCoordiService;
 @RequestMapping("/AI")
 public class AiCoordiController {
     private final AiCoordiService aiCoordiService;
+
+
     @PostMapping("/coordi")
     public ResponseEntity<OutfitResponseDto> generateAiCoordi(@ModelAttribute OutfitRequestDto outfitRequestDto) {
         try{
