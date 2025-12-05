@@ -7,11 +7,18 @@
 </head>
 <body>
 <header>
-    <div class="logo">Fit Maker<button id="logoMain"></button>
+    <div class="logo"><a href="/">Fit Maker</a>
+    </div>
+    <div class="movementPage">
+        <a href="/myCloset">My Closet</a>
+        <a href="/AICoordinator">AI Coordinator</a>
+        <a href="/community">Community</a>
     </div>
     <nav>
         <div class="headerBtn">
             <a href="/logout" id="logoutLink">Logout</a>
+            <a href="/myPage">My Page</a>
+            <!--            <button id="MyClosetButton">My Closet</button>-->
         </div>
     </nav>
 </header>
@@ -111,9 +118,10 @@
 
 <script>
     //페이지 이동관련 상단 추가입니다.
-    function redirectToMain() {
-        window.location.href = '/';
-    }
+    // function redirectToMain() {
+    //     window.location.href = '/';
+    // }
+
 
     document.addEventListener('DOMContentLoaded', function () {
         const logoutLink = document.getElementById('logoutLink');
@@ -121,10 +129,10 @@
             logoutLink.addEventListener('click', handleLogout);
         }
 
-        const logoMainButton = document.getElementById('logoMain');
-        if(logoMainButton) {
-            logoMainButton.addEventListener('click', redirectToMain);
-        }
+        // const logoMainButton = document.getElementById('logoMain');
+        // if(logoMainButton) {
+        //     logoMainButton.addEventListener('click', redirectToMain);
+        // }
 
     });
 
