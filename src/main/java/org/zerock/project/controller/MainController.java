@@ -53,4 +53,8 @@ public class MainController {
         return "user/myCloset";
     }
 
-}
+//    @GetMapping("/admin/users")
+//    public String adminUsersPage() {
+//        log.info("GET /admin/users 요청: 관리자 회원 목록 페이지로 이동");
+//        return "admin/adminUserList"; // templates/admin/adminUserList.html
+    }

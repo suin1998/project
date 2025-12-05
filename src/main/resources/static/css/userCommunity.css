@@ -49,22 +49,17 @@ header .logo {
     color: white;
 }
 
+.logo a {
+    text-decoration: none;
+    color: white;
+}
+
 .movementPage a {
     margin-left: 20px;
     text-decoration: none;
     color: white;
     font-size: 16px;
     font-weight: bold;
-}
-
-#logoMain {
-    position: absolute;
-    left: 0;
-    height: 32px;
-    width: 101px;
-    background: none;
-    border: none;
-    padding: 0;
 }
 
 header nav a {
@@ -78,23 +73,23 @@ header nav a {
     display: flex;
 }
 
-#MyClosetButton {
-    border: none;
-    color: white;
-    font-size: 16px;
-    margin-left: 20px;
-    background: none;
-    transform: translateY(3px);
-}
+/*#MyClosetButton {*/
+/*    border: none;*/
+/*    color: white;*/
+/*    font-size: 16px;*/
+/*    margin-left: 20px;*/
+/*    background: none;*/
+/*    transform: translateY(3px);*/
+/*}*/
 
-#AICoordinatorButton {
-    border: none;
-    color: #333;
-    font-size: 16px;
-    margin-left: 20px;
-    background: none;
-    transform: translateY(3px);
-}
+/*#AICoordinatorButton {*/
+/*    border: none;*/
+/*    color: #333;*/
+/*    font-size: 16px;*/
+/*    margin-left: 20px;*/
+/*    background: none;*/
+/*    transform: translateY(3px);*/
+/*}*/
 
 .container {
     width: 1200px;
@@ -105,9 +100,16 @@ header nav a {
 }
 
 .top-bar {
-    display: block;
+    display: grid;
     justify-content: flex-end;
     align-items: center;
+}
+
+.myBoard {
+    background: none;
+    padding: 5px 10px;
+    border: 1px solid black;
+    border-radius: 5px;
 }
 
 .newPost-btn {

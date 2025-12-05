@@ -4,6 +4,7 @@ body {
     color: black;
 }
 
+
 header {
     display: flex;
     justify-content: space-between;
@@ -21,14 +22,17 @@ header .logo {
     color: white;
 }
 
-#logoMain {
-    position: absolute;
-    left: 0;
-    height: 32px;
-    width: 101px;
-    background: none;
-    border: none;
-    padding: 0;
+.logo a {
+    text-decoration: none;
+    color: white;
+}
+
+.movementPage a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 header nav a {
@@ -42,14 +46,14 @@ header nav a {
     display: flex;
 }
 
-#MyClosetButton {
-    border: none;
-    color: white;
-    font-size: 16px;
-    margin-left: 20px;
-    background: none;
-    transform: translateY(3px);
-}
+/*#MyClosetButton {*/
+/*    border: none;*/
+/*    color: white;*/
+/*    font-size: 16px;*/
+/*    margin-left: 20px;*/
+/*    background: none;*/
+/*    transform: translateY(3px);*/
+/*}*/
 
 .movementPage a {
     margin-left: 20px;

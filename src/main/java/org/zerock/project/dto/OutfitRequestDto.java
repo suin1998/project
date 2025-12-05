@@ -22,7 +22,6 @@ public class OutfitRequestDto {
     private List<String> fashionStyle;
     private List<String> tempStyle;
     private String tpo;
-    private List<MultipartFile> clothesImages;
 }
 
 
