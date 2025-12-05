@@ -12,7 +12,9 @@ import java.util.List;
 @ToString
 
 public class OutfitResponseDto {
-    private List<String> outfitImgUrl;
+    private String outfitId;
     private String recommendation;
     private String reason;
+    private List<String> outfitImgUrl;
+
 }
